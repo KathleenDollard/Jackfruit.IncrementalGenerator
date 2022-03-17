@@ -1,0 +1,15 @@
+﻿using System;
+using System.Dynamic;
+
+namespace Jackfruit
+{
+    public class ConsoleApplication
+    {
+        public static ConsoleApplication Create(Delegate rootCommandHandler) { }
+    }
+
+    public class CliCommand
+    {
+        public CliCommand Create(Delegate CommandHandler)
+    }
+}
