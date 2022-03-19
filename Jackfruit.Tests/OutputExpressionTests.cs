@@ -17,13 +17,13 @@ namespace Jackfruit.Tests
 
 
         [Fact]
-        public Task Invcation_outputs_correctly()
+        public Task Invocation_outputs_correctly()
         {
             MethodModel model = new("A", "string")
             {
                 Statements = new()
                 {
-                    SimpleCall(Invoke("A", "B"))
+                    SimpleCall(Invoke("B", "C"))
                 }
             };
             var language = new LanguageCSharp(new StringBuilderWriter(3));

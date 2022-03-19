@@ -118,7 +118,7 @@ namespace Jackfruit.IncrementalGenerator
                 $"{OptionalKeyword(model.IsPartial, PartialKeyword)}";
             return new List<string>
                 {
-                    $"{Scope(model.Scope)} {keywords}{NamedItem(model.Name)}({Parameters(model.Parameters)})",
+                    $"{Scope(model.Scope)} {keywords}{NamedItem(model.ReturnType)} {NamedItem(model.Name)}({Parameters(model.Parameters)})",
                     "{"
                 };
         }
@@ -232,12 +232,12 @@ namespace Jackfruit.IncrementalGenerator
 
 
 
-        private static string OptionalKeyword(bool shouldOutputIt, string it)
+        public static string OptionalKeyword(bool shouldOutputIt, string it)
             => shouldOutputIt
                 ? $"{it} "
                 : "";
 
-        private string Scope(Scope scope)
+        public string Scope(Scope scope)
         {
             return scope switch
             {
@@ -253,59 +253,90 @@ namespace Jackfruit.IncrementalGenerator
         }
 
 
-        protected override IEnumerable<string> IfOpen(IExpression ifCondition)
-        {
-            throw new NotImplementedException();
-        }
+        public override IEnumerable<string> IfOpen(IExpression condition)
+            => new List<string>
+                {
+                    $"if ({condition})",
+                    "{"
+                };
 
-        protected override void ElseIfOpen(IExpression condition)
-        {
-            throw new NotImplementedException();
-        }
+        public override IEnumerable<string> ElseIfOpen(IExpression condition)
+            => new List<string>
+                {
+                    "}",
+                    $"else if ({condition})",
+                    "{"
+                };
 
-        protected override void ElseOpen()
-        {
-            throw new NotImplementedException();
-        }
+        public override IEnumerable<string> ElseOpen()
+            => new List<string>
+                {
+                    "}",
+                    $"else",
+                    "{"
+                };
 
-        protected override void IfClose()
-        {
-            throw new NotImplementedException();
-        }
+        public override IEnumerable<string> IfClose()
+            => new List<string>
+                {
+                    "}",
+                };
 
-        protected override void ForEachOpen(string loopVar, IExpression loopOver)
-        {
-            throw new NotImplementedException();
-        }
+        public override IEnumerable<string> ForEachOpen(string loopVar, IExpression loopOver)
+            => new List<string>
+                {
+                    $"foreach (var {loopVar} in {Expression(loopOver)})",
+                };
 
-        protected override void ForEachClose()
-        {
-            throw new NotImplementedException();
-        }
 
-        protected override void Assign(string variable, IExpression value)
-        {
-            throw new NotImplementedException();
-        }
+        public override IEnumerable<string> ForEachClose()
+            => new List<string>
+                {
+                    "}",
+                };
 
-        protected override void AssignWithDeclare(NamedItemModel? typeName, string variable, IExpression value)
-        {
-            throw new NotImplementedException();
-        }
+        public override IEnumerable<string> Assign(string variable, IExpression value)
+            => new List<string>
+                {
+                    $"{variable} = {Expression(value)}"
+                };
 
-        protected override void Return(IExpression expression)
-        {
-            throw new NotImplementedException();
-        }
 
-        protected override void SimpleCall(IExpression expression)
-        {
-            throw new NotImplementedException();
-        }
+        public override IEnumerable<string> AssignWithDeclare(NamedItemModel? typeName, string variable, IExpression value)
+            => new List<string>
+                {
+                    $"var {variable} = {Expression(value)}"
+                };
 
-        protected override void Comment(string text)
-        {
-            throw new NotImplementedException();
-        }
+
+        public override IEnumerable<string> Return(IExpression expression)
+            => new List<string>
+                {
+                    $"return {Expression(expression)}"
+                };
+
+
+        public override IEnumerable<string> SimpleCall(IExpression expression)
+            => new List<string>
+                {
+                    $"{Expression(expression)}"
+                };
+
+        public override IEnumerable<string> Comment(string text)
+            => new List<string>
+                {
+                    $"// {text}"
+                };
+
+        public override string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<IExpression> arguments)
+            => $"{NamedItem(instance)}.{NamedItem(methodName)}({string.Join(", ", arguments)})";
+
+        public override string Instantiate(NamedItemModel typeName, IEnumerable<IExpression> arguments)
+            => $"new {NamedItem(typeName)}({string.Join(", ", arguments)})";
+
+
+        public override string Compare(IExpression left, Operator op, IExpression right)
+            => $"{left} {op} {right}";
+
     }
 }

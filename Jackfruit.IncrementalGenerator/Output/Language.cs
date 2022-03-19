@@ -95,17 +95,24 @@ namespace Jackfruit.IncrementalGenerator
 
         public abstract string NamedItem(NamedItemModel namedItem);
 
-        protected abstract IEnumerable<string> IfOpen(IExpression ifCondition);
-        protected abstract void ElseIfOpen(IExpression condition);
-        protected abstract void ElseOpen();
-        protected abstract void IfClose();
-        protected abstract void ForEachOpen(string loopVar, IExpression loopOver);
-        protected abstract void ForEachClose();
-        protected abstract void Assign(string variable, IExpression value);
-        protected abstract void AssignWithDeclare(NamedItemModel? typeName, string variable, IExpression value);
-        protected abstract void Return(IExpression expression);
-        protected abstract void SimpleCall(IExpression expression);
-        protected abstract void Comment(string text);
+        // statements
+        public abstract IEnumerable<string> IfOpen(IExpression ifCondition);
+        public abstract IEnumerable<string> ElseIfOpen(IExpression condition);
+        public abstract IEnumerable<string> ElseOpen();
+        public abstract IEnumerable<string> IfClose();
+        public abstract IEnumerable<string> ForEachOpen(string loopVar, IExpression loopOver);
+        public abstract IEnumerable<string> ForEachClose();
+        public abstract IEnumerable<string> Assign(string variable, IExpression value);
+        public abstract IEnumerable<string> AssignWithDeclare(NamedItemModel? typeName, string variable, IExpression value);
+        public abstract IEnumerable<string> Return(IExpression expression);
+        public abstract IEnumerable<string> SimpleCall(IExpression expression);
+        public abstract IEnumerable<string> Comment(string text);
+
+        // expressions
+        public abstract string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<IExpression> arguments);
+        public abstract string Instantiate(NamedItemModel typeName, IEnumerable<IExpression> arguments);
+        public abstract string Compare(IExpression left, Operator @operator, IExpression right);
+
 
 
         public IWriter AddCodeFile(CodeFileModel codeFile)
@@ -152,7 +159,7 @@ namespace Jackfruit.IncrementalGenerator
         public IWriter AddMethod(MethodModel model)
         {
             writer.AddLines(MethodOpen(model))
-                .IncreaseIndent(); 
+                .IncreaseIndent();
 
             writer.AddLines(Statements(model.Statements));
 
@@ -170,12 +177,8 @@ namespace Jackfruit.IncrementalGenerator
         {
             writer.AddLines(ConstructorOpen(model))
                 .IncreaseIndent();
-            foreach (var statement in model.Statements)
-            {
-                //switch (statement)
-                //{
-                //}
-            }
+
+            writer.AddLines(Statements(model.Statements));
 
             writer.DecreaseIndent()
                 .AddLines(ConstructorClose(model));
@@ -196,12 +199,9 @@ namespace Jackfruit.IncrementalGenerator
                 {
                     writer.AddLines(GetterOpen(model))
                         .IncreaseIndent();
-                    foreach (var statement in model.Getter.Statements)
-                    {
-                        //switch (statement)
-                        //{
-                        //}
-                    }
+
+                    writer.AddLines(Statements(model.Getter.Statements));
+
                     writer.DecreaseIndent()
                     .AddLines(GetterClose(model));
                 }
@@ -209,12 +209,9 @@ namespace Jackfruit.IncrementalGenerator
                 {
                     writer.AddLines(SetterOpen(model))
                         .IncreaseIndent();
-                    foreach (var statement in model.Setter.Statements)
-                    {
-                        //switch (statement)
-                        //{
-                        //}
-                    }
+
+                    writer.AddLines(Statements(model.Setter.Statements));
+
                     writer.DecreaseIndent()
                     .AddLines(SetterClose(model));
 
@@ -234,27 +231,27 @@ namespace Jackfruit.IncrementalGenerator
                 switch (statement)
                 {
                     case IfModel ifModel:
-                        AddIf(ret, ifModel);
+                        ret.AddRange(AddIf(ifModel));
                         break;
                     case ForEachModel forEach:
-                        ForEachOpen(forEach.LoopVar, forEach.LoopOver);
+                        ret.AddRange(ForEachOpen(forEach.LoopVar, forEach.LoopOver));
                         ret.AddRange(Statements(forEach.Statements));
-                        ForEachClose();
+                        ret.AddRange(ForEachClose());
                         break;
                     case AssignmentModel assign:
-                        Assign(assign.Variable, assign.Value);
+                        ret.AddRange(Assign(assign.Variable, assign.Value));
                         break;
                     case AssignWithDeclareModel assign:
-                        AssignWithDeclare(assign.TypeName, assign.Variable, assign.Value);
+                        ret.AddRange(AssignWithDeclare(assign.TypeName, assign.Variable, assign.Value));
                         break;
                     case ReturnModel returnModel:
-                        Return(returnModel.Expression);
+                        ret.AddRange(Return(returnModel.Expression));
                         break;
                     case SimpleCallModel simpleCallModel:
-                        SimpleCall(simpleCallModel.Expression);
+                        ret.AddRange(SimpleCall(simpleCallModel.Expression));
                         break;
                     case CommentModel commentModel:
-                        Comment(commentModel.Text);
+                        ret.AddRange(Comment(commentModel.Text));
                         break;
                     default:
                         throw new NotImplementedException();
@@ -263,57 +260,40 @@ namespace Jackfruit.IncrementalGenerator
             return ret;
         }
 
-        private void AddIf(List<string> ret, IfModel ifModel)
+        private IEnumerable<string> AddIf( IfModel ifModel)
         {
+            var ret = new List<string>();
             ret.AddRange(IfOpen(ifModel.IfCondition));
             ret.AddRange(Statements(ifModel.IfStatements));
             foreach (var elseIf in ifModel.ElseIfBlocks)
             {
-                ElseIfOpen(elseIf.Condition);
+                ret.AddRange(ElseIfOpen(elseIf.Condition));
                 ret.AddRange(Statements(elseIf.Statements));
             }
             if (ifModel.ElseStatements.Any())
             {
-                ElseOpen();
+                ret.AddRange(ElseOpen());
                 ret.AddRange(Statements(ifModel.ElseStatements));
             }
-            IfClose();
-
-        }
-
-        public IEnumerable<string> Expression(IExpression expression)
-        {
-            var ret = new List<string>();
-            switch (expression)
-            {
-                case IfModel ifModel:
-                    AddIf(ret, ifModel);
-                    break;
-                case ForEachModel forEach:
-                    ForEachOpen(forEach.LoopVar, forEach.LoopOver);
-                    ret.AddRange(Statements(forEach.Statements));
-                    ForEachClose();
-                    break;
-                case AssignmentModel assign:
-                    Assign(assign.Variable, assign.Value);
-                    break;
-                case AssignWithDeclareModel assign:
-                    AssignWithDeclare(assign.TypeName, assign.Variable, assign.Value);
-                    break;
-                case ReturnModel returnModel:
-                    Return(returnModel.Expression);
-                    break;
-                case SimpleCallModel simpleCallModel:
-                    SimpleCall(simpleCallModel.Expression);
-                    break;
-                case CommentModel commentModel:
-                    Comment(commentModel.Text);
-                    break;
-                default:
-                    throw new NotImplementedException();
-                }
+            ret.AddRange(IfClose());
             return ret;
         }
+
+        public string Expression(IExpression expression) 
+            => expression switch
+            {
+                InvocationModel invocationModel => Invoke(invocationModel.Instance, invocationModel.MethodName, invocationModel.Arguments),
+                InstantiationModel instantiationModel => Instantiate(instantiationModel.TypeName, instantiationModel.Arguments),
+                ComparisonModel comparisonModel => Compare(comparisonModel.Left, comparisonModel.Operator, comparisonModel.Right),
+                LiteralModel literalModel => literalModel.Value ?? "",
+                StringLiteralModel literalModel => $@"""{literalModel.Value}""",
+                SymbolModel symbolModel => symbolModel.Name ?? "",
+                NullLiteralModel _ => NullKeyword,
+                ThisLiteralModel _ => ThisKeyword,
+                TrueLiteralModel _ => TrueKeyword,
+                FalseLiteralModel _ => FalseKeyword,
+                _ => throw new NotImplementedException(),
+            };
 
         public string Output()
             => writer.Output();

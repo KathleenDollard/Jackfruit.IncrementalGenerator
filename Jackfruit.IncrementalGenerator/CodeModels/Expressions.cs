@@ -49,14 +49,19 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
     }
 
-    public class LiteralModel<T> : IExpression
+    public class StringLiteralModel : IExpression
+    {
+        public string? Value { get; set; }
+    }
+
+    public class LiteralModel : IExpression
     {
         public string? Value { get; set; }
     }
 
     public class SymbolModel : IExpression
     {
-        public int? Name { get; set; }
+        public string? Name { get; set; }
     }
 
     public class NullLiteralModel : IExpression

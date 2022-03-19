@@ -1,10 +1,10 @@
 ﻿ class A
 {
-    B()
+    string B()
    {
    }
    
-    C()
+    string C()
    {
    }
    
