@@ -41,7 +41,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = GetGeneratedOutput<Generator>(input);
+            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -62,7 +62,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = GetGeneratedOutput<Generator>(input);
+            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -80,14 +80,10 @@ public class MyClass
     public void F() 
     {
         var app = ConsoleApplication.CreateWithRootCommand(Handlers.NextGeneration);
-        app.NextGeneration.AddSubCommand(Voyager);
-        app.NextGeneration.Voyager.Janeway.Required = true;
-
-        var x = NextGeneration.Voyager.JanewayResult(parseResult);
     }
 
 }";
-            var (diagnostics, output) = GetGeneratedOutput<Generator>(input);
+            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");

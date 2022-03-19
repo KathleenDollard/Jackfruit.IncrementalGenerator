@@ -1,19 +1,14 @@
 using Xunit;
-//using VerifyCS = CSharpSourceGeneratorVerifier<YourGenerator>;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using VerifyXunit;
-
-using System.Threading;
 using System.Threading.Tasks;
 using Jackfruit.IncrementalGenerator;
-using System.Collections.Immutable;
-using System.Collections.Generic;
 
 namespace Jackfruit.Tests
 {
     [UsesVerify]
-    public class BasicTests
+    public class CommandDefTests
     {
 
         [Fact]
@@ -45,7 +40,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<Generator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -69,7 +64,7 @@ public class MyClass
     {
     }
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<Generator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -86,7 +81,7 @@ public class MyClass
         MyClass.YesMine.Really.ConsoleApplication.CreateWithRootCommand(null);
     }
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<Generator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -94,7 +89,7 @@ public class MyClass
 
 
         [Fact]
-        public Task Method_with_other_names__has_no_output()
+        public Task Method_with_other_names_has_no_output()
         {
             const string input = @"
 public class MyClass
@@ -105,7 +100,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<Generator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -123,7 +118,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<Generator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -139,9 +134,11 @@ public class MyClass
     {
         ConsoleApplication.CreateWithRootCommand(A, B, C);
     }
-
+    public void A(int i) 
+    {
+    }
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<Generator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");

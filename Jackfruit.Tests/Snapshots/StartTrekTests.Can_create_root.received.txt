@@ -16,24 +16,6 @@ namespace Jackfruit
 
 // *******************************
 
-// Handlers.Voyager - Ja
-using System;
-
-namespace Jackfruit
-{
-    public class ConsoleApplication
-    {
-        public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler) { }
-    }
-
-    public class CliCommand
-    {
-        public static CliCommand AddCommand(Delegate CommandHandler)
-    }
-}
-
-// *******************************
-
 // 
 Key:         Jackfruit.ConsoleApplication
 Id:          Handlers.Voyager
@@ -87,4 +69,4 @@ Members:
          Description:    
          Aliases:        
          ArgDisplayName: 
-         Required:       Falseckfruit.ConsoleApplication - Description: 
+         Required:       False

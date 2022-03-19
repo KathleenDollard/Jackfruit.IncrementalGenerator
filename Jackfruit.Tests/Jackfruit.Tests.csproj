@@ -28,7 +28,70 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="OutputStructuralSnaps\" />
     <Folder Include="Snapshots\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="OutputExpressionTests.Empty_code_doesnt_fail.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputExpressionTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputExpressionTests.Empty_namespace_outputs_empty_file.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputExpressionTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputExpressionTests.SampleTest.Empty_code_doesnt_fail.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputExpressionTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputExpressionTests.SampleTest.Run.received.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputExpressionTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputExpressionTests.SampleTest.Run.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputExpressionTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputStatementsTests.Empty_code_doesnt_fail.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputStatementsTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputStatementsTests.Empty_namespace_outputs_empty_file.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputStatementsTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputStatementsTests.SampleTest.Empty_code_doesnt_fail.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputStatementsTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputStatementsTests.SampleTest.Run.received.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputStatementsTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputStatementsTests.SampleTest.Run.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputStatementsTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputStructureTests.Empty_code_doesnt_fail.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputStructureTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputStructureTests.Empty_namespace_outputs_empty_file.verified.txt">
+      <DependentUpon>OutputStructureTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputStructureTests.SampleTest.Empty_code_doesnt_fail.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputStructureTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputStructureTests.SampleTest.Run.received.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputStructureTests.cs</DependentUpon>
+    </None>
+    <None Update="OutputStructureTests.SampleTest.Run.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>OutputStructureTests.cs</DependentUpon>
+    </None>
   </ItemGroup>
 
 </Project>

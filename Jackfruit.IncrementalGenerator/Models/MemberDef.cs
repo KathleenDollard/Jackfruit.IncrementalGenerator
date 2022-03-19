@@ -18,7 +18,13 @@
     }
     public class OptionDef : MemberDef
     {
-        public OptionDef(string id, string description, string typeName, List<string> aliases, string argDisplayName, bool required)
+        public OptionDef(
+            string id,
+            string description,
+            string typeName,
+            IEnumerable<string> aliases,
+            string argDisplayName,
+            bool required)
             : base(id, description, typeName)
         {
             ArgDisplayName = argDisplayName;
@@ -27,13 +33,17 @@
         }
 
         public string ArgDisplayName { get; }
-        public List<string> Aliases { get; }
+        public IEnumerable<string> Aliases { get; }
         public bool Required { get; }
 
     }
     public class ArgumentDef : MemberDef
     {
-        public ArgumentDef(string id, string description, List<string> aliases, string typeName, bool required)
+        public ArgumentDef(
+            string id,
+            string description,
+            string typeName,
+            bool required)
             : base(id, description, typeName)
         {
             Required = required;
@@ -44,7 +54,10 @@
     }
     public class ServiceDef : MemberDef
     {
-        public ServiceDef(string id, string description, List<string> aliases, string typeName)
+        public ServiceDef(
+            string id,
+            string description,
+            string typeName)
             : base(id, description, typeName)
         { }
     }

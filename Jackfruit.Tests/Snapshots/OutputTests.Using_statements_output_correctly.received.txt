@@ -17,24 +17,16 @@ namespace Jackfruit
 // *******************************
 
 // 
-Key:         Jackfruit.ConsoleApplication
-Id:          Handlers.NextGeneration
-Path:        Jackfruit...ConsoleApplication
-Description: This is the description for Next Generation
+Key:         ConsoleApplication
+Id:          A
+Path:        ConsoleApplication
+Description: 
 Members:     
 
-         Option Id:      greeting
-         Name:           greeting
+         Option Id:      i
+         Name:           i
          TypeName:       
          Description:    
-         Aliases:        
-         ArgDisplayName: 
-         Required:       False
-
-         Option Id:      picard
-         Name:           picard
-         TypeName:       
-         Description:    This is the description for Picard
          Aliases:        
          ArgDisplayName: 
          Required:       False

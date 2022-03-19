@@ -12,17 +12,29 @@ namespace Jackfruit.IncrementalGenerator
 {
     internal static class RoslynHelpers
     {
+        public enum MemberKind
+        {
+            Option = 0,
+            Argument,
+            Service
+        }
+
         public class Detail
         {
             private string description = "";
-            private bool isArg;
+            private MemberKind memberKind;
             private string typeName = "";
             private string argDisplayId = "";
             private bool required;
 
-            public Detail(string id)
-            { Id = id; }
+            public Detail(string id, string? returnType = null)
+            {
+                Id = id;
+                ReturnType = returnType;
+            }
+
             public string Id { get; }
+            public string? ReturnType { get; } 
             public string Description
             {
                 get => description;
@@ -35,14 +47,14 @@ namespace Jackfruit.IncrementalGenerator
                 }
             }
             public string[] Aliases { get; set; } = new string[] { };
-            public bool IsArg
+            public MemberKind MemberKind
             {
-                get => isArg;
+                get => memberKind;
                 set
                 {
-                    if (value)
+                    if (value != MemberKind.Option)
                     {
-                        isArg = value;
+                        memberKind = value;
                     }
                 }
             }
@@ -92,16 +104,17 @@ namespace Jackfruit.IncrementalGenerator
             return null;
         }
 
-        public static Dictionary<string, Detail> BasicDetails(IMethodSymbol methodSymbol)
+        public static Dictionary<string, Detail> BasicDetails(this IMethodSymbol methodSymbol)
         {
             var details = new Dictionary<string, Detail>();
-            details[CommandKey] = new Detail(methodSymbol.Name);
+            details[CommandKey] = new Detail(methodSymbol.Name, methodSymbol.ReturnType.ToString());
             foreach (var param in methodSymbol.Parameters)
             {
-                details[param.Name] = new Detail(param.Name)
-                {
-                    IsArg = param.Name.EndsWith("Arg")
-                };
+                details[param.Name] = new Detail(param.Name);
+                if (param.Name.EndsWith("Arg"))
+                { details[param.Name].MemberKind = MemberKind.Argument; }
+                else if (param.Type.IsAbstract)  // Test that this is true for interfaces
+                { details[param.Name].MemberKind = MemberKind.Service; }
             }
             return details;
         }
@@ -173,7 +186,7 @@ namespace Jackfruit.IncrementalGenerator
                         break;
 
                     case "ArgumentAttribute":
-                        detail.IsArg = true;
+                        detail.MemberKind = MemberKind.Argument;
                         break;
 
                     case "OptionArgumentNameAttribute":
