@@ -47,7 +47,7 @@
         public ACommand RootCommand { get; }
 
 
-        public class A
+        public static class A
         {
             public static void AddSubCommand(Delegate x) { }
             public class B
@@ -61,10 +61,12 @@
     {
         public ACommand() { B = new BCommand(); }
         public BCommand B { get; }
+        // all the normal System.CommandLine support generation
     }
     public class BCommand : CliCommandBase
     {
         public BCommand() { }
+        // all the normal System.CommandLine support generation
     }
 
 }

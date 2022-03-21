@@ -7,7 +7,7 @@ using System.Text;
 namespace Jackfruit.IncrementalGenerator.CodeModels
 {
 
-    public class ClassModel : IHasScope
+    public class ClassModel : IMember, IHasScope
     {
         public static List<ClassModel> Create(params ClassModel[] classes)
             => classes.ToList();

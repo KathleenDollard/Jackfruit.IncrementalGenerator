@@ -6,6 +6,9 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 {
     public static class StructureHelpers
     {
+        public static NamedItemModel Void() 
+            => new VoidNamedItemModel();
+
         public static T Public<T>(this T model)
             where T : IHasScope
         {
@@ -49,6 +52,9 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             model.Parameters = parameters.ToList();
             return model;
         }
+
+        public static ParameterModel Parameter(string name, NamedItemModel type)
+            => new ParameterModel(name, type);
 
         public static T Statements<T>(this T model, params IStatement[] statements)
             where T : IHasStatements
@@ -156,6 +162,13 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             model.IsSealed = true;
             return model;
         }
+
+        public static ClassModel Members(this ClassModel model, params IMember[] members)
+        {
+            model.Members = members.ToList();
+            return model;
+        }
+
 
         public static FieldModel Field(string name, NamedItemModel type)
             => new FieldModel(name, type);

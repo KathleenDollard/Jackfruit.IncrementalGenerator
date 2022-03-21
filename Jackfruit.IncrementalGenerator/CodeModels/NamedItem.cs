@@ -10,11 +10,20 @@
         }
 
         // TODO: Work needed here on generics
-        public static implicit operator NamedItemModel(string name) => new(name);
+        public static implicit operator NamedItemModel(string name) 
+            => name == "void" 
+                    ? new VoidNamedItemModel()
+                    : new NamedItemModel(name);
 
     }
+    public class VoidNamedItemModel : NamedItemModel
+    {
+        public VoidNamedItemModel() : base("")
+        {
+        }
+    }
 
-    public class GenericNamedItemModel : NamedItemModel
+        public class GenericNamedItemModel : NamedItemModel
     {
         public GenericNamedItemModel(string name) : base(name)
         {
