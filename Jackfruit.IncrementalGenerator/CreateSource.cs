@@ -14,11 +14,17 @@ namespace Jackfruit.IncrementalGenerator
     internal class CreateSource
     {
 
-        private readonly string createWithRootCommand = "CreateWithRootCommand";
-        private readonly string cliRoot = "CliRoot";
-        private readonly string rootCommandHandler = "rootCommandHandler";
-        private string CommandClassName(CommandDef commandDef)
+        private const string createWithRootCommand = "CreateWithRootCommand";
+        private const string cliRoot = "CliRoot";
+        private const string rootCommandHandler = "rootCommandHandler";
+        private const string commandVar = "command";
+
+        private static string CommandClassName(CommandDef commandDef)
             => $"{commandDef.Id}Command";
+        private static string OptionPropertyName(OptionDef optionDef)
+            => $"{commandVar}.{optionDef.Id}Option";
+        private static string ArgumentPropertyName(ArgumentDef optionDef)
+            => $"{commandVar}.{optionDef.Id}Argument";
 
         public CodeFileModel GetDefaultConsoleApp()
         {
@@ -107,7 +113,6 @@ namespace Jackfruit.IncrementalGenerator
         public ClassModel GetCommandCode(CommandDef commandDef)
         {
             var commandClassName = CommandClassName(commandDef);
-            var commandVar = "command";
             var commandCode =
                 Class(commandClassName)
                     .Public()
@@ -115,23 +120,58 @@ namespace Jackfruit.IncrementalGenerator
                     .Members(
                         Constructor(commandClassName)
                             .Private(),
-                    CreateMethodModel(commandVar, commandClassName, commandDef)
+                    CreateMethodModel(commandDef)
 );
 
             return commandCode;
 
-            static MethodModel CreateMethodModel(string commandVar, string commandClassName, CommandDef commandDef)
-            {
-                var method =
+        }
+ 
+        public MethodModel CreateMethodModel(CommandDef commandDef)
+        {
+            var commandClassName = CommandClassName(commandDef);
+            var method =
                     Method(commandClassName, "Create")
                     .Public()
                     .Statements(
                         AssignWithDeclare(commandVar, New(commandClassName)));
-                // initialize members and subcommands
-                method.Statements.Add(Assign($"{commandVar}.Handler", Symbol(commandVar)));
-                method.Statements.Add(Return(commandVar));
-                return method;
+            foreach (var member in commandDef.Members)
+            {
+                switch (member)
+                {
+                    case OptionDef opt:
+                        var optPropertyName = OptionPropertyName(opt);
+                        method.Statements.Add(Assign(optPropertyName, New(Generic("Option",opt.TypeName), opt.Id)));
+                        if (!string.IsNullOrWhiteSpace(opt.Description))
+                        { method.Statements.Add(Assign($"{optPropertyName}.Description", opt.Description)); }
+                        if(opt.Aliases.Any())
+                        { method.Statements.Add(Assign($"{optPropertyName}.Aliases", opt.Aliases)); }
+                        if (!string.IsNullOrWhiteSpace(opt.ArgDisplayName))
+                        { method.Statements.Add(Assign($"{optPropertyName}.ArgDisplayName", opt.ArgDisplayName)); }
+                        if (opt.Required)
+                        { method.Statements.Add(Assign($"{optPropertyName}.Required", opt.Required)); }
+                        method.Statements.Add(SimpleCall(Invoke(commandVar, "Add", Symbol(optPropertyName))));
+                        break;
+                    case ArgumentDef arg:
+                        var argPropertyName = ArgumentPropertyName(arg);
+                        method.Statements.Add(Assign(argPropertyName, New(Generic("Argument", arg.TypeName), arg.Id)));
+                        if (arg.Required)
+                        { method.Statements.Add(Assign($"{argPropertyName}.Required", arg.Required)); }
+                        method.Statements.Add(SimpleCall(Invoke(commandVar, "Add", Symbol(argPropertyName))));
+                        break;
+                    default:
+                        break;
+                }
             }
+            foreach (var subCommand in commandDef.SubCommands)
+            {
+                var toAdd = $"{commandVar}.{subCommand.Id}";
+                method.Statements.Add(Assign(toAdd, Invoke(CommandClassName(subCommand), "Create")));
+                method.Statements.Add(SimpleCall(Invoke(commandVar, "Add", Symbol(toAdd))));
+            }
+            method.Statements.Add(Assign($"{commandVar}.Handler", Symbol(commandVar)));
+            method.Statements.Add(Return(commandVar));
+            return method;
         }
 
     }

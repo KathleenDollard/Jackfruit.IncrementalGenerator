@@ -9,6 +9,9 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public static NamedItemModel Void() 
             => new VoidNamedItemModel();
 
+        public static GenericNamedItemModel Generic(string name, params NamedItemModel[] genericTypes)
+            => new(name);
+
         public static T Public<T>(this T model)
             where T : IHasScope
         {

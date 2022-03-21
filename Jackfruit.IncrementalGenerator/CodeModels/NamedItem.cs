@@ -25,8 +25,9 @@
 
         public class GenericNamedItemModel : NamedItemModel
     {
-        public GenericNamedItemModel(string name) : base(name)
+        public GenericNamedItemModel(string name, params NamedItemModel[] genericTypes) : base(name)
         {
+            GenericTypes = genericTypes.ToList();
         }
 
         public List<NamedItemModel> GenericTypes { get; } = new List<NamedItemModel>();
