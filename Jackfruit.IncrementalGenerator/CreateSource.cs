@@ -7,6 +7,7 @@ using static Jackfruit.IncrementalGenerator.CodeModels.StatementHelpers;
 using static Jackfruit.IncrementalGenerator.CodeModels.ExpressionHelpers;
 using static Jackfruit.IncrementalGenerator.CodeModels.StructureHelpers;
 using System.Xml.Schema;
+using System.Runtime.CompilerServices;
 
 namespace Jackfruit.IncrementalGenerator
 {
@@ -16,8 +17,8 @@ namespace Jackfruit.IncrementalGenerator
         private readonly string createWithRootCommand = "CreateWithRootCommand";
         private readonly string cliRoot = "CliRoot";
         private readonly string rootCommandHandler = "rootCommandHandler";
-        private  string commandClassName(CommandDef commandDef)
-            =>  $"{commandDef.Id}Command";
+        private string CommandClassName(CommandDef commandDef)
+            => $"{commandDef.Id}Command";
 
         public CodeFileModel GetDefaultConsoleApp()
         {
@@ -30,7 +31,7 @@ namespace Jackfruit.IncrementalGenerator
                     {
                         new(Helpers.ConsoleAppClassName)
                         {
-                            IsPartial = true, 
+                            IsPartial = true,
                             Members = new()
                             {
                                 Constructor(Helpers.ConsoleAppClassName).Private(),
@@ -47,11 +48,11 @@ namespace Jackfruit.IncrementalGenerator
 
         public CodeFileModel GetCustomApp(CommandDef commandDef)
         {
-            var commandClass = GetNestedCommands(0,commandDef);
-            var consoleClassCode = GetConsoleCode(commandClass, commandClassName(commandDef));
+            var commandClass = GetNestedCommands(0, commandDef);
+            var consoleClassCode = GetConsoleCode(commandClass, CommandClassName(commandDef));
             var codeFile = new CodeFileModel(Helpers.ConsoleAppClassName)
             {
-                Usings = {"System", "System.CommandLine","System.CommandLine.Invocation","System.Threading.Tasks" },
+                Usings = { "System", "System.CommandLine", "System.CommandLine.Invocation", "System.Threading.Tasks" },
                 Namespace = new(commandDef.Namespace)  // not sure what nspace to put this in
                 {
                     Classes = new()
@@ -61,11 +62,11 @@ namespace Jackfruit.IncrementalGenerator
                 }
             };
             return codeFile;
-            
+
         }
 
         private ClassModel GetConsoleCode(ClassModel commandCode, string commandClassName)
-            {
+        {
             var consoleCode = new ClassModel(Helpers.ConsoleAppClassName)
             {
                 Members = new()
@@ -103,17 +104,34 @@ namespace Jackfruit.IncrementalGenerator
             return classCode;
         }
 
-
-        private ClassModel GetCommandCode(CommandDef commandDef)
+        public ClassModel GetCommandCode(CommandDef commandDef)
         {
+            var commandClassName = CommandClassName(commandDef);
+            var commandVar = "command";
             var commandCode =
-                Class(commandClassName(commandDef))
+                Class(commandClassName)
                     .Public()
-                    .Partial();
-                    //.Members(
+                    .Partial()
+                    .Members(
+                        Constructor(commandClassName)
+                            .Private(),
+                    CreateMethodModel(commandVar, commandClassName, commandDef)
+);
 
-                    //)
             return commandCode;
+
+            static MethodModel CreateMethodModel(string commandVar, string commandClassName, CommandDef commandDef)
+            {
+                var method =
+                    Method(commandClassName, "Create")
+                    .Public()
+                    .Statements(
+                        AssignWithDeclare(commandVar, New(commandClassName)));
+                // initialize members and subcommands
+                method.Statements.Add(Assign($"{commandVar}.Handler", Symbol(commandVar)));
+                method.Statements.Add(Return(commandVar));
+                return method;
+            }
         }
 
     }

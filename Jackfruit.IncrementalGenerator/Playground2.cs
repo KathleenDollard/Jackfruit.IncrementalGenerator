@@ -57,13 +57,13 @@
         }
     }
 
-    public class ACommand : CliCommandBase
+    public partial class ACommand : CliCommandBase
     {
         public ACommand() { B = new BCommand(); }
         public BCommand B { get; }
         // all the normal System.CommandLine support generation
     }
-    public class BCommand : CliCommandBase
+    public partial class BCommand : CliCommandBase
     {
         public BCommand() { }
         // all the normal System.CommandLine support generation
