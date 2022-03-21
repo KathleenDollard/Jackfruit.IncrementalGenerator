@@ -12,7 +12,7 @@
         public NamedItemModel Type { get; }
         public ParameterStyle Style { get; }
         public bool IsParamArray { get; }
-        public IExpression? DefaultValue { get; }
+        public ExpressionBase? DefaultValue { get; }
     }
 }
 /* Hmmm. Will we need these?

@@ -15,6 +15,8 @@
 
         public string? Alias { get; }
 
+        public static implicit operator UsingModel(string name) => new(name);
+
     }
 }
 /* Hmmm. Will we need these?

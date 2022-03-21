@@ -16,17 +16,19 @@ namespace Jackfruit
 
 // *******************************
 
-// 
+/*
 Key:         ConsoleApplication
 Id:          A
 Path:        ConsoleApplication
 Description: 
+Namespace:   <global namespace>
 Members:     
-
-         Option Id:      i
-         Name:           i
-         TypeName:       
-         Description:    
-         Aliases:        
-         ArgDisplayName: 
-         Required:       False
+   Option
+      Option Id:      i
+      Name:           i
+      TypeName:       
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+*/

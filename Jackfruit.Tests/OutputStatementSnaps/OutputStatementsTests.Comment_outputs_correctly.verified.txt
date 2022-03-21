@@ -1,0 +1,4 @@
+﻿ string A()
+{
+   // This is a comment
+}

@@ -1,14 +1,12 @@
 ﻿using Jackfruit.IncrementalGenerator.CodeModels;
 using Jackfruit.IncrementalGenerator.Output;
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace Jackfruit.IncrementalGenerator
 {
     public class LanguageCSharp : LanguageOutput
     {
+        public LanguageCSharp(IWriter writer) : base(writer) { }
+
         public override string PrivateKeyword { get; } = "private";
         public override string PublicKeyword { get; } = "public";
         public override string InternalKeyword { get; } = "internal";
@@ -51,7 +49,18 @@ namespace Jackfruit.IncrementalGenerator
                 _ => namedItem.Name
             };
 
-        public LanguageCSharp(IWriter writer) : base(writer) { }
+
+        public override string Operator(Operator op)
+            => op switch
+            {
+                CodeModels.Operator.Equals => "==",
+                CodeModels.Operator.NotEquals => "!=",
+                CodeModels.Operator.GreaterThan => ">",
+                CodeModels.Operator.LessThan => "<",
+                CodeModels.Operator.GreaterThanOrEqualTo => ">=",
+                CodeModels.Operator.LessThanOrEqualTo => "<=",
+                _ => throw new InvalidOperationException()
+            };
 
         public override IEnumerable<string> Comments(IEnumerable<string> comments)
            => comments.Select(x => $"// {x}");
@@ -253,18 +262,19 @@ namespace Jackfruit.IncrementalGenerator
         }
 
 
-        public override IEnumerable<string> IfOpen(IExpression condition)
+        // Statements
+        public override IEnumerable<string> IfOpen(ExpressionBase condition)
             => new List<string>
                 {
-                    $"if ({condition})",
+                    $"if ({Expression(condition)})",
                     "{"
                 };
 
-        public override IEnumerable<string> ElseIfOpen(IExpression condition)
+        public override IEnumerable<string> ElseIfOpen(ExpressionBase condition)
             => new List<string>
                 {
                     "}",
-                    $"else if ({condition})",
+                    $"else if ({Expression(condition)})",
                     "{"
                 };
 
@@ -282,9 +292,10 @@ namespace Jackfruit.IncrementalGenerator
                     "}",
                 };
 
-        public override IEnumerable<string> ForEachOpen(string loopVar, IExpression loopOver)
+        public override IEnumerable<string> ForEachOpen(string loopVar, ExpressionBase loopOver)
             => new List<string>
                 {
+                    "{",
                     $"foreach (var {loopVar} in {Expression(loopOver)})",
                 };
 
@@ -295,31 +306,34 @@ namespace Jackfruit.IncrementalGenerator
                     "}",
                 };
 
-        public override IEnumerable<string> Assign(string variable, IExpression value)
+        public override IEnumerable<string> Assign(string variable, ExpressionBase value)
             => new List<string>
                 {
-                    $"{variable} = {Expression(value)}"
+                    $"{variable} = {Expression(value)};"
+                };
+
+        public override IEnumerable<string> AssignWithDeclare(NamedItemModel? typeName, string variable, ExpressionBase value)
+        {
+            var useType = typeName is null
+                    ? "var"
+                    : NamedItem(typeName);
+            return new List<string>
+                {
+                    $"{useType} {variable} = {Expression(value)};"
+                };
+        }
+
+        public override IEnumerable<string> Return(ExpressionBase expression)
+            => new List<string>
+                {
+                    $"return {Expression(expression)};"
                 };
 
 
-        public override IEnumerable<string> AssignWithDeclare(NamedItemModel? typeName, string variable, IExpression value)
+        public override IEnumerable<string> SimpleCall(ExpressionBase expression)
             => new List<string>
                 {
-                    $"var {variable} = {Expression(value)}"
-                };
-
-
-        public override IEnumerable<string> Return(IExpression expression)
-            => new List<string>
-                {
-                    $"return {Expression(expression)}"
-                };
-
-
-        public override IEnumerable<string> SimpleCall(IExpression expression)
-            => new List<string>
-                {
-                    $"{Expression(expression)}"
+                    $"{Expression(expression)};"
                 };
 
         public override IEnumerable<string> Comment(string text)
@@ -328,15 +342,16 @@ namespace Jackfruit.IncrementalGenerator
                     $"// {text}"
                 };
 
-        public override string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<IExpression> arguments)
+        // Expressions
+        public override string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments)
             => $"{NamedItem(instance)}.{NamedItem(methodName)}({string.Join(", ", arguments)})";
 
-        public override string Instantiate(NamedItemModel typeName, IEnumerable<IExpression> arguments)
+        public override string Instantiate(NamedItemModel typeName, IEnumerable<ExpressionBase> arguments)
             => $"new {NamedItem(typeName)}({string.Join(", ", arguments)})";
 
 
-        public override string Compare(IExpression left, Operator op, IExpression right)
-            => $"{left} {op} {right}";
+        public override string Compare(ExpressionBase left, Operator op, ExpressionBase right)
+            => $"{Expression(left)} {Operator(op)} {Expression(right)}";
 
     }
 }

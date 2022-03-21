@@ -1,6 +1,6 @@
 ﻿namespace Jackfruit.IncrementalGenerator.CodeModels
 {
-    public class ConstructorModel : IMember
+    public class ConstructorModel : IMember, IHasScope, IHasParameters,IHasStatements
     {
         public string ClassName { get; }
 
@@ -9,14 +9,15 @@
             ClassName = className;
         }
 
-        public BaseOrThis BaseOrThis { get; }
-        public List<IExpression> BaseOrThisArguments { get; } = new List<IExpression> { };
-        public Scope Scope { get; }
-        public bool IsStatic { get; }
-        public List<ParameterModel> Parameters { get; } = new List<ParameterModel> { };
-        public List<IStatement> Statements { get; } = new List<IStatement> { };
+        public BaseOrThis BaseOrThis { get; set; }
+        public List<ExpressionBase> BaseOrThisArguments { get; set; } = new List<ExpressionBase> { };
+        public Scope Scope { get; set; }
+        public bool IsStatic { get; set; }
+        public List<ParameterModel> Parameters { get; set; } = new List<ParameterModel> { };
+        public List<IStatement> Statements { get; set; } = new List<IStatement> { };
 
     }
+
 }
 /* Hmmm. Will we need these?
 

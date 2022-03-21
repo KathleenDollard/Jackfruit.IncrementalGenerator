@@ -28,7 +28,7 @@ namespace Jackfruit.Tests
         }
 
         [Fact]
-        public Task Empty_namespace_outputs_empty_file()
+        public Task Empty_codeFile_outputs_empty_file()
         {
             CodeFileModel codeModel = new("asdf");
             var language = new LanguageCSharp(new StringBuilderWriter(3));

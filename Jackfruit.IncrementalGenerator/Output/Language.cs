@@ -94,24 +94,25 @@ namespace Jackfruit.IncrementalGenerator
         public abstract IEnumerable<string> SetterClose(PropertyModel model);
 
         public abstract string NamedItem(NamedItemModel namedItem);
+        public abstract string Operator(Operator op);
 
         // statements
-        public abstract IEnumerable<string> IfOpen(IExpression ifCondition);
-        public abstract IEnumerable<string> ElseIfOpen(IExpression condition);
+        public abstract IEnumerable<string> IfOpen(ExpressionBase ifCondition);
+        public abstract IEnumerable<string> ElseIfOpen(ExpressionBase condition);
         public abstract IEnumerable<string> ElseOpen();
         public abstract IEnumerable<string> IfClose();
-        public abstract IEnumerable<string> ForEachOpen(string loopVar, IExpression loopOver);
+        public abstract IEnumerable<string> ForEachOpen(string loopVar, ExpressionBase loopOver);
         public abstract IEnumerable<string> ForEachClose();
-        public abstract IEnumerable<string> Assign(string variable, IExpression value);
-        public abstract IEnumerable<string> AssignWithDeclare(NamedItemModel? typeName, string variable, IExpression value);
-        public abstract IEnumerable<string> Return(IExpression expression);
-        public abstract IEnumerable<string> SimpleCall(IExpression expression);
+        public abstract IEnumerable<string> Assign(string variable, ExpressionBase value);
+        public abstract IEnumerable<string> AssignWithDeclare(NamedItemModel? typeName, string variable, ExpressionBase value);
+        public abstract IEnumerable<string> Return(ExpressionBase expression);
+        public abstract IEnumerable<string> SimpleCall(ExpressionBase expression);
         public abstract IEnumerable<string> Comment(string text);
 
         // expressions
-        public abstract string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<IExpression> arguments);
-        public abstract string Instantiate(NamedItemModel typeName, IEnumerable<IExpression> arguments);
-        public abstract string Compare(IExpression left, Operator @operator, IExpression right);
+        public abstract string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments);
+        public abstract string Instantiate(NamedItemModel typeName, IEnumerable<ExpressionBase> arguments);
+        public abstract string Compare(ExpressionBase left, Operator @operator, ExpressionBase right);
 
 
 
@@ -161,7 +162,7 @@ namespace Jackfruit.IncrementalGenerator
             writer.AddLines(MethodOpen(model))
                 .IncreaseIndent();
 
-            writer.AddLines(Statements(model.Statements));
+           Statements(writer,model.Statements);
 
             writer.DecreaseIndent()
                 .AddLines(MethodClose(model));
@@ -178,7 +179,7 @@ namespace Jackfruit.IncrementalGenerator
             writer.AddLines(ConstructorOpen(model))
                 .IncreaseIndent();
 
-            writer.AddLines(Statements(model.Statements));
+            Statements(writer, model.Statements);
 
             writer.DecreaseIndent()
                 .AddLines(ConstructorClose(model));
@@ -200,7 +201,7 @@ namespace Jackfruit.IncrementalGenerator
                     writer.AddLines(GetterOpen(model))
                         .IncreaseIndent();
 
-                    writer.AddLines(Statements(model.Getter.Statements));
+                    Statements(writer, model.Getter.Statements);
 
                     writer.DecreaseIndent()
                     .AddLines(GetterClose(model));
@@ -210,7 +211,7 @@ namespace Jackfruit.IncrementalGenerator
                     writer.AddLines(SetterOpen(model))
                         .IncreaseIndent();
 
-                    writer.AddLines(Statements(model.Setter.Statements));
+                    Statements(writer, model.Setter.Statements);
 
                     writer.DecreaseIndent()
                     .AddLines(SetterClose(model));
@@ -223,70 +224,79 @@ namespace Jackfruit.IncrementalGenerator
             return writer;
         }
 
-        public IEnumerable<string> Statements(IEnumerable<IStatement> statements)
+
+        // ARGHHHH! this is broken because statements often need to indent. We need to pass the writer down.
+
+        public IWriter Statements(IWriter writer, IEnumerable<IStatement> statements)
         {
-            var ret = new List<string>();
             foreach (var statement in statements)
             {
                 switch (statement)
                 {
                     case IfModel ifModel:
-                        ret.AddRange(AddIf(ifModel));
+                        AddIf(writer, ifModel);
                         break;
                     case ForEachModel forEach:
-                        ret.AddRange(ForEachOpen(forEach.LoopVar, forEach.LoopOver));
-                        ret.AddRange(Statements(forEach.Statements));
-                        ret.AddRange(ForEachClose());
+                        writer.AddLines(ForEachOpen(forEach.LoopVar, forEach.LoopOver));
+                        writer.IncreaseIndent();
+                        Statements(writer, forEach.Statements);
+                        writer.DecreaseIndent();
+                        writer.AddLines(ForEachClose());
                         break;
                     case AssignmentModel assign:
-                        ret.AddRange(Assign(assign.Variable, assign.Value));
+                        writer.AddLines(Assign(assign.Variable, assign.Value));
                         break;
                     case AssignWithDeclareModel assign:
-                        ret.AddRange(AssignWithDeclare(assign.TypeName, assign.Variable, assign.Value));
+                        writer.AddLines(AssignWithDeclare(assign.TypeName, assign.Variable, assign.Value));
                         break;
                     case ReturnModel returnModel:
-                        ret.AddRange(Return(returnModel.Expression));
+                        writer.AddLines(Return(returnModel.Expression));
                         break;
                     case SimpleCallModel simpleCallModel:
-                        ret.AddRange(SimpleCall(simpleCallModel.Expression));
+                        writer.AddLines(SimpleCall(simpleCallModel.Expression));
                         break;
                     case CommentModel commentModel:
-                        ret.AddRange(Comment(commentModel.Text));
+                        writer.AddLines(Comment(commentModel.Text));
                         break;
                     default:
                         throw new NotImplementedException();
                 }
             }
-            return ret;
+            return writer;
         }
 
-        private IEnumerable<string> AddIf( IfModel ifModel)
+        private IWriter AddIf(IWriter writer, IfModel ifModel)
         {
-            var ret = new List<string>();
-            ret.AddRange(IfOpen(ifModel.IfCondition));
-            ret.AddRange(Statements(ifModel.IfStatements));
+            writer.AddLines(IfOpen(ifModel.IfCondition));
+            writer.IncreaseIndent();
+            Statements(writer, ifModel.IfStatements);
+            writer.DecreaseIndent();
             foreach (var elseIf in ifModel.ElseIfBlocks)
             {
-                ret.AddRange(ElseIfOpen(elseIf.Condition));
-                ret.AddRange(Statements(elseIf.Statements));
+                writer.AddLines(ElseIfOpen(elseIf.Condition));
+                writer.IncreaseIndent();
+                Statements(writer, elseIf.Statements);
+                writer.DecreaseIndent();
             }
             if (ifModel.ElseStatements.Any())
             {
-                ret.AddRange(ElseOpen());
-                ret.AddRange(Statements(ifModel.ElseStatements));
+                writer.AddLines(ElseOpen());
+                writer.IncreaseIndent();
+                Statements(writer, ifModel.ElseStatements);
+                writer.DecreaseIndent();
             }
-            ret.AddRange(IfClose());
-            return ret;
+            writer.AddLines(IfClose());
+            return writer;
         }
 
-        public string Expression(IExpression expression) 
+        public string Expression(ExpressionBase expression) 
             => expression switch
             {
                 InvocationModel invocationModel => Invoke(invocationModel.Instance, invocationModel.MethodName, invocationModel.Arguments),
                 InstantiationModel instantiationModel => Instantiate(instantiationModel.TypeName, instantiationModel.Arguments),
                 ComparisonModel comparisonModel => Compare(comparisonModel.Left, comparisonModel.Operator, comparisonModel.Right),
-                LiteralModel literalModel => literalModel.Value ?? "",
                 StringLiteralModel literalModel => $@"""{literalModel.Value}""",
+                LiteralModel literalModel => literalModel.Value ?? "",
                 SymbolModel symbolModel => symbolModel.Name ?? "",
                 NullLiteralModel _ => NullKeyword,
                 ThisLiteralModel _ => ThisKeyword,

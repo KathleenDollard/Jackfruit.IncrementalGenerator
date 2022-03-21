@@ -18,50 +18,36 @@ namespace Jackfruit
 
 /*
 Key:         ConsoleApplication
-Id:          Handlers.Voyager
+Id:          Handlers.StarTrek
 Path:        ConsoleApplication
-Description: 
+Description: This is the description for StarTrek
 Namespace:   DemoHandlers
 Members:     
    Option Id:      greeting
    Name:           greeting
    TypeName:       
-   Description:    
+   Description:    What greeting to use
    Aliases:        
    ArgDisplayName: 
    Required:       False
-   Option Id:      janeway
-   Name:           janeway
+   Option Id:      kirk
+   Name:           kirk
    TypeName:       
-   Description:    
+   Description:    Whether to greek Captain Kirk
    Aliases:        
    ArgDisplayName: 
    Required:       False
-   Option Id:      chakotay
-   Name:           chakotay
+   Option Id:      spock
+   Name:           spock
    TypeName:       
-   Description:    
+   Description:    Whether to greek Spock
    Aliases:        
    ArgDisplayName: 
    Required:       False
-   Option Id:      torres
-   Name:           torres
+   Option Id:      uhura
+   Name:           uhura
    TypeName:       
-   Description:    
-   Aliases:        
-   ArgDisplayName: 
-   Required:       False
-   Option Id:      tuvok
-   Name:           tuvok
-   TypeName:       
-   Description:    
-   Aliases:        
-   ArgDisplayName: 
-   Required:       False
-   Option Id:      sevenOfNine
-   Name:           sevenOfNine
-   TypeName:       
-   Description:    
+   Description:    Whether to greek Lieutenant Uhura
    Aliases:        
    ArgDisplayName: 
    Required:       False

@@ -100,14 +100,17 @@ namespace Jackfruit.IncrementalGenerator
             if (expression == null) { return null; }
             var symbolInfo = semanticModel.GetSymbolInfo(expression);
             if (symbolInfo.Symbol is IMethodSymbol methodSymbol) { return methodSymbol; }
-            if (symbolInfo.CandidateSymbols.FirstOrDefault() is IMethodSymbol candidate) { return candidate; }
-            return null;
+            return symbolInfo.CandidateSymbols.FirstOrDefault() is IMethodSymbol candidate 
+                    ? candidate 
+                    : null;
         }
 
         public static Dictionary<string, Detail> BasicDetails(this IMethodSymbol methodSymbol)
         {
-            var details = new Dictionary<string, Detail>();
-            details[CommandKey] = new Detail(methodSymbol.Name, methodSymbol.ReturnType.ToString());
+            var details = new Dictionary<string, Detail>
+            {
+                [CommandKey] = new Detail(methodSymbol.Name, methodSymbol.ReturnType.ToString())
+            };
             foreach (var param in methodSymbol.Parameters)
             {
                 details[param.Name] = new Detail(param.Name);

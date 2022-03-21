@@ -1,6 +1,6 @@
 ﻿namespace Jackfruit.IncrementalGenerator.CodeModels
 {
-    public class FieldModel : IMember
+    public class FieldModel : IMember, IHasScope
     {
         public FieldModel(string name, NamedItemModel type)
         {
@@ -9,13 +9,14 @@
         }
 
         public string Name { get; }
-        public NamedItemModel Type { get; }
-        public Scope Scope { get; }
-        public bool IsReadonly { get; }
-        public bool IsStatic { get; }
-        public IExpression? InitialValue { get; }
+        public NamedItemModel Type { get;  }
+        public Scope Scope { get; set;}
+        public bool IsReadonly { get; set; }
+        public bool IsStatic { get; set; }
+        public ExpressionBase? InitialValue { get; set; }
 
     }
+
 }
 /* Hmmm. Will we need these?
 

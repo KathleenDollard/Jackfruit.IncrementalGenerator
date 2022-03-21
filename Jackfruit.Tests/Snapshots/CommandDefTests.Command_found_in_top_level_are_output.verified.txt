@@ -17,9 +17,9 @@ namespace Jackfruit
 // *******************************
 
 /*
-Key:         MyClassYesMineReallyConsoleApplication
+Key:         
 Id:          A
-Path:        MyClass.YesMine.Really.ConsoleApplication
+Path:        
 Description: 
 Namespace:   <global namespace>
 Members:     

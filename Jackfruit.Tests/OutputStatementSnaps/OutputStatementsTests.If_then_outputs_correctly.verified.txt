@@ -1,0 +1,11 @@
+﻿ string A()
+{
+   if (true)
+   {
+      B = false;
+   }
+   else
+   {
+      B = true;
+   }
+}

@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.Text;
 using Jackfruit.Models;
 using Jackfruit.IncrementalGenerator;
 using Newtonsoft.Json;
+using Jackfruit.IncrementalGenerator.Output;
 
 namespace Jackfruit.Tests
 {
@@ -29,49 +30,78 @@ namespace Jackfruit.Tests
         private static void Generate(CommandDef commandDef, SourceProductionContext context)
         {
             var joinedPath = string.Join("", commandDef.Path);
-            var sb = new StringBuilder();
-            sb.AppendLine($@"// 
-Key:         {joinedPath}
-Id:          {commandDef.Id}
-Path:        {string.Join(".", commandDef.Path)}
-Description: {commandDef.Description}
-Members:     "); 
-            foreach (var member in commandDef.Members)
+
+            var writer = new StringBuilderWriter(3);
+            writer.AddLine("/*");
+            OutputCommand(writer, commandDef);
+            writer.AddLine("*/");
+
+            context.AddSource($"{joinedPath}.g.cs", writer.Output());
+
+            static void OutputCommand(IWriter writer, CommandDef commandDef)
             {
-                switch (member)
+            var joinedPath = string.Join("", commandDef.Path);
+                writer.AddLine($"Key:         {joinedPath}");
+                writer.AddLine($"Id:          {commandDef.Id}");
+                var path = string.Join(".", commandDef.Path);
+                writer.AddLine($"Path:        {path}");
+                writer.AddLine($"Description: {commandDef.Description}");
+                writer.AddLine($"Namespace:   {commandDef.Namespace}");
+                writer.AddLine($"Members:     ");
+                writer.IncreaseIndent();
+                foreach (var member in commandDef.Members)
                 {
-                    case OptionDef option:  sb.AppendLine(OutputOption(option));break;
-                    case ArgumentDef arg:   sb.AppendLine(OutputArgument(arg)); break;
-                    case ServiceDef service:sb.AppendLine(OutputService(service)); break;
+                    switch (member)
+                    {
+                        case OptionDef option: OutputOption(writer, option); break;
+                        case ArgumentDef arg: OutputArgument(writer, arg); break;
+                        case ServiceDef service: OutputService(writer, service); break;
+                    }
                 }
-
+                foreach (var subCommand in commandDef.SubCommands)
+                {
+                    writer.IncreaseIndent();
+                    OutputCommand(writer, subCommand);
+                    writer.DecreaseIndent();
+                }
+                writer.DecreaseIndent();
             }
-            context.AddSource($"{joinedPath}.g.cs", sb.ToString());
+            static void OutputOption(IWriter writer, OptionDef option)
+            {
+                writer.AddLine("Option");
+                writer.IncreaseIndent();
+                writer.AddLine($"Option Id:      {option.Id}");
+                writer.AddLine($"Name:           {option.Name}");
+                writer.AddLine($"TypeName:       {option.TypeName}");
+                writer.AddLine($"Description:    {option.Description}");
+                writer.AddLine($"Aliases:        {string.Join(", ", option.Aliases)}");
+                writer.AddLine($"ArgDisplayName: {option.ArgDisplayName}");
+                writer.AddLine($"Required:       {option.Required}");
+                writer.DecreaseIndent();
+            }
 
-            static string OutputOption(OptionDef option)
-            => $@"
-         Option Id:      {option.Id}
-         Name:           {option.Name}
-         TypeName:       {option.TypeName}
-         Description:    {option.Description}
-         Aliases:        {string.Join(", ", option.Aliases)}
-         ArgDisplayName: {option.ArgDisplayName}
-         Required:       {option.Required}";
+            static void OutputArgument(IWriter writer, ArgumentDef option)
+            {
+                writer.AddLine("Option");
+                writer.IncreaseIndent();
+                writer.AddLine($"Argumet Id:     {option.Id}");
+                writer.AddLine($"Name:           {option.Name}");
+                writer.AddLine($"TypeName:       {option.TypeName}");
+                writer.AddLine($"Description:    {option.Description}");
+                writer.AddLine($"Required:       {option.Required}");
+                writer.DecreaseIndent();
+            }
 
-            static string OutputArgument(ArgumentDef option)
-            => $@"
-         Argumet Id:     {option.Id}
-         Name:           {option.Name}
-         TypeName:       {option.TypeName}
-         Description:    {option.Description}
-         Required:       {option.Required}";
-
-            static string OutputService(ServiceDef option)
-            => $@"
-         Service Id:     {option.Id}
-         Name:           {option.Name}
-         TypeName:       {option.TypeName}
-         Description:    {option.Description}";
+            static void OutputService(IWriter writer, ServiceDef option)
+            {
+                writer.AddLine("Option");
+                writer.IncreaseIndent();
+                writer.AddLine($"Service Id:     {option.Id}");
+                writer.AddLine($"Name:           {option.Name}");
+                writer.AddLine($"TypeName:       {option.TypeName}");
+                writer.AddLine($"Description:    {option.Description}");
+                writer.DecreaseIndent();
+            }
         }
 
     }

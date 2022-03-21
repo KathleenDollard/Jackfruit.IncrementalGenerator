@@ -34,6 +34,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TreeFromListTests.Empty_code_doesnt_fail.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>TreeFromListTests.cs</DependentUpon>
+    </None>
+    <None Update="TreeFromListTests.SampleTest.Empty_code_doesnt_fail.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>TreeFromListTests.cs</DependentUpon>
+    </None>
+    <None Update="TreeFromListTests.SampleTest.Run.received.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>TreeFromListTests.cs</DependentUpon>
+    </None>
+    <None Update="TreeFromListTests.SampleTest.Run.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>TreeFromListTests.cs</DependentUpon>
+    </None>
     <None Update="OutputExpressionTests.Empty_code_doesnt_fail.verified.txt">
       <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
       <DependentUpon>OutputExpressionTests.cs</DependentUpon>

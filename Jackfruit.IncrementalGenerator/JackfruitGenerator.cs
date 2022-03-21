@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Jackfruit.Models;
 using Microsoft.CodeAnalysis.CSharp;
 using static Jackfruit.IncrementalGenerator.RoslynHelpers;
+using System.Collections.Immutable;
 
 // Next Steps:
 // * Create a CommandDef test generator that just looks at CommandDef
@@ -34,8 +35,18 @@ namespace Jackfruit.IncrementalGenerator
                     transform: static (ctx, _) => Helpers.GetCommandDef(ctx))
                 .Where(static m => m is not null)!;
 
+            IncrementalValueProvider<ImmutableArray<CommandDef>> collected = commandDefs.Collect();
+
+            IncrementalValueProvider<CommandDef> rootCommand = collected.Select(static (x, _) => BuildCli(x));
             initContext.RegisterSourceOutput(commandDefs,
                 static (context, commandDef) => Generate(commandDef, context));
+
+        }
+
+        private static CommandDef BuildCli(ImmutableArray<CommandDef> commandDefs)
+        {
+            return commandDefs.First();
+
 
         }
 

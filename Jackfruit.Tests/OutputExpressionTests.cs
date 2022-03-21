@@ -31,5 +31,139 @@ namespace Jackfruit.Tests
             return Verifier.Verify(output).UseDirectory("OutputExpressionSnaps");
         }
 
+        [Fact]
+        public Task Instatiation_outputs_correctly()
+        {
+            MethodModel model = new("A", "string")
+            {
+                Statements = new()
+                {
+                    Assign("B",New("C"))                }
+            };
+            var language = new LanguageCSharp(new StringBuilderWriter(3));
+            var output = language.AddMethod(model).Output();
+            return Verifier.Verify(output).UseDirectory("OutputExpressionSnaps");
+        }
+
+        [Fact]
+        public Task Comparison_outputs_correctly()
+        {
+            MethodModel model = new("A", "string")
+            {
+                Statements = new()
+                {
+                    Assign("B",Compare("C",Operator.Equals, "D" ))                }
+            };
+            var language = new LanguageCSharp(new StringBuilderWriter(3));
+            var output = language.AddMethod(model).Output();
+            return Verifier.Verify(output).UseDirectory("OutputExpressionSnaps");
+        }
+
+
+        [Fact]
+        public Task String_literal_outputs_correctly()
+        {
+            MethodModel model = new("A", "string")
+            {
+                Statements = new()
+                {
+                    Assign("B","C")           
+                }
+            };
+            var language = new LanguageCSharp(new StringBuilderWriter(3));
+            var output = language.AddMethod(model).Output();
+            return Verifier.Verify(output).UseDirectory("OutputExpressionSnaps");
+        }
+
+        [Fact]
+        public Task Numeric_literals_outputs_correctly()
+        {
+            MethodModel model = new("A", "string")
+            {
+                Statements = new()
+                {
+                    Assign("B",42),
+                    Assign("B",3.14),
+                }
+            };
+            var language = new LanguageCSharp(new StringBuilderWriter(3));
+            var output = language.AddMethod(model).Output();
+            return Verifier.Verify(output).UseDirectory("OutputExpressionSnaps");
+        }
+
+        [Fact]
+        public Task Symbol_outputs_correctly()
+        {
+            MethodModel model = new("A", "string")
+            {
+                Statements = new()
+                {
+                    Assign("B",Symbol("C"))
+                }
+            };
+            var language = new LanguageCSharp(new StringBuilderWriter(3));
+            var output = language.AddMethod(model).Output();
+            return Verifier.Verify(output).UseDirectory("OutputExpressionSnaps");
+        }
+
+        [Fact]
+        public Task Null_literal_outputs_correctly()
+        {
+            MethodModel model = new("A", "string")
+            {
+                Statements = new()
+                {
+                    Assign("B",Null)
+                }
+            };
+            var language = new LanguageCSharp(new StringBuilderWriter(3));
+            var output = language.AddMethod(model).Output();
+            return Verifier.Verify(output).UseDirectory("OutputExpressionSnaps");
+        }
+
+        [Fact]
+        public Task This_literal_outputs_correctly()
+        {
+            MethodModel model = new("A", "string")
+            {
+                Statements = new()
+                {
+                    Assign("B",This)
+                }
+            };
+            var language = new LanguageCSharp(new StringBuilderWriter(3));
+            var output = language.AddMethod(model).Output();
+            return Verifier.Verify(output).UseDirectory("OutputExpressionSnaps");
+        }
+
+        [Fact]
+        public Task True_literal_outputs_correctly()
+        {
+            MethodModel model = new("A", "string")
+            {
+                Statements = new()
+                {
+                    Assign("B",true)
+                }
+            };
+            var language = new LanguageCSharp(new StringBuilderWriter(3));
+            var output = language.AddMethod(model).Output();
+            return Verifier.Verify(output).UseDirectory("OutputExpressionSnaps");
+        }
+
+        [Fact]
+        public Task false_literal_outputs_correctly()
+        {
+            MethodModel model = new("A", "string")
+            {
+                Statements = new()
+                {
+                    Assign("B",false)
+                }
+            };
+            var language = new LanguageCSharp(new StringBuilderWriter(3));
+            var output = language.AddMethod(model).Output();
+            return Verifier.Verify(output).UseDirectory("OutputExpressionSnaps");
+        }
     }
 }

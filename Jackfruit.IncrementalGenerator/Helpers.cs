@@ -2,15 +2,13 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using static Jackfruit.IncrementalGenerator.RoslynHelpers;
 
 namespace Jackfruit.IncrementalGenerator
 {
-    public class Helpers
+    public static class Helpers
     {
+        private const string ConsoleAppClassName = "ConsoleApplication";
         private static readonly string[] names = { "AddSubCommand", "CreateWithRootCommand" };
 
         public const string ConsoleClass = @"
@@ -40,7 +38,7 @@ namespace Jackfruit
             {
                 if (invocation.ArgumentList.Arguments.Count != 1)
                 { return false; }
-                var (_, name) = GetNameAndTarget(invocation.Expression);
+                var name = GetName(invocation.Expression);
                 return name is not null && names.Contains(name);
             }
             else
@@ -48,16 +46,32 @@ namespace Jackfruit
 
         }
 
-        private static (string path, string? name) GetNameAndTarget(SyntaxNode expression)
+        private static string? GetName(SyntaxNode expression)
         {
-            return expression switch
+            var name = expression switch
             {
                 MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
-                    => (memberAccess.Expression.ToString(), memberAccess.Name.ToString()),
+                    => memberAccess.Name.ToString(),
                 IdentifierNameSyntax identifier
-                     => ("", identifier.ToString()),
-                _ => ("", null)
+                     => identifier.ToString(),
+                _ => null
             };
+
+            return name;
+        }
+
+        private static string GetPath(SyntaxNode expression)
+        {
+            var path = expression switch
+            {
+                MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                    => memberAccess.Expression.ToString(),
+                IdentifierNameSyntax identifier
+                     => "",
+                _ => ""
+            };
+
+            return path.Replace(ConsoleAppClassName, "");
         }
 
         public static CommandDef? GetCommandDef(GeneratorSyntaxContext context)
@@ -73,10 +87,12 @@ namespace Jackfruit
                 // Weird, but we do not want to throw
                 return null;
             }
-            var (nspace, path) = GetNamespaceAndPath(context, invocation.Expression);
+            var path = GetPath(invocation.Expression).Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
 
             var delegateArg = invocation.ArgumentList.Arguments[0].Expression;
             var methodSymbol = MethodOrCandidateSymbol(context.SemanticModel, delegateArg);
+            if (methodSymbol is null) { return null; }
+            var nspace = methodSymbol.ContainingNamespace.ToString();
             if (methodSymbol is null) { return null; }
 
             var details = methodSymbol.BasicDetails();
@@ -133,20 +149,44 @@ namespace Jackfruit
                     commandDetail.ReturnType ?? "Unknown");
             }
 
-            static (string nspace, IEnumerable<string> path) GetNamespaceAndPath(GeneratorSyntaxContext context, ExpressionSyntax callingExpression)
+            //static (string nspace, IEnumerable<string> path) GetNamespaceAndPath(GeneratorSyntaxContext context, ExpressionSyntax callingExpression)
+            //{
+            //    var symbol = context.SemanticModel.GetSymbolInfo(callingExpression).Symbol;
+            //    return symbol switch
+            //    {
+            //        IMethodSymbol callingMethodSymbol
+            //                => (callingMethodSymbol.ContainingNamespace.ToString(),
+            //                    callingMethodSymbol.ContainingType
+            //                            .ToDisplayParts()
+            //                            .Select(x => x.ToString())),
+            //        _
+            //                => ("", GetPathAndName(callingExpression).path.ToString().Split('.'))
+            //    };
+            //}
+        }
+
+        public static CommandDef TreeFromList(this IEnumerable<CommandDef> commandDefs, int pos)
+        {
+            if(pos > 10) { throw new InvalidOperationException("Runaway recursion suspected"); }
+            // This throws on badly formed trees. not sure whether to just let that happen and catch, or do more work here
+            var roots = commandDefs.Where(x => GroupKey(x,pos) is null);
+            var root = roots.First();
+            var remaining = commandDefs.Except(roots);
+            if (remaining.Any())
             {
-                var symbol = context.SemanticModel.GetSymbolInfo(callingExpression).Symbol;
-                return symbol switch
+                var groups = remaining.GroupBy(x => GroupKey(x,pos));
+                var subCommands = new List<CommandDef>();
+                foreach (var group in groups)
                 {
-                    IMethodSymbol callingMethodSymbol
-                            => (callingMethodSymbol.ContainingNamespace.ToString(),
-                                callingMethodSymbol.ContainingType
-                                        .ToDisplayParts()
-                                        .Select(x => x.ToString())),
-                    _
-                            => ("", GetNameAndTarget(callingExpression).path.ToString().Split('.'))
-                };
+                    var subCommand = group.TreeFromList(pos + 1);
+                    subCommands.Add(subCommand);
+                }
+                root.SubCommands = subCommands;
             }
+            return root;
+
+            static string? GroupKey(CommandDef commandDef, int pos)
+                => commandDef.Path.Skip(pos).FirstOrDefault();
         }
     }
 }
