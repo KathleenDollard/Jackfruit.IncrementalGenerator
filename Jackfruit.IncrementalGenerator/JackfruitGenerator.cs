@@ -1,11 +1,11 @@
 ﻿using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Jackfruit.Models;
-using Microsoft.CodeAnalysis.CSharp;
-using static Jackfruit.IncrementalGenerator.RoslynHelpers;
 using System.Collections.Immutable;
+using Jackfruit.IncrementalGenerator;
+using Jackfruit.IncrementalGenerator.Output;
+using Jackfruit.IncrementalGenerator.CodeModels;
 
 // Next Steps:
 // * Create a CommandDef test generator that just looks at CommandDef
@@ -25,6 +25,9 @@ namespace Jackfruit.IncrementalGenerator
     {
         public void Initialize(IncrementalGeneratorInitializationContext initContext)
         {
+            // How do I kick off a different generation if the user has not called interesting syntax.
+            // is there some node that is always retrieved and I could create an empty CommandDef and 
+            // carry it along and generate the alternate if it is the only CommandDef
             initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource(
                 "ConsoleApplication.g.cs",
                 SourceText.From(Helpers.ConsoleClass, Encoding.UTF8)));
@@ -35,26 +38,50 @@ namespace Jackfruit.IncrementalGenerator
                     transform: static (ctx, _) => Helpers.GetCommandDef(ctx))
                 .Where(static m => m is not null)!;
 
-            IncrementalValueProvider<ImmutableArray<CommandDef>> collected = commandDefs.Collect();
+            //IncrementalValueProvider<ImmutableArray<CommandDef>> collected = commandDefs.Collect();
+            IncrementalValueProvider<(Compilation, ImmutableArray<CommandDef>)> collected
+                    = initContext.CompilationProvider.Combine(commandDefs.Collect());
+            // IncrementalValueProvider<ImmutableArray<CommandDef>> collected = commandDefs.Collect().Select(x=>x);
+            IncrementalValueProvider<CommandDef> rootCommand = collected.Select(static (x, _) => BuildCli(x.Item2));
 
-            IncrementalValueProvider<CommandDef> rootCommand = collected.Select(static (x, _) => BuildCli(x));
+            initContext.RegisterSourceOutput(rootCommand,
+                static (context, commandDef) => GenerateConsoleApp(commandDef, context));
+
             initContext.RegisterSourceOutput(commandDefs,
-                static (context, commandDef) => Generate(commandDef, context));
+                static (context, commandDef) => GenerateCommands(commandDef, context));
 
         }
 
         private static CommandDef BuildCli(ImmutableArray<CommandDef> commandDefs)
         {
-            return commandDefs.First();
-
-
+            return commandDefs.TreeFromList(0);
         }
 
-        private static void Generate(CommandDef commandDef, SourceProductionContext context)
+        private static void GenerateConsoleApp(CommandDef commandDef, SourceProductionContext context)
         {
             var joinedPath = string.Join("", commandDef.Path);
-            var output = $"// {commandDef.Id} - {joinedPath} - Description: {commandDef.Description}";
-            context.AddSource($"{joinedPath}.g.cs", output);
+            // var output = $"// {commandDef.Id} - {joinedPath} - Description: {commandDef.Description}";
+
+            var codeFileModel = CreateSource.GetCustomApp(commandDef);
+            OutputGenerated($"{joinedPath}.g.cs",codeFileModel, context);
+        }
+
+        private static void GenerateCommands(CommandDef commandDef, SourceProductionContext context)
+        {
+            var joinedPath = string.Join("", commandDef.Path);
+            // var output = $"// {commandDef.Id} - {joinedPath} - Description: {commandDef.Description}";
+
+            //var codeFileModel = CreateSource.GetCustomApp(commandDef);
+            //OutputGenerated($"{joinedPath}.g.cs", codeFileModel, context);
+        }
+
+        private static void OutputGenerated(string hintName,CodeFileModel codeFileModel, SourceProductionContext context)
+        {
+            var writer = new StringBuilderWriter(3);
+            var language = new LanguageCSharp(writer);
+            language.AddCodeFile(codeFileModel);
+            context.AddSource(hintName, writer.Output());
+
         }
 
     }

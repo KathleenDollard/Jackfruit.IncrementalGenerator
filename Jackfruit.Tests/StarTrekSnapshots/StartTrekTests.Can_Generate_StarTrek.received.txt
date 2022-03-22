@@ -16,19 +16,4 @@ namespace Jackfruit
 
 // *******************************
 
-/*
-Key:         MyClassYesMineReally
-Id:          A
-Path:        MyClass.YesMine.Really
-Description: 
-Namespace:   <global namespace>
-Members:     
-   Option
-      Option Id:      i
-      Name:           i
-      TypeName:       
-      Description:    
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-*/
+// Handlers.StarTrek -  - Description: This is the description for StarTrek

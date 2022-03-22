@@ -18,16 +18,24 @@ namespace Jackfruit
 
 /*
 Key:         
-Id:          A
+Id:          Handlers.NextGeneration
 Path:        
-Description: 
-Namespace:   <global namespace>
+Description: This is the description for Next Generation
+Namespace:   DemoHandlers
 Members:     
    Option
-      Option Id:      i
-      Name:           i
+      Option Id:      greeting
+      Name:           greeting
       TypeName:       
       Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      picard
+      Name:           picard
+      TypeName:       
+      Description:    This is the description for Picard
       Aliases:        
       ArgDisplayName: 
       Required:       False

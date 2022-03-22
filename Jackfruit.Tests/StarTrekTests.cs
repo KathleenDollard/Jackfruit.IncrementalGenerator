@@ -26,10 +26,7 @@ namespace Jackfruit.Tests
             return TestHelpers.GetGeneratedOutput<T>(syntaxTrees);
         }
 
-        [Fact]
-        public Task Can_create_root()
-        {
-            const string input = @"
+        private const string VoyagerRoot =@"
 using DemoHandlers;
 using Jackfruit;
 
@@ -41,16 +38,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
-
-            Assert.Empty(diagnostics);
-            return Verifier.Verify(output).UseDirectory("Snapshots");
-        }
-
-        [Fact]
-        public Task Can_find_xmlComment_command_descrption()
-        {
-            const string input = @"
+        private const string StarTrekRoot =@"
 using DemoHandlers;
 using Jackfruit;
 
@@ -62,16 +50,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
-
-            Assert.Empty(diagnostics);
-            return Verifier.Verify(output).UseDirectory("Snapshots");
-        }
-
-        [Fact]
-        public Task Can_find_attribute_command_descrption()
-        {
-            const string input = @"
+        private const string NextGenerationRoot = @"
 using DemoHandlers;
 using Jackfruit;
 
@@ -83,10 +62,51 @@ public class MyClass
     }
 
 }";
+
+        [Theory]
+        [InlineData("Voyager", VoyagerRoot)]
+        [InlineData("NextGeneration", NextGenerationRoot)]
+        [InlineData("StarTrek", StarTrekRoot)]
+
+        public Task Can_create_commandDef(string fileName, string input)
+        {
             var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
-            return Verifier.Verify(output).UseDirectory("Snapshots");
+            return Verifier.Verify(output).UseDirectory("StarTrekSnapshots").UseTextForParameters(fileName);
+        }
+
+        [Theory]
+        [InlineData("Voyager", VoyagerRoot)]
+        [InlineData("NextGeneration", NextGenerationRoot)]
+        [InlineData( "StarTrek",StarTrekRoot)]
+
+        public Task Can_Generate(string fileName, string input)
+        {
+            var (diagnostics, output) = GetGeneratedOutput<Generator>(input);
+
+            Assert.Empty(diagnostics);
+            return Verifier.Verify(output).UseDirectory("StarTrekSnapshots").UseTextForParameters(fileName);
+        }
+
+        [Fact]
+        public Task Command_descrption_from_xml_comment()
+        {
+            const string input = StarTrekRoot;
+            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
+
+            Assert.Empty(diagnostics);
+            return Verifier.Verify(output).UseDirectory("StarTrekSnapshots");
+        }
+
+        [Fact]
+        public Task Command_descrption_from_attribute()
+        {
+            const string input = NextGenerationRoot;
+            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
+
+            Assert.Empty(diagnostics);
+            return Verifier.Verify(output).UseDirectory("StarTrekSnapshots");
         }
     }
 }

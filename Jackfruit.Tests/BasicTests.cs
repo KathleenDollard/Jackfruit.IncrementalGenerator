@@ -21,7 +21,7 @@ namespace Jackfruit.Tests
 
             driver = driver.RunGenerators(compilation);
 
-            return Verifier.Verify(driver);
+            return Verifier.Verify(driver).UseDirectory("Snapshots");
         }
 
         [Fact]

@@ -17,72 +17,55 @@ namespace Jackfruit
 // *******************************
 
 /*
-Key:         ConsoleApplication
-Id:          A
-Path:        ConsoleApplication
+Key:         
+Id:          Handlers.Voyager
+Path:        
 Description: 
-Namespace:   Fred
+Namespace:   DemoHandlers
 Members:     
    Option
-      Option Id:      i
-      Name:           i
+      Option Id:      greeting
+      Name:           greeting
       TypeName:       
       Description:    
       Aliases:        
       ArgDisplayName: 
       Required:       False
-*/
-
-// *******************************
-
-/*
-Key:         ConsoleApplicationAB
-Id:          A
-Path:        ConsoleApplication.A.B
-Description: 
-Namespace:   Fred
-Members:     
    Option
-      Option Id:      i
-      Name:           i
+      Option Id:      janeway
+      Name:           janeway
       TypeName:       
       Description:    
       Aliases:        
       ArgDisplayName: 
       Required:       False
-*/
-
-// *******************************
-
-/*
-Key:         ConsoleApplicationAC
-Id:          A
-Path:        ConsoleApplication.A.C
-Description: 
-Namespace:   Fred
-Members:     
    Option
-      Option Id:      i
-      Name:           i
+      Option Id:      chakotay
+      Name:           chakotay
       TypeName:       
       Description:    
       Aliases:        
       ArgDisplayName: 
       Required:       False
-*/
-
-// *******************************
-
-/*
-Key:         ConsoleApplicationABD
-Id:          A
-Path:        ConsoleApplication.A.B.D
-Description: 
-Namespace:   Fred
-Members:     
    Option
-      Option Id:      i
-      Name:           i
+      Option Id:      torres
+      Name:           torres
+      TypeName:       
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      tuvok
+      Name:           tuvok
+      TypeName:       
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      sevenOfNine
+      Name:           sevenOfNine
       TypeName:       
       Description:    
       Aliases:        

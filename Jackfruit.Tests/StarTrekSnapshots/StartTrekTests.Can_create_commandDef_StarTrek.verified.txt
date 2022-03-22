@@ -17,55 +17,41 @@ namespace Jackfruit
 // *******************************
 
 /*
-Key:         B
-Id:          A
-Path:        B
-Description: 
-Namespace:   <global namespace>
+Key:         
+Id:          Handlers.StarTrek
+Path:        
+Description: This is the description for StarTrek
+Namespace:   DemoHandlers
 Members:     
    Option
-      Option Id:      i
-      Name:           i
+      Option Id:      greeting
+      Name:           greeting
       TypeName:       
-      Description:    
+      Description:    What greeting to use
       Aliases:        
       ArgDisplayName: 
       Required:       False
-*/
-
-// *******************************
-
-/*
-Key:         C
-Id:          A
-Path:        C
-Description: 
-Namespace:   <global namespace>
-Members:     
    Option
-      Option Id:      i
-      Name:           i
+      Option Id:      kirk
+      Name:           kirk
       TypeName:       
-      Description:    
+      Description:    Whether to greek Captain Kirk
       Aliases:        
       ArgDisplayName: 
       Required:       False
-*/
-
-// *******************************
-
-/*
-Key:         D
-Id:          A
-Path:        D
-Description: 
-Namespace:   <global namespace>
-Members:     
    Option
-      Option Id:      i
-      Name:           i
+      Option Id:      spock
+      Name:           spock
       TypeName:       
-      Description:    
+      Description:    Whether to greek Spock
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      uhura
+      Name:           uhura
+      TypeName:       
+      Description:    Whether to greek Lieutenant Uhura
       Aliases:        
       ArgDisplayName: 
       Required:       False

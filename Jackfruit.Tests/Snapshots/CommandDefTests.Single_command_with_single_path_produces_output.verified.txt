@@ -17,9 +17,9 @@ namespace Jackfruit
 // *******************************
 
 /*
-Key:         ConsoleApplication
+Key:         
 Id:          A
-Path:        ConsoleApplication
+Path:        
 Description: 
 Namespace:   <global namespace>
 Members:     

@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 
 namespace Jackfruit.IncrementalGenerator
 {
-    internal class CreateSource
+    public static class CreateSource
     {
 
         private const string createWithRootCommand = "CreateWithRootCommand";
@@ -26,7 +26,7 @@ namespace Jackfruit.IncrementalGenerator
         private static string ArgumentPropertyName(ArgumentDef optionDef)
             => $"{commandVar}.{optionDef.Id}Argument";
 
-        public CodeFileModel GetDefaultConsoleApp()
+        public static CodeFileModel GetDefaultConsoleApp()
         {
             return new CodeFileModel(Helpers.ConsoleAppClassName)
             {
@@ -52,18 +52,17 @@ namespace Jackfruit.IncrementalGenerator
             };
         }
 
-        public CodeFileModel GetCustomApp(CommandDef commandDef)
+        public static CodeFileModel GetCustomApp(CommandDef commandDef)
         {
-            var commandClass = GetNestedCommands(0, commandDef);
-            var consoleClassCode = GetConsoleCode(commandClass, CommandClassName(commandDef));
+
             var codeFile = new CodeFileModel(Helpers.ConsoleAppClassName)
             {
                 Usings = { "System", "System.CommandLine", "System.CommandLine.Invocation", "System.Threading.Tasks" },
                 Namespace = new(commandDef.Namespace)  // not sure what nspace to put this in
                 {
-                    Classes = new()
+                    Classes = new List<ClassModel> 
                     {
-                       consoleClassCode
+                        GetConsoleCode(GetNestedCommands(0, commandDef), CommandClassName(commandDef))
                     }
                 }
             };
@@ -71,7 +70,69 @@ namespace Jackfruit.IncrementalGenerator
 
         }
 
-        private ClassModel GetConsoleCode(ClassModel commandCode, string commandClassName)
+        public static CodeFileModel GetCommandFile(CommandDef commandDef)
+        {
+            var codeFile = new CodeFileModel("Whereisthisused")
+            {
+                Usings = { "System", "System.CommandLine", "System.CommandLine.Invocation", "System.Threading.Tasks" },
+                Namespace = new(commandDef.Namespace)  // not sure what nspace to put this in
+                {
+                    Classes = GetCommandClass( commandDef )
+                }
+            };
+            return codeFile;
+
+        }
+
+        public static ClassModel GetCommandClass(CommandDef commandDef)
+        {
+            var commandClassName = CommandClassName(commandDef);
+            var commandCode =
+                Class(commandClassName)
+                    .Public()
+                    .Partial()
+                    .Members(
+                        Constructor(commandClassName)
+                            .Private(),
+                        CreateMethod(commandDef),
+                        InvokeHandlerMethod(commandDef));
+            foreach (var member in commandDef.Members)
+            {
+                switch (member)
+                {
+                    case OptionDef opt:
+                        var optPropertyName = OptionPropertyName(opt);
+                        commandCode.Members.Add(Property(optPropertyName, Generic("Option", opt.TypeName)).Public());
+                        commandCode.Members.Add(
+                            Method($"{optPropertyName}Result", opt.TypeName)
+                                .Public()
+                                .Parameters(Parameter("context", "InvocationContext"))
+                                .Statements(Return(Invoke($"context.ParseResult", Generic("GetValueForOption", opt.TypeName), Symbol(optPropertyName)))));
+                        break;
+                    case ArgumentDef arg:
+                        var argPropertyName = ArgumentPropertyName(arg);
+                        commandCode.Members.Add(Property(argPropertyName, Generic("Argument", arg.TypeName)).Public());
+                        commandCode.Members.Add(
+                            Method($"{argPropertyName}Result", arg.TypeName)
+                                .Public()
+                                .Parameters(Parameter("context", "InvocationContext"))
+                                .Statements(Return(Invoke($"context.ParseResult", Generic("GetValueForOption", arg.TypeName), Symbol(argPropertyName)))));
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            foreach (var subCommand in commandDef.SubCommands)
+            {
+                commandCode.Members.Add(Property(subCommand.Id, CommandClassName(subCommand)).Public());
+            }
+
+            return commandCode;
+
+        }
+
+        private static ClassModel GetConsoleCode(ClassModel commandCode, string commandClassName)
         {
             var consoleCode = new ClassModel(Helpers.ConsoleAppClassName)
             {
@@ -92,9 +153,9 @@ namespace Jackfruit.IncrementalGenerator
             return consoleCode;
         }
 
-        private ClassModel GetNestedCommands(int i, CommandDef commandDef)
+        private static ClassModel GetNestedCommands(int i, CommandDef commandDef)
         {
-            if (i == 0) throw new IOException("Runaway recursion suspected");
+            if (i == 10) throw new IOException("Runaway recursion suspected");
             var classCode =
                 Class(commandDef.Id)
                     .Public()
@@ -110,24 +171,27 @@ namespace Jackfruit.IncrementalGenerator
             return classCode;
         }
 
-        public ClassModel GetCommandCode(CommandDef commandDef)
+        public static MethodModel InvokeHandlerMethod(CommandDef commandDef)
         {
-            var commandClassName = CommandClassName(commandDef);
-            var commandCode =
-                Class(commandClassName)
+            var arguments = new List<ExpressionBase>();
+            var method =
+                Method("InvokeAsync", Generic("Task", "int"))
                     .Public()
-                    .Partial()
-                    .Members(
-                        Constructor(commandClassName)
-                            .Private(),
-                    CreateMethodModel(commandDef)
-);
+                    .Parameters(Parameter("context", "InvocationContext"));
+            if (commandDef.ReturnType == "void")
+            {
+                method.Statements.Add(SimpleCall(Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
+                method.Statements.Add(Return(Invoke("Task", "FromResult", Symbol("context.Exitcode"))));
+            }
+            else
+            {
+                method.Statements.Add(Return(Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
+            }
 
-            return commandCode;
-
+            return method;
         }
- 
-        public MethodModel CreateMethodModel(CommandDef commandDef)
+
+        public static MethodModel CreateMethod(CommandDef commandDef)
         {
             var commandClassName = CommandClassName(commandDef);
             var method =
@@ -141,11 +205,11 @@ namespace Jackfruit.IncrementalGenerator
                 {
                     case OptionDef opt:
                         var optPropertyName = OptionPropertyName(opt);
-                        method.Statements.Add(Assign(optPropertyName, New(Generic("Option",opt.TypeName), opt.Id)));
+                        method.Statements.Add(Assign(optPropertyName, New(Generic("Option", opt.TypeName), opt.Id)));
                         if (!string.IsNullOrWhiteSpace(opt.Description))
                         { method.Statements.Add(Assign($"{optPropertyName}.Description", opt.Description)); }
-                        if(opt.Aliases.Any())
-                        { method.Statements.Add(Assign($"{optPropertyName}.Aliases", opt.Aliases)); }
+                        if (opt.Aliases.Any())
+                        { method.Statements.Add(Assign($"{optPropertyName}.Aliases", new ListLiteralModel( opt.Aliases))); }
                         if (!string.IsNullOrWhiteSpace(opt.ArgDisplayName))
                         { method.Statements.Add(Assign($"{optPropertyName}.ArgDisplayName", opt.ArgDisplayName)); }
                         if (opt.Required)

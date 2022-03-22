@@ -17,23 +17,26 @@ namespace Jackfruit
 // *******************************
 
 /*
-Key:         ConsoleApplication
+Key:         
 Id:          Handlers.NextGeneration
-Path:        ConsoleApplication
+Path:        
 Description: This is the description for Next Generation
 Namespace:   DemoHandlers
 Members:     
-   Option Id:      greeting
-   Name:           greeting
-   TypeName:       
-   Description:    
-   Aliases:        
-   ArgDisplayName: 
-   Required:       False
-   Option Id:      picard
-   Name:           picard
-   TypeName:       
-   Description:    This is the description for Picard
-   Aliases:        
-   ArgDisplayName: 
-   Required:       False
+   Option
+      Option Id:      greeting
+      Name:           greeting
+      TypeName:       
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      picard
+      Name:           picard
+      TypeName:       
+      Description:    This is the description for Picard
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+*/

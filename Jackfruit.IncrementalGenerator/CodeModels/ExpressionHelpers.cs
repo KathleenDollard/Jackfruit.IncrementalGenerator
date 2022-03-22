@@ -58,6 +58,17 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public string Value { get; set; }
     }
 
+    public class ListLiteralModel : ExpressionBase
+    {
+        public ListLiteralModel(IEnumerable<string> values)
+        {
+            Values = values;
+        }
+        public IEnumerable<string> Values { get; set; }
+    }
+
+
+
     public class LiteralModel : ExpressionBase
     {
         public LiteralModel(string value)

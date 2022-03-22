@@ -13,6 +13,8 @@
             => value
                 ? new TrueLiteralModel()
                 : new FalseLiteralModel();
+        public static implicit operator ExpressionBase(List<string> values)
+            => new ListLiteralModel(values);
         // TODO: Make datetime, Guid, and decimal literals
         //public static implicit operator ExpressionBase(DateTime value)
         //    => new LiteralModel(value.ToString());
