@@ -101,9 +101,6 @@ namespace Jackfruit
             details = DescFromXmlDocComment(methodSymbol.GetDocumentationCommentXml(), details);
             details = DescFromAttributes(methodSymbol, details);
 
-
-
-            //var arg = invocation.ArgumentList.Arguments[0];
             if (!details.TryGetValue(CommandKey, out var commandDetail))
             {
                 return null;
@@ -150,21 +147,6 @@ namespace Jackfruit
                     new CommandDef[] { },
                     commandDetail.ReturnType ?? "Unknown");
             }
-
-            //static (string nspace, IEnumerable<string> path) GetNamespaceAndPath(GeneratorSyntaxContext context, ExpressionSyntax callingExpression)
-            //{
-            //    var symbol = context.SemanticModel.GetSymbolInfo(callingExpression).Symbol;
-            //    return symbol switch
-            //    {
-            //        IMethodSymbol callingMethodSymbol
-            //                => (callingMethodSymbol.ContainingNamespace.ToString(),
-            //                    callingMethodSymbol.ContainingType
-            //                            .ToDisplayParts()
-            //                            .Select(x => x.ToString())),
-            //        _
-            //                => ("", GetPathAndName(callingExpression).path.ToString().Split('.'))
-            //    };
-            //}
         }
 
         public static CommandDef TreeFromList(this IEnumerable<CommandDef> commandDefs, int pos)

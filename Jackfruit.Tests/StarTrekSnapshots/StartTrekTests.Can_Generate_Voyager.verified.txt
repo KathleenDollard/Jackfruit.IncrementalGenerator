@@ -1,74 +1,110 @@
-﻿
-using System;
+﻿// This file is created by a generator.
+using System
+using System.CommandLine
+using System.CommandLine.Invocation
+using System.Threading.Tasks
 
-namespace Jackfruit
+namespace DemoHandlers
 {
-    public class ConsoleApplication
-    {
-        public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler) { }
-    }
-
-    public class CliCommand
-    {
-        public static CliCommand AddCommand(Delegate CommandHandler)
-    }
+    class ConsoleApplication
+   {
+      public Handlers.VoyagerCommand _CliRoot
+      public ConsoleApplication()
+      {
+      }
+      
+      public static ConsoleApplication CreateWithRootCommand(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel rootCommandHandler)
+      {
+         _CliRoot = new Handlers.VoyagerCommand();
+      }
+      
+      public Handlers.VoyagerCommand CliRoot
+      {
+         get
+         {
+            return _CliRoot;
+         }
+      }
+   }
+   
 }
 
 // *******************************
 
-/*
-Key:         
-Id:          Handlers.Voyager
-Path:        
-Description: 
-Namespace:   DemoHandlers
-Members:     
-   Option
-      Option Id:      greeting
-      Name:           greeting
-      TypeName:       
-      Description:    
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-   Option
-      Option Id:      janeway
-      Name:           janeway
-      TypeName:       
-      Description:    
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-   Option
-      Option Id:      chakotay
-      Name:           chakotay
-      TypeName:       
-      Description:    
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-   Option
-      Option Id:      torres
-      Name:           torres
-      TypeName:       
-      Description:    
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-   Option
-      Option Id:      tuvok
-      Name:           tuvok
-      TypeName:       
-      Description:    
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-   Option
-      Option Id:      sevenOfNine
-      Name:           sevenOfNine
-      TypeName:       
-      Description:    
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-*/
+// This file is created by a generator.
+using System
+using System.CommandLine
+using System.CommandLine.Invocation
+using System.Threading.Tasks
+
+namespace DemoHandlers
+{
+   public partial class Handlers.VoyagerCommand
+   {
+      public Handlers.VoyagerCommand()
+      {
+      }
+      
+      public Create Handlers.VoyagerCommand()
+      {
+         var command = new Handlers.VoyagerCommand();
+         command.greetingOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.janewayOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.chakotayOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.torresOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.tuvokOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.sevenOfNineOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.Handler = command;
+         return "command";
+      }
+      
+      public Task<int> InvokeAsync(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return .Handlers.Voyager();
+      }
+      
+      public Option<> command.greetingOption {get; set;}
+      public  command.greetingOptionResult(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.janewayOption {get; set;}
+      public  command.janewayOptionResult(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.chakotayOption {get; set;}
+      public  command.chakotayOptionResult(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.torresOption {get; set;}
+      public  command.torresOptionResult(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.tuvokOption {get; set;}
+      public  command.tuvokOptionResult(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.sevenOfNineOption {get; set;}
+      public  command.sevenOfNineOptionResult(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+   }
+   
+}

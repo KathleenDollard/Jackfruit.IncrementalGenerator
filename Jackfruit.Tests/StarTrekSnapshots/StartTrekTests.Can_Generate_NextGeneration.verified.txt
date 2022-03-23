@@ -1,42 +1,79 @@
-﻿
-using System;
+﻿// This file is created by a generator.
+using System
+using System.CommandLine
+using System.CommandLine.Invocation
+using System.Threading.Tasks
 
-namespace Jackfruit
+namespace DemoHandlers
 {
-    public class ConsoleApplication
-    {
-        public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler) { }
-    }
-
-    public class CliCommand
-    {
-        public static CliCommand AddCommand(Delegate CommandHandler)
-    }
+    class ConsoleApplication
+   {
+      public Handlers.NextGenerationCommand _CliRoot
+      public ConsoleApplication()
+      {
+      }
+      
+      public static ConsoleApplication CreateWithRootCommand(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel rootCommandHandler)
+      {
+         _CliRoot = new Handlers.NextGenerationCommand();
+      }
+      
+      public Handlers.NextGenerationCommand CliRoot
+      {
+         get
+         {
+            return _CliRoot;
+         }
+      }
+   }
+   
 }
 
 // *******************************
 
-/*
-Key:         
-Id:          Handlers.NextGeneration
-Path:        
-Description: This is the description for Next Generation
-Namespace:   DemoHandlers
-Members:     
-   Option
-      Option Id:      greeting
-      Name:           greeting
-      TypeName:       
-      Description:    
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-   Option
-      Option Id:      picard
-      Name:           picard
-      TypeName:       
-      Description:    This is the description for Picard
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-*/
+// This file is created by a generator.
+using System
+using System.CommandLine
+using System.CommandLine.Invocation
+using System.Threading.Tasks
+
+namespace DemoHandlers
+{
+   public partial class Handlers.NextGenerationCommand
+   {
+      public Handlers.NextGenerationCommand()
+      {
+      }
+      
+      public Create Handlers.NextGenerationCommand()
+      {
+         var command = new Handlers.NextGenerationCommand();
+         command.greetingOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.picardOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.picardOption.Description = "This is the description for Picard";
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.Handler = command;
+         return "command";
+      }
+      
+      public Task<int> InvokeAsync(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return .Handlers.NextGeneration();
+      }
+      
+      public Option<> command.greetingOption {get; set;}
+      public  command.greetingOptionResult(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.picardOption {get; set;}
+      public  command.picardOptionResult(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+   }
+   
+}

@@ -10,7 +10,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             => new VoidNamedItemModel();
 
         public static GenericNamedItemModel Generic(string name, params NamedItemModel[] genericTypes)
-            => new(name);
+            => new(name, genericTypes);
 
         public static T Public<T>(this T model)
             where T : IHasScope
@@ -57,7 +57,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         }
 
         public static ParameterModel Parameter(string name, NamedItemModel type)
-            => new ParameterModel(name, type);
+            => new(name, type);
 
         public static T Statements<T>(this T model, params IStatement[] statements)
             where T : IHasStatements
@@ -67,7 +67,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         }
 
         public static ConstructorModel Constructor(string className)
-            => new ConstructorModel(className);
+            => new(className);
 
         public static ConstructorModel Static(this ConstructorModel model)
         {
@@ -90,7 +90,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         }
 
         public static MethodModel Method(string name, NamedItemModel type)
-             => new MethodModel(name, type);
+             => new(name, type);
 
         public static MethodModel Static(this MethodModel model)
         {
@@ -111,7 +111,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         }
 
         public static PropertyModel Property(string name, NamedItemModel type)
-            => new PropertyModel(name, type);
+            => new(name, type);
 
         public static PropertyModel Static(this PropertyModel model)
         {
@@ -121,20 +121,24 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
         public static PropertyModel Get(this PropertyModel model, params IStatement[] statements)
         {
-            model.Getter = new PropertyAccessorModel();
-            model.Getter.Statements = statements.ToList();
+            model.Getter = new PropertyAccessorModel
+            {
+                Statements = statements.ToList()
+            };
             return model;
         }
 
         public static PropertyModel Set(this PropertyModel model, params IStatement[] statements)
         {
-            model.Setter = new PropertyAccessorModel();
-            model.Setter.Statements = statements.ToList();
+            model.Setter = new PropertyAccessorModel
+            {
+                Statements = statements.ToList()
+            };
             return model;
         }
 
         public static ClassModel Class(NamedItemModel name)
-            => new ClassModel(name);
+            => new(name);
 
         public static ClassModel Static(this ClassModel model)
         {
@@ -174,7 +178,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
 
         public static FieldModel Field(string name, NamedItemModel type)
-            => new FieldModel(name, type);
+            => new(name, type);
 
         public static FieldModel Static(this FieldModel field)
         {

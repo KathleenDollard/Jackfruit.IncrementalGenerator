@@ -1,58 +1,99 @@
-﻿
-using System;
+﻿// This file is created by a generator.
+using System
+using System.CommandLine
+using System.CommandLine.Invocation
+using System.Threading.Tasks
 
-namespace Jackfruit
+namespace DemoHandlers
 {
-    public class ConsoleApplication
-    {
-        public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler) { }
-    }
-
-    public class CliCommand
-    {
-        public static CliCommand AddCommand(Delegate CommandHandler)
-    }
+    class ConsoleApplication
+   {
+      public Handlers.StarTrekCommand _CliRoot
+      public ConsoleApplication()
+      {
+      }
+      
+      public static ConsoleApplication CreateWithRootCommand(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel rootCommandHandler)
+      {
+         _CliRoot = new Handlers.StarTrekCommand();
+      }
+      
+      public Handlers.StarTrekCommand CliRoot
+      {
+         get
+         {
+            return _CliRoot;
+         }
+      }
+   }
+   
 }
 
 // *******************************
 
-/*
-Key:         
-Id:          Handlers.StarTrek
-Path:        
-Description: This is the description for StarTrek
-Namespace:   DemoHandlers
-Members:     
-   Option
-      Option Id:      greeting
-      Name:           greeting
-      TypeName:       
-      Description:    What greeting to use
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-   Option
-      Option Id:      kirk
-      Name:           kirk
-      TypeName:       
-      Description:    Whether to greek Captain Kirk
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-   Option
-      Option Id:      spock
-      Name:           spock
-      TypeName:       
-      Description:    Whether to greek Spock
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-   Option
-      Option Id:      uhura
-      Name:           uhura
-      TypeName:       
-      Description:    Whether to greek Lieutenant Uhura
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
-*/
+// This file is created by a generator.
+using System
+using System.CommandLine
+using System.CommandLine.Invocation
+using System.Threading.Tasks
+
+namespace DemoHandlers
+{
+   public partial class Handlers.StarTrekCommand
+   {
+      public Handlers.StarTrekCommand()
+      {
+      }
+      
+      public Create Handlers.StarTrekCommand()
+      {
+         var command = new Handlers.StarTrekCommand();
+         command.greetingOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.greetingOption.Description = "What greeting to use";
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.kirkOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.kirkOption.Description = "Whether to greek Captain Kirk";
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.spockOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.spockOption.Description = "Whether to greek Spock";
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.uhuraOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.uhuraOption.Description = "Whether to greek Lieutenant Uhura";
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.Handler = command;
+         return "command";
+      }
+      
+      public Task<int> InvokeAsync(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         .Handlers.StarTrek();
+         return Task.FromResult(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.greetingOption {get; set;}
+      public  command.greetingOptionResult(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.kirkOption {get; set;}
+      public  command.kirkOptionResult(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.spockOption {get; set;}
+      public  command.spockOptionResult(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.uhuraOption {get; set;}
+      public  command.uhuraOptionResult(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+   }
+   
+}

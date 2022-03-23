@@ -42,7 +42,7 @@
     {
         public static void AddRootCommand(Delegate x) { }
         public static ConsoleApp Create()
-            => new ConsoleApp();
+            => new();
         private ConsoleApp() { RootCommand = new ACommand(); }
         public ACommand RootCommand { get; }
 

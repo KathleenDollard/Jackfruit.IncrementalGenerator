@@ -8,6 +8,7 @@ using static Jackfruit.IncrementalGenerator.CodeModels.ExpressionHelpers;
 using static Jackfruit.IncrementalGenerator.CodeModels.StructureHelpers;
 using System.Xml.Schema;
 using System.Runtime.CompilerServices;
+using System.Collections.Immutable;
 
 namespace Jackfruit.IncrementalGenerator
 {
@@ -52,6 +53,21 @@ namespace Jackfruit.IncrementalGenerator
             };
         }
 
+        internal static CodeFileModel WrapClassesInCodefile(
+            ImmutableArray<ClassModel> classModels, 
+            CommandDef rootCommandDef)
+        {
+            var codeFile = new CodeFileModel("Whereisthisused")
+            {
+                Usings = { "System", "System.CommandLine", "System.CommandLine.Invocation", "System.Threading.Tasks" },
+                Namespace = new(rootCommandDef.Namespace)  // not sure what nspace to put this in
+                {
+                    Classes = classModels.ToList()
+                }
+            };
+            return codeFile;
+        }
+
         public static CodeFileModel GetCustomApp(CommandDef commandDef)
         {
 
@@ -67,22 +83,8 @@ namespace Jackfruit.IncrementalGenerator
                 }
             };
             return codeFile;
-
         }
 
-        public static CodeFileModel GetCommandFile(CommandDef commandDef)
-        {
-            var codeFile = new CodeFileModel("Whereisthisused")
-            {
-                Usings = { "System", "System.CommandLine", "System.CommandLine.Invocation", "System.Threading.Tasks" },
-                Namespace = new(commandDef.Namespace)  // not sure what nspace to put this in
-                {
-                    Classes = GetCommandClass( commandDef )
-                }
-            };
-            return codeFile;
-
-        }
 
         public static ClassModel GetCommandClass(CommandDef commandDef)
         {
@@ -129,7 +131,6 @@ namespace Jackfruit.IncrementalGenerator
             }
 
             return commandCode;
-
         }
 
         private static ClassModel GetConsoleCode(ClassModel commandCode, string commandClassName)
@@ -148,6 +149,7 @@ namespace Jackfruit.IncrementalGenerator
                     Property(cliRoot,commandClassName)
                         .Public()
                         .Get( Return(Symbol( $"_{cliRoot}"))),
+                    commandCode
                 }
             };
             return consoleCode;

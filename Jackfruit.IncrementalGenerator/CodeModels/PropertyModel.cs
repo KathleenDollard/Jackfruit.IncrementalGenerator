@@ -20,7 +20,7 @@
     public static class PropertyModelExtensions
     {
         public static PropertyModel Property(string name, NamedItemModel type)
-            => new PropertyModel(name, type);
+            => new(name, type);
 
         public static PropertyModel Static(this PropertyModel model)
         {
