@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Xml.Linq;
 using static Jackfruit.IncrementalGenerator.RoslynHelpers;
 
 namespace Jackfruit.IncrementalGenerator
@@ -97,70 +98,70 @@ namespace Jackfruit
             var nspace = methodSymbol.ContainingNamespace.ToString();
             if (methodSymbol is null) { return null; }
 
-            var details = methodSymbol.BasicDetails();
-            details = DescFromXmlDocComment(methodSymbol.GetDocumentationCommentXml(), details);
-            details = DescFromAttributes(methodSymbol, details);
-
-            if (!details.TryGetValue(CommandKey, out var commandDetail))
+            var (commandDetail, memberDetails) = methodSymbol.BasicDetails();
+            var xmlComment = (methodSymbol.GetDocumentationCommentXml());
+            if (!string.IsNullOrWhiteSpace(xmlComment))
             {
-                return null;
+                var xDoc = XDocument.Parse(xmlComment);
+                AddDescFromXmlDocComment(xDoc, commandDetail);
+                AddDescFromXmlDocComment(xDoc, memberDetails);
             }
-            else
-            {
-                var members = new List<MemberDef>();
-                foreach (var memberPair in details)
-                {
-                    if (memberPair.Key == CommandKey) { continue; }
-                    var memberDetail = memberPair.Value;
-                    members.Add(
-                            memberDetail.MemberKind switch
-                            {
-                                MemberKind.Option => new OptionDef(
-                                    memberDetail.Id,
-                                    memberDetail.Description,
-                                    memberDetail.TypeName,
-                                    memberDetail.Aliases,
-                                    memberDetail.ArgDisplayName,
-                                    memberDetail.Required),
-                                MemberKind.Argument => new ArgumentDef(
-                                    memberDetail.Id,
-                                    memberDetail.Description,
-                                    memberDetail.TypeName,
-                                    memberDetail.Required),
-                                MemberKind.Service => new ServiceDef(
-                                    memberDetail.Id,
-                                    memberDetail.Description,
-                                    memberDetail.TypeName),
-                                _ => throw new InvalidOperationException("Unexpected member kind")
-                            });
+            AddDetailsFromAttributes(methodSymbol, memberDetails);
 
-                }
-                return new CommandDef(
-                    delegateArg.ToString(),
-                    string.Join("_", path),
-                    nspace,
-                    path,
-                    commandDetail.Description,
-                    commandDetail.Aliases,
-                    members,
-                    delegateArg.ToString(),
-                    new CommandDef[] { },
-                    commandDetail.ReturnType ?? "Unknown");
+
+            var members = new List<MemberDef>();
+            foreach (var memberPair in memberDetails)
+            {
+                if (memberPair.Key == CommandKey) { continue; }
+                var memberDetail = memberPair.Value;
+                members.Add(
+                        memberDetail.MemberKind switch
+                        {
+                            MemberKind.Option => new OptionDef(
+                                memberDetail.Id,
+                                memberDetail.Description,
+                                memberDetail.TypeName,
+                                memberDetail.Aliases,
+                                memberDetail.ArgDisplayName,
+                                memberDetail.Required),
+                            MemberKind.Argument => new ArgumentDef(
+                                memberDetail.Id,
+                                memberDetail.Description,
+                                memberDetail.TypeName,
+                                memberDetail.Required),
+                            MemberKind.Service => new ServiceDef(
+                                memberDetail.Id,
+                                memberDetail.Description,
+                                memberDetail.TypeName),
+                            _ => throw new InvalidOperationException("Unexpected member kind")
+                        });
+
             }
+            return new CommandDef(
+                delegateArg.ToString(),
+                string.Join("_", path),
+                nspace,
+                path,
+                commandDetail.Description,
+                commandDetail.Aliases,
+                members,
+                delegateArg.ToString(),
+                new CommandDef[] { },
+                commandDetail.ReturnType ?? "Unknown");
         }
 
         public static CommandDefBase TreeFromList(this IEnumerable<CommandDef> commandDefs, int pos)
         {
-            if(pos > 10) { throw new InvalidOperationException("Runaway recursion suspected"); }
+            if (pos > 10) { throw new InvalidOperationException("Runaway recursion suspected"); }
             // This throws on badly formed trees. not sure whether to just let that happen and catch, or do more work here
-            var roots = commandDefs.Where(x => GroupKey(x,pos) is null);
+            var roots = commandDefs.Where(x => GroupKey(x, pos) is null);
             var root = roots.FirstOrDefault();
             if (root is null) { return new EmptyCommandDef(); }
 
             var remaining = commandDefs.Except(roots);
             if (remaining.Any())
             {
-                var groups = remaining.GroupBy(x => GroupKey(x,pos));
+                var groups = remaining.GroupBy(x => GroupKey(x, pos));
                 var subCommands = new List<CommandDefBase>();
                 foreach (var group in groups)
                 {

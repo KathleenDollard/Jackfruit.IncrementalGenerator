@@ -105,12 +105,12 @@ namespace Jackfruit.IncrementalGenerator
                     : null;
         }
 
-        public static Dictionary<string, Detail> BasicDetails(this IMethodSymbol methodSymbol)
+        public static (Detail commandDetail, Dictionary<string, Detail> memberDetail) BasicDetails(this IMethodSymbol methodSymbol)
         {
-            var details = new Dictionary<string, Detail>
-            {
-                [CommandKey] = new Detail(methodSymbol.Name, methodSymbol.ReturnType.ToString())
-            };
+            var commandDetail = new Detail(methodSymbol.Name, methodSymbol.ReturnType.ToString());
+
+            var details = new Dictionary<string, Detail>();
+
             foreach (var param in methodSymbol.Parameters)
             {
                 details[param.Name] = new Detail(param.Name);
@@ -119,42 +119,32 @@ namespace Jackfruit.IncrementalGenerator
                 else if (param.Type.IsAbstract)  // Test that this is true for interfaces
                 { details[param.Name].MemberKind = MemberKind.Service; }
             }
-            return details;
+            return (commandDetail, details);
         }
 
-        public static Dictionary<string, Detail> DescFromXmlDocComment(string? xmlComment, Dictionary<string, Detail> details)
+        public static void AddDescFromXmlDocComment(XDocument xDoc, Dictionary<string, Detail> details)
         {
-            if (string.IsNullOrWhiteSpace(xmlComment)) { return new Dictionary<string, Detail>(); }
-            var xDoc = XDocument.Parse(xmlComment);
-            var summaryElement = xDoc.Root.Element("summary");
-            var commandDetail = GetOrCreate(CommandKey, details);
-            commandDetail.Description =
-                    summaryElement is null
-                    ? ""
-                    : summaryElement.Value.Trim();
-
             foreach (var element in xDoc.Root.Elements("param"))
             {
                 var paramName = element.Attribute("name");
                 if (paramName is not null)
                 {
-                    var paramDetail = GetOrCreate(paramName.Value, details);
-                    paramDetail.Description = element.Value.Trim();
+                    if (details.TryGetValue(paramName.Value, out var paramDetail))
+                    { paramDetail.Description = element.Value.Trim(); }
                 }
             }
-            return details;
         }
 
-        private static Detail GetOrCreate(string key, Dictionary<string, Detail> details)
+        public static void AddDescFromXmlDocComment(XDocument xDoc,  Detail commandDetail)
         {
-            if (!details.TryGetValue(key, out var detail))
-            {
-                detail = new Detail(key);
-                details[key] = detail;
-            }
-            return detail;
+            var summaryElement = xDoc.Root.Element("summary");
+            commandDetail.Description =
+                    summaryElement is null
+                    ? commandDetail.Description
+                    : summaryElement.Value.Trim();
         }
-        public static Dictionary<string, Detail> DescFromAttributes(
+
+        public static Dictionary<string, Detail>AddDetailsFromAttributes(
             IMethodSymbol methodSymbol,
             Dictionary<string, Detail> details)
         {
@@ -172,37 +162,39 @@ namespace Jackfruit.IncrementalGenerator
             Dictionary<string, Detail> details,
             string key)
         {
-            var detail = GetOrCreate(key, details);
-            foreach (var attrib in attributes)
+            if (details.TryGetValue(key, out var detail))
             {
-                if (attrib.AttributeClass is null) { continue; }
-                switch (attrib.AttributeClass.Name)
+                foreach (var attrib in attributes)
                 {
-                    case "DescriptionAttribute":
-                        var arg = attrib.ConstructorArguments.FirstOrDefault();
-                        detail.Description = arg.Value?.ToString() ?? "";
-                        break;
+                    if (attrib.AttributeClass is null) { continue; }
+                    switch (attrib.AttributeClass.Name)
+                    {
+                        case "DescriptionAttribute":
+                            var arg = attrib.ConstructorArguments.FirstOrDefault();
+                            detail.Description = arg.Value?.ToString() ?? "";
+                            break;
 
-                    case "AliasesAttribute":
-                        var arg1 = attrib.ConstructorArguments.FirstOrDefault();
-                        detail.Aliases = arg1.Values.Select(x => x.ToString()).ToArray();
-                        break;
+                        case "AliasesAttribute":
+                            var arg1 = attrib.ConstructorArguments.FirstOrDefault();
+                            detail.Aliases = arg1.Values.Select(x => x.ToString()).ToArray();
+                            break;
 
-                    case "ArgumentAttribute":
-                        detail.MemberKind = MemberKind.Argument;
-                        break;
+                        case "ArgumentAttribute":
+                            detail.MemberKind = MemberKind.Argument;
+                            break;
 
-                    case "OptionArgumentNameAttribute":
-                        var arg3 = attrib.ConstructorArguments.FirstOrDefault();
-                        detail.ArgDisplayName = arg3.Value?.ToString() ?? "";
-                        break;
+                        case "OptionArgumentNameAttribute":
+                            var arg3 = attrib.ConstructorArguments.FirstOrDefault();
+                            detail.ArgDisplayName = arg3.Value?.ToString() ?? "";
+                            break;
 
-                    case "RequiredAttribute":
-                        detail.Required = true;
-                        break;
+                        case "RequiredAttribute":
+                            detail.Required = true;
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
