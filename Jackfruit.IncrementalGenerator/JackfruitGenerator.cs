@@ -33,17 +33,18 @@ namespace Jackfruit.IncrementalGenerator
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => Helpers.IsSyntaxInteresting(s),
                     transform: static (ctx, _) => Helpers.GetCommandDef(ctx))
-                .Where(static m => m is not null);
+                .Where(static m => m is not null)
+                .Select(static (m, _) => m!);
 
             // Create a tree in the shape of the CLI. We will use both the listand the and tree to generate
-            // TODO: Support an empty CommandDef so that we can generated the default ConsoleApp for Intellisense
             var rootCommandDef = commandDefs
-                .Collect() 
+                .Collect()
                 .Select(static (x, _) => x.TreeFromList(0));
-        
+
             // Generate the console app, including the nested classes that provide access for adding subcommands
+            // TODO: Support an empty CommandDef so that we can generated the default ConsoleApp for Intellisense
             var consoleCodeFileModel = rootCommandDef
-                .Select(static (x, _) => CreateSource.GetCustomApp(x));
+                .Select(static (x, _) => CreateSource.GetConsoleApp(x));
 
             // Generate classes for each command. This code creates the System.CommandLine tree and includes the handler
             // It also collects the classes together, then adds the root so we know the namespace and can name the file we output
@@ -51,7 +52,7 @@ namespace Jackfruit.IncrementalGenerator
                 .Select(static (x, _) => CreateSource.GetCommandClass(x)) // Q to Chris on this NRT issue
                 .Collect()
                 .Combine(rootCommandDef)
-                .Select(static (x,_)=> CreateSource.WrapClassesInCodefile(x.Item1, x.Item2));
+                .Select(static (x, _) => CreateSource.WrapClassesInCodefile(x.Item1, x.Item2));
 
             // And finally, we output two files/sources
             initContext.RegisterSourceOutput(consoleCodeFileModel,

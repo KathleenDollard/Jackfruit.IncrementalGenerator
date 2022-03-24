@@ -136,9 +136,9 @@ namespace Jackfruit.IncrementalGenerator
             => string.Join(", ", parameters.Select(param =>
                 param.Style switch
                 {
-                    ParameterStyle.Normal => $"{param.Type} {param.Name}",
-                    ParameterStyle.DefaultValue => $"{param.Type} {param.Name} = {param.DefaultValue}",
-                    ParameterStyle.IsParamArray => $"params {param.Type}[] {param.Name}",
+                    ParameterStyle.Normal => $"{NamedItem(param.Type)} {param.Name}",
+                    ParameterStyle.DefaultValue => $"{NamedItem(param.Type)} {param.Name} = {param.DefaultValue}",
+                    ParameterStyle.IsParamArray => $"params {NamedItem(param.Type)}[] {param.Name}",
                     _ => "",
                 }));
 
@@ -153,8 +153,8 @@ namespace Jackfruit.IncrementalGenerator
             => model.BaseOrThis switch
             {
                 BaseOrThis.None => "",
-                BaseOrThis.Base => $" : base({string.Join(", ", model.BaseOrThisArguments)})",
-                BaseOrThis.This => $" : base({string.Join(", ", model.BaseOrThisArguments)})",
+                BaseOrThis.Base => $" : base({string.Join(", ", model.BaseOrThisArguments.Select(x => Expression(x)))})",
+                BaseOrThis.This => $" : base({string.Join(", ", model.BaseOrThisArguments.Select(x => Expression(x)))})",
                 _ => ""
             };
 
@@ -163,7 +163,7 @@ namespace Jackfruit.IncrementalGenerator
             var keywords = $"{OptionalKeyword(model.IsStatic, StaticKeyword)}";
             return new List<string>
                 {
-                    $"{Scope(model.Scope)} {keywords}{NamedItem(model.ClassName)}({string.Join(",", model.BaseOrThisArguments)}){BaseOrThisCall(model)}",
+                    $"{Scope(model.Scope)} {keywords}{NamedItem(model.ClassName)}({string.Join(",",Parameters(model.Parameters))}){BaseOrThisCall(model)}",
                     "{"
                 };
 
@@ -188,11 +188,11 @@ namespace Jackfruit.IncrementalGenerator
                 };
         }
 
-        private string PropertyKeywords(PropertyModel model) 
+        private string PropertyKeywords(PropertyModel model)
             => $"{OptionalKeyword(model.IsStatic, StaticKeyword)}" +
                 $"{OptionalKeyword(model.IsPartial, PartialKeyword)}";
 
-        public override IEnumerable<string> AutoProperty(PropertyModel model) 
+        public override IEnumerable<string> AutoProperty(PropertyModel model)
             => new List<string>
             {
                 $"{Scope( model.Scope)}{PropertyKeywords(model)} {NamedItem( model.Type)} {model.Name} {{get; set;}}"
@@ -344,10 +344,10 @@ namespace Jackfruit.IncrementalGenerator
 
         // Expressions
         public override string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments)
-            => $"{NamedItem(instance)}.{NamedItem(methodName)}({string.Join(", ", arguments)})";
+            => $"{NamedItem(instance)}.{NamedItem(methodName)}({string.Join(", ", arguments.Select(x=>Expression(x)))})";
 
         public override string Instantiate(NamedItemModel typeName, IEnumerable<ExpressionBase> arguments)
-            => $"new {NamedItem(typeName)}({string.Join(", ", arguments)})";
+            => $"new {NamedItem(typeName)}({string.Join(", ", arguments.Select(x => Expression(x)))})";
 
 
         public override string Compare(ExpressionBase left, Operator op, ExpressionBase right)

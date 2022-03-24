@@ -1,6 +1,13 @@
 ﻿namespace Jackfruit.Models
 {
-    public class CommandDef
+    public abstract class CommandDefBase
+    { }
+
+    public  class EmptyCommandDef:CommandDefBase
+    { }
+
+
+    public class CommandDef : CommandDefBase
     {
         public CommandDef(
             string id,
@@ -51,7 +58,7 @@
         //Options, args, and services in order of handler parameters
         public IEnumerable<MemberDef> Members { get; }
         public string HandlerMethodName { get; }
-        public IEnumerable<CommandDef> SubCommands { get; set; }
+        public IEnumerable<CommandDefBase> SubCommands { get; set; }
         public IEnumerable<string> Path { get; }
         public string ReturnType { get; }
 

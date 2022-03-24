@@ -5,6 +5,7 @@ using Jackfruit.Models;
 using Jackfruit.IncrementalGenerator;
 using Newtonsoft.Json;
 using Jackfruit.IncrementalGenerator.Output;
+using System.Management;
 
 namespace Jackfruit.Tests
 {
@@ -58,11 +59,14 @@ namespace Jackfruit.Tests
                         case ServiceDef service: OutputService(writer, service); break;
                     }
                 }
-                foreach (var subCommand in commandDef.SubCommands)
+                foreach (var subCommandDef in commandDef.SubCommands)
                 {
-                    writer.IncreaseIndent();
-                    OutputCommand(writer, subCommand);
-                    writer.DecreaseIndent();
+                    if (subCommandDef is CommandDef subCommand)
+                    {
+                        writer.IncreaseIndent();
+                        OutputCommand(writer, subCommand);
+                        writer.DecreaseIndent();
+                    }
                 }
                 writer.DecreaseIndent();
             }

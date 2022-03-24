@@ -1,0 +1,110 @@
+﻿// This file is created by a generator.
+using System
+using System.CommandLine
+using System.CommandLine.Invocation
+using System.Threading.Tasks
+
+namespace DemoHandlers
+{
+    class ConsoleApplication
+   {
+      public Handlers.VoyagerCommand _CliRoot
+      public ConsoleApplication()
+      {
+      }
+      
+      public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler)
+      {
+         _CliRoot = new Handlers.VoyagerCommand();
+      }
+      
+      public Handlers.VoyagerCommand CliRoot
+      {
+         get
+         {
+            return _CliRoot;
+         }
+      }
+   }
+   
+}
+
+// *******************************
+
+// This file is created by a generator.
+using System
+using System.CommandLine
+using System.CommandLine.Invocation
+using System.Threading.Tasks
+
+namespace DemoHandlers
+{
+   public partial class Handlers.VoyagerCommand
+   {
+      public Handlers.VoyagerCommand()
+      {
+      }
+      
+      public Create Handlers.VoyagerCommand()
+      {
+         var command = new Handlers.VoyagerCommand();
+         command.greetingOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.janewayOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.chakotayOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.torresOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.tuvokOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.sevenOfNineOption = new Option<>(Jackfruit.IncrementalGenerator.CodeModels.StringLiteralModel);
+         command.Add(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+         command.Handler = command;
+         return "command";
+      }
+      
+      public Task<int> InvokeAsync(InvocationContext context)
+      {
+         return .Handlers.Voyager();
+      }
+      
+      public Option<> command.greetingOption {get; set;}
+      public  command.greetingOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.janewayOption {get; set;}
+      public  command.janewayOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.chakotayOption {get; set;}
+      public  command.chakotayOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.torresOption {get; set;}
+      public  command.torresOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.tuvokOption {get; set;}
+      public  command.tuvokOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+      public Option<> command.sevenOfNineOption {get; set;}
+      public  command.sevenOfNineOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<>(Jackfruit.IncrementalGenerator.CodeModels.SymbolModel);
+      }
+      
+   }
+   
+}

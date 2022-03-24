@@ -1,0 +1,79 @@
+﻿// This file is created by a generator.
+using System
+using System.CommandLine
+using System.CommandLine.Invocation
+using System.Threading.Tasks
+
+namespace DemoHandlers
+{
+    class ConsoleApplication
+   {
+      private Handlers.NextGenerationCommand _CliRoot
+      private ConsoleApplication()
+      {
+      }
+      
+      public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler)
+      {
+         _CliRoot = new Handlers.NextGenerationCommand();
+      }
+      
+      public Handlers.NextGenerationCommand CliRoot
+      {
+         get
+         {
+            return _CliRoot;
+         }
+      }
+   }
+   
+}
+
+// *******************************
+
+// This file is created by a generator.
+using System
+using System.CommandLine
+using System.CommandLine.Invocation
+using System.Threading.Tasks
+
+namespace DemoHandlers
+{
+   public partial class Handlers.NextGenerationCommand
+   {
+      private Handlers.NextGenerationCommand()
+      {
+      }
+      
+      public Create Handlers.NextGenerationCommand()
+      {
+         var command = new Handlers.NextGenerationCommand();
+         greetingArgOption = new Option<>("greetingArg");
+         command.Add(greetingArgOption);
+         picardOption = new Option<>("picard");
+         picardOption.Description = "This is the description for Picard";
+         command.Add(picardOption);
+         command.Handler = command;
+         return command;
+      }
+      
+      public Task<int> InvokeAsync(InvocationContext context)
+      {
+         return .Handlers.NextGeneration(.greetingArgOptionResult, Jackfruit.IncrementalGenerator.CodeModels.SymbolModel(), .picardOptionResult, Jackfruit.IncrementalGenerator.CodeModels.SymbolModel());
+      }
+      
+      public Option<> greetingArgOption {get; set;}
+      public  greetingArgOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<>(greetingArgOption);
+      }
+      
+      public Option<> picardOption {get; set;}
+      public  picardOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<>(picardOption);
+      }
+      
+   }
+   
+}

@@ -33,7 +33,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public static T Private<T>(this T model)
             where T : IHasScope
         {
-            model.Scope = Scope.Public;
+            model.Scope = Scope.Private;
             return model;
         }
         public static T ProtectedInternal<T>(this T model)

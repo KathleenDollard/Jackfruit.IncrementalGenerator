@@ -149,17 +149,19 @@ namespace Jackfruit
             }
         }
 
-        public static CommandDef TreeFromList(this IEnumerable<CommandDef> commandDefs, int pos)
+        public static CommandDefBase TreeFromList(this IEnumerable<CommandDef> commandDefs, int pos)
         {
             if(pos > 10) { throw new InvalidOperationException("Runaway recursion suspected"); }
             // This throws on badly formed trees. not sure whether to just let that happen and catch, or do more work here
             var roots = commandDefs.Where(x => GroupKey(x,pos) is null);
-            var root = roots.First();
+            var root = roots.FirstOrDefault();
+            if (root is null) { return new EmptyCommandDef(); }
+
             var remaining = commandDefs.Except(roots);
             if (remaining.Any())
             {
                 var groups = remaining.GroupBy(x => GroupKey(x,pos));
-                var subCommands = new List<CommandDef>();
+                var subCommands = new List<CommandDefBase>();
                 foreach (var group in groups)
                 {
                     var subCommand = group.TreeFromList(pos + 1);
