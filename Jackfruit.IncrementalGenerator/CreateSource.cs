@@ -24,26 +24,21 @@ namespace Jackfruit.IncrementalGenerator
         private const string commandVar = "command";
 
         private static string CommandClassName(CommandDef commandDef)
-            => $"{commandDef.Id}Command";
+            => $"{commandDef.Name}Command";
         private static string MemberPropertyName(MemberDef memberDef)
             => memberDef switch
             {
-                OptionDef optionDef => $"{optionDef.Id}Option",
-                ArgumentDef argDef => $"{argDef.Id}Argument",
-                _=> $"{memberDef.Id}Service"
+                OptionDef optionDef => $"{optionDef.Name}Option",
+                ArgumentDef argDef => $"{argDef.Name}Argument",
+                _ => $"{memberDef.Id}Service"
             };
         private static string MemberPropertyStyle(MemberDef memberDef)
             => memberDef switch
             {
-                OptionDef optionDef =>"Option",
+                OptionDef optionDef => "Option",
                 ArgumentDef argDef => "Argument",
                 _ => "Service"
             };
-
-        //private static string OptionPropertyName(OptionDef optionDef)
-        //    => $"{commandVar}.{optionDef.Id}Option";
-        //private static string ArgumentPropertyName(ArgumentDef optionDef)
-        //    => $"{commandVar}.{optionDef.Id}Argument";
 
         public static CodeFileModel GetDefaultConsoleApp()
         {
@@ -72,7 +67,7 @@ namespace Jackfruit.IncrementalGenerator
         }
 
         internal static CodeFileModel WrapClassesInCodefile(
-            ImmutableArray<ClassModel> classModels, 
+            ImmutableArray<ClassModel> classModels,
             CommandDefBase rootCommandDef)
         {
             var nspace = rootCommandDef is CommandDef rootCommand
@@ -100,7 +95,7 @@ namespace Jackfruit.IncrementalGenerator
                 Usings = { "System", "System.CommandLine", "System.CommandLine.Invocation", "System.Threading.Tasks" },
                 Namespace = new(commandDef.Namespace)  // not sure what nspace to put this in
                 {
-                    Classes = new List<ClassModel> 
+                    Classes = new List<ClassModel>
                     {
                         GetConsoleCode(GetNestedCommands(0, commandDef), CommandClassName(commandDef))
                     }
@@ -117,6 +112,9 @@ namespace Jackfruit.IncrementalGenerator
                 Class(commandClassName)
                     .Public()
                     .Partial()
+                    // TODO: Implement way to recognize RootCommand
+                    .InheritedFrom("Command")
+                    .ImplementedInterfaces("ICommandHandler")
                     .Members(
                         Constructor(commandClassName)
                             .Private(),
@@ -130,10 +128,10 @@ namespace Jackfruit.IncrementalGenerator
 
                 switch (member)
                 {
-                    case OptionDef :
-                    case ArgumentDef :
+                    case OptionDef:
+                    case ArgumentDef:
                         commandCode.Members.Add(
-                            Property(name, Generic(style, member.TypeName)) 
+                            Property(name, Generic(style, member.TypeName))
                                 .Public());
                         commandCode.Members.Add(
                             Method($"{name}Result", member.TypeName)
@@ -162,12 +160,15 @@ namespace Jackfruit.IncrementalGenerator
                 Members = new()
                 {
                     Field($"_{cliRoot}",commandClassName).Private(),
-                    Constructor(Helpers. ConsoleAppClassName).Private(),
+                    Constructor(Helpers.ConsoleAppClassName).Private(),
                     Method(createWithRootCommand, Helpers. ConsoleAppClassName)
                         .Public()
                         .Static()
                         .Parameters(new ParameterModel(rootCommandHandler,"Delegate"))
-                        .Statements(Assign($"_{cliRoot}", New(commandClassName))),
+                        .Statements(
+                            AssignWithDeclare("app", New(Helpers.ConsoleAppClassName)),
+                            Assign($"app._{cliRoot}", New(commandClassName)),
+                            Return(Symbol("app"))),
                     Property(cliRoot,commandClassName)
                         .Public()
                         .Get( Return(Symbol( $"_{cliRoot}"))),
@@ -202,7 +203,7 @@ namespace Jackfruit.IncrementalGenerator
             foreach (var member in commandDef.Members)
             {
                 //RestaurantArgumentResult(context)
-                arguments.Add(Invoke("",$"{MemberPropertyName(member)}Result, {Symbol("context")}"));
+                arguments.Add(Invoke("", $"{MemberPropertyName(member)}Result, {Symbol("context")}"));
             }
             var method =
                 Method("InvokeAsync", Generic("Task", "int"))
@@ -221,12 +222,13 @@ namespace Jackfruit.IncrementalGenerator
             return method;
         }
 
-        public static MethodModel CreateMethod(CommandDef commandDef)
+        private static MethodModel CreateMethod(CommandDef commandDef)
         {
             var commandClassName = CommandClassName(commandDef);
             var method =
-                    Method(commandClassName, "Create")
+                    Method("Create", commandClassName)
                     .Public()
+                    .Static()
                     .Statements(
                         AssignWithDeclare(commandVar, New(commandClassName)));
             foreach (var member in commandDef.Members)
@@ -234,12 +236,12 @@ namespace Jackfruit.IncrementalGenerator
                 switch (member)
                 {
                     case OptionDef opt:
-                        var optPropertyName = MemberPropertyName(opt);
+                        var optPropertyName = $"{commandVar}.{MemberPropertyName(opt)}";
                         method.Statements.Add(Assign(optPropertyName, New(Generic("Option", opt.TypeName), opt.Id)));
                         if (!string.IsNullOrWhiteSpace(opt.Description))
                         { method.Statements.Add(Assign($"{optPropertyName}.Description", opt.Description)); }
                         if (opt.Aliases.Any())
-                        { method.Statements.Add(Assign($"{optPropertyName}.Aliases", new ListLiteralModel( opt.Aliases))); }
+                        { method.Statements.Add(Assign($"{optPropertyName}.Aliases", new ListLiteralModel(opt.Aliases))); }
                         if (!string.IsNullOrWhiteSpace(opt.ArgDisplayName))
                         { method.Statements.Add(Assign($"{optPropertyName}.ArgDisplayName", opt.ArgDisplayName)); }
                         if (opt.Required)
@@ -247,7 +249,7 @@ namespace Jackfruit.IncrementalGenerator
                         method.Statements.Add(SimpleCall(Invoke(commandVar, "Add", Symbol(optPropertyName))));
                         break;
                     case ArgumentDef arg:
-                        var argPropertyName = MemberPropertyName(arg);
+                        var argPropertyName = $"{commandVar}.{MemberPropertyName(arg)}";
                         method.Statements.Add(Assign(argPropertyName, New(Generic("Argument", arg.TypeName), arg.Id)));
                         if (arg.Required)
                         { method.Statements.Add(Assign($"{argPropertyName}.Required", arg.Required)); }

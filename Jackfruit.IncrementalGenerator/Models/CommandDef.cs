@@ -14,6 +14,7 @@
             IEnumerable<string> path)
         {
             Id = id;
+            Name = id;
             UniqueId = string.Join("|", path);
             Namespace = "";
             Description = null;
@@ -27,6 +28,7 @@
 
         public CommandDef(
             string id,
+            string name,
             string uniqueId,
             string nspace,
             IEnumerable<string> path,
@@ -39,6 +41,7 @@
             )
         {
             Id = id;
+            Name = name;
             UniqueId = uniqueId;
             Namespace = nspace;
             Description = description;
@@ -51,6 +54,7 @@
         }
 
         public string Id { get; }
+        public string Name { get; }
         public string UniqueId { get; }
         public string Namespace { get; }
         public string? Description { get; }

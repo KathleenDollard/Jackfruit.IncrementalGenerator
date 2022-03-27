@@ -91,12 +91,12 @@ namespace Jackfruit
                 return null;
             }
             var path = GetPath(invocation.Expression).Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-
+            
+            //We creawte details first because at this point we don't know what is an argument or option
             var delegateArg = invocation.ArgumentList.Arguments[0].Expression;
             var methodSymbol = MethodOrCandidateSymbol(context.SemanticModel, delegateArg);
             if (methodSymbol is null) { return null; }
             var nspace = methodSymbol.ContainingNamespace.ToString();
-            if (methodSymbol is null) { return null; }
 
             var (commandDetail, memberDetails) = methodSymbol.BasicDetails();
             var xmlComment = (methodSymbol.GetDocumentationCommentXml());
@@ -119,6 +119,7 @@ namespace Jackfruit
                         {
                             MemberKind.Option => new OptionDef(
                                 memberDetail.Id,
+                                memberDetail.Name,
                                 memberDetail.Description,
                                 memberDetail.TypeName,
                                 memberDetail.Aliases,
@@ -126,11 +127,13 @@ namespace Jackfruit
                                 memberDetail.Required),
                             MemberKind.Argument => new ArgumentDef(
                                 memberDetail.Id,
+                                memberDetail.Name,
                                 memberDetail.Description,
                                 memberDetail.TypeName,
                                 memberDetail.Required),
                             MemberKind.Service => new ServiceDef(
                                 memberDetail.Id,
+                                memberDetail.Name,
                                 memberDetail.Description,
                                 memberDetail.TypeName),
                             _ => throw new InvalidOperationException("Unexpected member kind")
@@ -138,7 +141,8 @@ namespace Jackfruit
 
             }
             return new CommandDef(
-                delegateArg.ToString(),
+                commandDetail.Id,
+                commandDetail.Name,
                 string.Join("_", path),
                 nspace,
                 path,
@@ -147,7 +151,7 @@ namespace Jackfruit
                 members,
                 delegateArg.ToString(),
                 new CommandDef[] { },
-                commandDetail.ReturnType ?? "Unknown");
+                commandDetail.TypeName ?? "Unknown");
         }
 
         public static CommandDefBase TreeFromList(this IEnumerable<CommandDef> commandDefs, int pos)

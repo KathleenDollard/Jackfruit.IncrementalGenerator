@@ -170,6 +170,17 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             return model;
         }
 
+        public static ClassModel InheritedFrom(this ClassModel model, NamedItemModel baseClassName)
+        {
+            model.InheritedFrom = baseClassName;
+            return model;
+        }
+        public static ClassModel ImplementedInterfaces(this ClassModel model,params NamedItemModel[] interfaces)
+        {
+            model.ImplementedInterfaces.AddRange( interfaces.ToList());
+            return model;
+        }
+
         public static ClassModel Members(this ClassModel model, params IMember[] members)
         {
             model.Members = members.ToList();

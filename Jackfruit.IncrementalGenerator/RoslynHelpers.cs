@@ -1,12 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections.Generic;
 using System.Xml.Linq;
-using System.Collections.Immutable;
-using System.Reflection.Metadata;
-using System.ComponentModel;
 
 namespace Jackfruit.IncrementalGenerator
 {
@@ -27,14 +20,15 @@ namespace Jackfruit.IncrementalGenerator
             private string argDisplayId = "";
             private bool required;
 
-            public Detail(string id, string? returnType = null)
+            public Detail(string id, string name, string? typeName = null)
             {
                 Id = id;
-                ReturnType = returnType;
+                Name = name;
+                TypeName = typeName;
             }
 
             public string Id { get; }
-            public string? ReturnType { get; } 
+            public string Name { get; set; }
             public string Description
             {
                 get => description;
@@ -100,24 +94,29 @@ namespace Jackfruit.IncrementalGenerator
             if (expression == null) { return null; }
             var symbolInfo = semanticModel.GetSymbolInfo(expression);
             if (symbolInfo.Symbol is IMethodSymbol methodSymbol) { return methodSymbol; }
-            return symbolInfo.CandidateSymbols.FirstOrDefault() is IMethodSymbol candidate 
-                    ? candidate 
+            return symbolInfo.CandidateSymbols.FirstOrDefault() is IMethodSymbol candidate
+                    ? candidate
                     : null;
         }
 
         public static (Detail commandDetail, Dictionary<string, Detail> memberDetail) BasicDetails(this IMethodSymbol methodSymbol)
         {
-            var commandDetail = new Detail(methodSymbol.Name, methodSymbol.ReturnType.ToString());
+            var commandDetail = new Detail(methodSymbol.ToDisplayString(), methodSymbol.Name, methodSymbol.ReturnType.ToString());
 
             var details = new Dictionary<string, Detail>();
 
             foreach (var param in methodSymbol.Parameters)
             {
-                details[param.Name] = new Detail(param.Name);
+                details[param.Name] = new Detail(param.Name, param.Name, param.Type.ToString());
                 if (param.Name.EndsWith("Arg"))
-                { details[param.Name].MemberKind = MemberKind.Argument; }
+                {
+                    details[param.Name].MemberKind = MemberKind.Argument;
+                    details[param.Name].Name = param.Name.Substring(0, param.Name.Length - 3);
+                }
                 else if (param.Type.IsAbstract)  // Test that this is true for interfaces
-                { details[param.Name].MemberKind = MemberKind.Service; }
+                {
+                    details[param.Name].MemberKind = MemberKind.Service;
+                }
             }
             return (commandDetail, details);
         }
@@ -135,7 +134,7 @@ namespace Jackfruit.IncrementalGenerator
             }
         }
 
-        public static void AddDescFromXmlDocComment(XDocument xDoc,  Detail commandDetail)
+        public static void AddDescFromXmlDocComment(XDocument xDoc, Detail commandDetail)
         {
             var summaryElement = xDoc.Root.Element("summary");
             commandDetail.Description =
@@ -144,7 +143,7 @@ namespace Jackfruit.IncrementalGenerator
                     : summaryElement.Value.Trim();
         }
 
-        public static Dictionary<string, Detail>AddDetailsFromAttributes(
+        public static Dictionary<string, Detail> AddDetailsFromAttributes(
             IMethodSymbol methodSymbol,
             Dictionary<string, Detail> details)
         {

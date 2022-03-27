@@ -2,9 +2,10 @@
 {
     public abstract class MemberDef
     {
-        protected MemberDef(string id, string description, string typeName)
+        protected MemberDef(string id, string name, string description, string typeName)
         {
             Id = id;
+            Name= name;
             Description = description;
             TypeName = typeName;
         }
@@ -13,19 +14,20 @@
         public string Description { get; }
         public string TypeName { get; }
 
-        public string Name => Id;
+        public string Name { get; set; }
 
     }
     public class OptionDef : MemberDef
     {
         public OptionDef(
             string id,
+            string name,
             string description,
             string typeName,
             IEnumerable<string> aliases,
             string argDisplayName,
             bool required)
-            : base(id, description, typeName)
+            : base(id, name, description, typeName)
         {
             ArgDisplayName = argDisplayName;
             Aliases = aliases;
@@ -41,10 +43,11 @@
     {
         public ArgumentDef(
             string id,
+            string name,
             string description,
             string typeName,
             bool required)
-            : base(id, description, typeName)
+            : base(id, name,description, typeName)
         {
             Required = required;
         }
@@ -56,9 +59,10 @@
     {
         public ServiceDef(
             string id,
+            string name,
             string description,
             string typeName)
-            : base(id, description, typeName)
+            : base(id,name, description, typeName)
         { }
     }
 }

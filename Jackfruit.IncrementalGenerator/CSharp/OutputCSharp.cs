@@ -86,8 +86,8 @@ namespace Jackfruit.IncrementalGenerator
         public override IEnumerable<string> Usings(List<UsingModel> usings)
             => usings.Select(x =>
                 x.Alias is null
-                ? $"using {x.Name}"
-                : $"using {x.Alias} = {x.Name}");
+                ? $"using {x.Name};"
+                : $"using {x.Alias} = {x.Name};");
 
         public override IEnumerable<string> ClassOpen(ClassModel model)
         {
@@ -184,7 +184,7 @@ namespace Jackfruit.IncrementalGenerator
 
             return new List<string>
                 {
-                    $"{Scope( model.Scope)}{keywords} {NamedItem( model.Type)} {model.Name}"
+                    $"{Scope( model.Scope)}{keywords} {NamedItem( model.Type)} {model.Name};"
                 };
         }
 

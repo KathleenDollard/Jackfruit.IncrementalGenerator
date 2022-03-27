@@ -1,24 +1,24 @@
 ﻿// This file is created by a generator.
-using System
-using System.CommandLine
-using System.CommandLine.Invocation
-using System.Threading.Tasks
+using System;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.Threading.Tasks;
 
 namespace DemoHandlers
 {
     class ConsoleApplication
    {
-      private Handlers.NextGenerationCommand _CliRoot
+      private NextGenerationCommand _CliRoot;
       private ConsoleApplication()
       {
       }
       
       public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler)
       {
-         _CliRoot = new Handlers.NextGenerationCommand();
+         _CliRoot = new NextGenerationCommand();
       }
       
-      public Handlers.NextGenerationCommand CliRoot
+      public NextGenerationCommand CliRoot
       {
          get
          {
@@ -32,46 +32,47 @@ namespace DemoHandlers
 // *******************************
 
 // This file is created by a generator.
-using System
-using System.CommandLine
-using System.CommandLine.Invocation
-using System.Threading.Tasks
+using System;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.Threading.Tasks;
 
 namespace DemoHandlers
 {
-   public partial class Handlers.NextGenerationCommand
+   public partial class NextGenerationCommand : Command, ICommandHandler
    {
-      private Handlers.NextGenerationCommand()
+      private NextGenerationCommand()
       {
       }
       
-      public Create Handlers.NextGenerationCommand()
+      public static NextGenerationCommand Create()
       {
-         var command = new Handlers.NextGenerationCommand();
-         greetingArgOption = new Option<>("greetingArg");
-         command.Add(greetingArgOption);
-         picardOption = new Option<>("picard");
-         picardOption.Description = "This is the description for Picard";
-         command.Add(picardOption);
+         var command = new NextGenerationCommand();
+         command.greetingArgument = new Argument<string>("greetingArg");
+         command.Add(command.greetingArgument);
+         command.picardOption = new Option<bool>("picard");
+         command.picardOption.Description = "This is the description for Picard";
+         command.Add(command.picardOption);
          command.Handler = command;
          return command;
       }
       
       public Task<int> InvokeAsync(InvocationContext context)
       {
-         return .Handlers.NextGeneration(.greetingArgOptionResult, Jackfruit.IncrementalGenerator.CodeModels.SymbolModel(), .picardOptionResult, Jackfruit.IncrementalGenerator.CodeModels.SymbolModel());
+         .Handlers.NextGeneration(.greetingArgumentResult, Jackfruit.IncrementalGenerator.CodeModels.SymbolModel(), .picardOptionResult, Jackfruit.IncrementalGenerator.CodeModels.SymbolModel());
+         return Task.FromResult(context.Exitcode);
       }
       
-      public Option<> greetingArgOption {get; set;}
-      public  greetingArgOptionResult(InvocationContext context)
+      public Argument<string> greetingArgument {get; set;}
+      public string greetingArgumentResult(InvocationContext context)
       {
-         return context.ParseResult.GetValueForOption<>(greetingArgOption);
+         return context.ParseResult.GetValueForArgument<string>(greetingArgument);
       }
       
-      public Option<> picardOption {get; set;}
-      public  picardOptionResult(InvocationContext context)
+      public Option<bool> picardOption {get; set;}
+      public bool picardOptionResult(InvocationContext context)
       {
-         return context.ParseResult.GetValueForOption<>(picardOption);
+         return context.ParseResult.GetValueForOption<bool>(picardOption);
       }
       
    }
