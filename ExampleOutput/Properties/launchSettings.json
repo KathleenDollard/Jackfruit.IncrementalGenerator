@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ExampleOutput": {
+      "commandName": "Project",
+      "commandLineArgs": "HelloYou --picard"
+    }
+  }
+}

@@ -49,7 +49,8 @@ namespace Jackfruit.IncrementalGenerator
             // Generate classes for each command. This code creates the System.CommandLine tree and includes the handler
             // It also collects the classes together, then adds the root so we know the namespace and can name the file we output
             var commandsCodeFileModel = commandDefs
-                .Select(static (x, _) => CreateSource.GetCommandClass(x)) // Q to Chris on this NRT issue
+                .Combine(rootCommandDef)
+                .Select(static (x, _) => CreateSource.GetCommandClass(x.Item1, x.Item2)) 
                 .Collect()
                 .Combine(rootCommandDef)
                 .Select(static (x, _) => CreateSource.WrapClassesInCodefile(x.Item1, x.Item2));

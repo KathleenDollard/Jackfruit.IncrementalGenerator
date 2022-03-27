@@ -15,7 +15,9 @@ namespace DemoHandlers
       
       public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler)
       {
-         _CliRoot = new NextGenerationCommand();
+         var app = new ConsoleApplication();
+         app._CliRoot = NextGenerationCommand.Create();
+         return app;
       }
       
       public NextGenerationCommand CliRoot
@@ -39,7 +41,7 @@ using System.Threading.Tasks;
 
 namespace DemoHandlers
 {
-   public partial class NextGenerationCommand : Command, ICommandHandler
+   public partial class NextGenerationCommand : RootCommand, ICommandHandler
    {
       private NextGenerationCommand()
       {
@@ -59,8 +61,8 @@ namespace DemoHandlers
       
       public Task<int> InvokeAsync(InvocationContext context)
       {
-         .Handlers.NextGeneration(.greetingArgumentResult, Jackfruit.IncrementalGenerator.CodeModels.SymbolModel(), .picardOptionResult, Jackfruit.IncrementalGenerator.CodeModels.SymbolModel());
-         return Task.FromResult(context.Exitcode);
+         Handlers.NextGeneration(greetingArgumentResult(context), picardOptionResult(context));
+         return Task.FromResult(context.ExitCode);
       }
       
       public Argument<string> greetingArgument {get; set;}

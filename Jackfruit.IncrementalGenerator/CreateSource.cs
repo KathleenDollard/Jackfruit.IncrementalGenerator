@@ -105,7 +105,9 @@ namespace Jackfruit.IncrementalGenerator
         }
 
 
-        public static ClassModel GetCommandClass(CommandDef commandDef)
+        public static ClassModel GetCommandClass(
+            CommandDef commandDef,
+            CommandDefBase rootCommandDef)
         {
             var commandClassName = CommandClassName(commandDef);
             var commandCode =
@@ -113,7 +115,7 @@ namespace Jackfruit.IncrementalGenerator
                     .Public()
                     .Partial()
                     // TODO: Implement way to recognize RootCommand
-                    .InheritedFrom("Command")
+                    .InheritedFrom((rootCommandDef == commandDef) ? "RootCommand" : "Command")
                     .ImplementedInterfaces("ICommandHandler")
                     .Members(
                         Constructor(commandClassName)
@@ -167,7 +169,7 @@ namespace Jackfruit.IncrementalGenerator
                         .Parameters(new ParameterModel(rootCommandHandler,"Delegate"))
                         .Statements(
                             AssignWithDeclare("app", New(Helpers.ConsoleAppClassName)),
-                            Assign($"app._{cliRoot}", New(commandClassName)),
+                            Assign($"app._{cliRoot}", Invoke(commandClassName, "Create")),
                             Return(Symbol("app"))),
                     Property(cliRoot,commandClassName)
                         .Public()
@@ -203,7 +205,7 @@ namespace Jackfruit.IncrementalGenerator
             foreach (var member in commandDef.Members)
             {
                 //RestaurantArgumentResult(context)
-                arguments.Add(Invoke("", $"{MemberPropertyName(member)}Result, {Symbol("context")}"));
+                arguments.Add(Invoke("", $"{MemberPropertyName(member)}Result", Symbol("context")));
             }
             var method =
                 Method("InvokeAsync", Generic("Task", "int"))
@@ -212,7 +214,7 @@ namespace Jackfruit.IncrementalGenerator
             if (commandDef.ReturnType == "void")
             {
                 method.Statements.Add(SimpleCall(Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
-                method.Statements.Add(Return(Invoke("Task", "FromResult", Symbol("context.Exitcode"))));
+                method.Statements.Add(Return(Invoke("Task", "FromResult", Symbol("context.ExitCode"))));
             }
             else
             {

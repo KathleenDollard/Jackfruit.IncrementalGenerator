@@ -10,7 +10,7 @@ public class Program
         ConsoleApp.AddRootCommand(Handlers.NextGeneration);
 
         // if you do not want to customize anything
-        ConsoleAppBase.Run(args);
+        ConsoleApplication.Run(args);
 
 
 

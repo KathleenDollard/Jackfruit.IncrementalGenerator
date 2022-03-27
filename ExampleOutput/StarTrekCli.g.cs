@@ -1,8 +1,4 @@
-﻿
-
-//// *******************************
-
-// This file is created by a generator.
+﻿// This file is created by a generator.
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
@@ -21,7 +17,7 @@ namespace DemoHandlers
             var command = new NextGenerationCommand();
             command.greetingArgument = new Argument<string>("greetingArg");
             command.Add(command.greetingArgument);
-            command.picardOption = new Option<bool>("picard");
+            command.picardOption = new Option<bool>("--picard");
             command.picardOption.Description = "This is the description for Picard";
             command.Add(command.picardOption);
             command.Handler = command;
@@ -30,8 +26,8 @@ namespace DemoHandlers
 
         public Task<int> InvokeAsync(InvocationContext context)
         {
-         .Handlers.NextGeneration(.greetingArgumentResult, Jackfruit.IncrementalGenerator.CodeModels.SymbolModel(), .picardOptionResult, Jackfruit.IncrementalGenerator.CodeModels.SymbolModel());
-            return Task.FromResult(context.Exitcode);
+            Handlers.NextGeneration(greetingArgumentResult(context), picardOptionResult(context));
+            return Task.FromResult(context.ExitCode);
         }
 
         public Argument<string> greetingArgument { get; set; }

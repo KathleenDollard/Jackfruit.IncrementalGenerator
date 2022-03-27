@@ -344,7 +344,13 @@ namespace Jackfruit.IncrementalGenerator
 
         // Expressions
         public override string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments)
-            => $"{NamedItem(instance)}.{NamedItem(methodName)}({string.Join(", ", arguments.Select(x=>Expression(x)))})";
+        {
+            var namedItem = NamedItem(instance);
+            var target = string.IsNullOrEmpty(namedItem)
+                            ? NamedItem(methodName)
+                            : $"{namedItem}.{NamedItem(methodName)}";
+            return $"{target}({string.Join(", ", arguments.Select(x => Expression(x)))})";
+        }
 
         public override string Instantiate(NamedItemModel typeName, IEnumerable<ExpressionBase> arguments)
             => $"new {NamedItem(typeName)}({string.Join(", ", arguments.Select(x => Expression(x)))})";

@@ -28,7 +28,8 @@
     }
     public class ConsoleAppBase
     {
-        public static int Run(string[] args) => 42;
+        public static int Run(string[] args)
+            => 42;
     }
     // If we use a base class for classes A and  B, the IDE offers to simplify the call to a direct call
     //public class CliDef
