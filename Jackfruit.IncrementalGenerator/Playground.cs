@@ -14,7 +14,7 @@ namespace Jackfruit
     public class ConsoleApplication
     {
         private ConsoleApplication() {}
-        public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler) { }
+        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
     }
 }
 ";
@@ -28,7 +28,7 @@ namespace Prototype
     public class ConsoleApplication
     {
         private ConsoleApplication() {}
-        public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler) { } // This is this ConsoleApplication, not the general one
+        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { } // This is this ConsoleApplication, not the general one
         public static LunchCommand CliRoot{get;}
     }
 
@@ -108,7 +108,7 @@ namespace Prototype
 {
     public static int Main(string[] args)
     {
-        var app = ConsoleApplication.CreateWithRootCommand(Lunch);
+        var app = ConsoleApplication.AddRootCommand(Lunch);
         var command = ConsoleApplication.Lunch.AddSubcommand(Burger); //you only need this value if you are further customizing
         return app.run(context);
     }

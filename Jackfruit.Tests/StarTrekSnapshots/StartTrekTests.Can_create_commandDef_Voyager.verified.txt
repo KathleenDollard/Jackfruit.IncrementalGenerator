@@ -5,7 +5,7 @@ namespace Jackfruit
 {
     public class ConsoleApplication
     {
-        public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler) { }
+        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
     }
 
     public class CliCommand
@@ -18,7 +18,7 @@ namespace Jackfruit
 
 /*
 Key:         
-Id:          Handlers.Voyager
+Id:          DemoHandlers.Handlers.Voyager(string, bool, bool, bool, bool, bool)
 Path:        
 Description: 
 Namespace:   DemoHandlers
@@ -26,7 +26,7 @@ Members:
    Option
       Option Id:      greeting
       Name:           greeting
-      TypeName:       
+      TypeName:       string
       Description:    
       Aliases:        
       ArgDisplayName: 
@@ -34,7 +34,7 @@ Members:
    Option
       Option Id:      janeway
       Name:           janeway
-      TypeName:       
+      TypeName:       bool
       Description:    
       Aliases:        
       ArgDisplayName: 
@@ -42,7 +42,7 @@ Members:
    Option
       Option Id:      chakotay
       Name:           chakotay
-      TypeName:       
+      TypeName:       bool
       Description:    
       Aliases:        
       ArgDisplayName: 
@@ -50,7 +50,7 @@ Members:
    Option
       Option Id:      torres
       Name:           torres
-      TypeName:       
+      TypeName:       bool
       Description:    
       Aliases:        
       ArgDisplayName: 
@@ -58,7 +58,7 @@ Members:
    Option
       Option Id:      tuvok
       Name:           tuvok
-      TypeName:       
+      TypeName:       bool
       Description:    
       Aliases:        
       ArgDisplayName: 
@@ -66,7 +66,7 @@ Members:
    Option
       Option Id:      sevenOfNine
       Name:           sevenOfNine
-      TypeName:       
+      TypeName:       bool
       Description:    
       Aliases:        
       ArgDisplayName: 

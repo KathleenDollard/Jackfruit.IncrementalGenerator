@@ -1,16 +1,16 @@
 ﻿//HintName: ConsoleApplication.cs
 // This file is created by a generator.
-using System
+using System;
 
 namespace System.CommandLine
 {
     partial class ConsoleApplication
    {
-      public ConsoleApplication()
+      private ConsoleApplication()
       {
       }
       
-      public static ConsoleApplication CreateWithRootCommand(Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel rootCommandHandler)
+      public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler)
       {
       }
       

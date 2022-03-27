@@ -5,7 +5,7 @@ namespace Jackfruit
 {
     public class ConsoleApplication
     {
-        public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler) { }
+        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
     }
 
     public class CliCommand
@@ -18,7 +18,7 @@ namespace Jackfruit
 
 /*
 Key:         MyClassYesMineReally
-Id:          A
+Id:          MyClass.A(int)
 Path:        MyClass.YesMine.Really
 Description: 
 Namespace:   <global namespace>
@@ -26,7 +26,7 @@ Members:
    Option
       Option Id:      i
       Name:           i
-      TypeName:       
+      TypeName:       int
       Description:    
       Aliases:        
       ArgDisplayName: 

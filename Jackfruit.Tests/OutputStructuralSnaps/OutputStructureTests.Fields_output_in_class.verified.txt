@@ -1,5 +1,6 @@
 ﻿ class A
 {
-    string A
-    int B
+    string A;
+    int B;
 }
+

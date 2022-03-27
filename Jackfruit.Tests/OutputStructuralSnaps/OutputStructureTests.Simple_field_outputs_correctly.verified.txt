@@ -1,1 +1,1 @@
-﻿ string A
+﻿ string A;

@@ -46,6 +46,8 @@ namespace Jackfruit.IncrementalGenerator
             => namedItem switch
             {
                 GenericNamedItemModel generic => $"{generic.Name}<{string.Join(", ", generic.GenericTypes.Select(x => NamedItem(x)))}>",
+                VoidNamedItemModel => "void",
+                ArrayNamedItemModel array => $"{array.Name}[]",
                 _ => namedItem.Name
             };
 

@@ -11,8 +11,8 @@ namespace Jackfruit.IncrementalGenerator
     {
         internal const string ConsoleAppClassName = "ConsoleApplication";
         internal const string AddSubCommand = "AddSubCommand";
-        internal const string CreateWithRootCommand = "CreateWithRootCommand";
-        private static readonly string[] names = { AddSubCommand, CreateWithRootCommand };
+        internal const string AddRootCommand = "AddRootCommand";
+        private static readonly string[] names = { AddSubCommand, AddRootCommand };
 
         public const string ConsoleClass = @"
 using System;
@@ -21,7 +21,7 @@ namespace Jackfruit
 {
     public class ConsoleApplication
     {
-        public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler) { }
+        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
     }
 
     public class CliCommand

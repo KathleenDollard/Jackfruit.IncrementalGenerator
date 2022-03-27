@@ -1,1 +1,123 @@
-﻿
+﻿// This file is created by a generator.
+using System;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.Threading.Tasks;
+
+namespace DemoHandlers
+{
+    class ConsoleApplication
+   {
+      private VoyagerCommand _CliRoot;
+      private ConsoleApplication()
+      {
+      }
+      
+      public static void AddRootCommand(Delegate rootCommandHandler)
+      {
+      }
+      
+      public static ConsoleApplication Create()
+      {
+         var app = new ConsoleApplication();
+         app._CliRoot = VoyagerCommand.Create();
+         return app;
+      }
+      
+      public static int Run(string[] args)
+      {
+         var app = ConsoleApplication.Create();
+         return app.CliRoot.Invoke(args);
+      }
+      
+      public VoyagerCommand CliRoot
+      {
+         get
+         {
+            return _CliRoot;
+         }
+      }
+   }
+   
+}
+
+// *******************************
+
+// This file is created by a generator.
+using System;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.Threading.Tasks;
+
+namespace DemoHandlers
+{
+   public partial class VoyagerCommand : RootCommand, ICommandHandler
+   {
+      private VoyagerCommand()
+      {
+      }
+      
+      public static VoyagerCommand Create()
+      {
+         var command = new VoyagerCommand();
+         command.greetingOption = new Option<string>("greeting");
+         command.Add(command.greetingOption);
+         command.janewayOption = new Option<bool>("janeway");
+         command.Add(command.janewayOption);
+         command.chakotayOption = new Option<bool>("chakotay");
+         command.Add(command.chakotayOption);
+         command.torresOption = new Option<bool>("torres");
+         command.Add(command.torresOption);
+         command.tuvokOption = new Option<bool>("tuvok");
+         command.Add(command.tuvokOption);
+         command.sevenOfNineOption = new Option<bool>("sevenOfNine");
+         command.Add(command.sevenOfNineOption);
+         command.Handler = command;
+         return command;
+      }
+      
+      public Task<int> InvokeAsync(InvocationContext context)
+      {
+         Handlers.Voyager(greetingOptionResult(context), janewayOptionResult(context), chakotayOptionResult(context), torresOptionResult(context), tuvokOptionResult(context), sevenOfNineOptionResult(context));
+         return Task.FromResult(context.ExitCode);
+      }
+      
+      public Option<string> greetingOption {get; set;}
+      public string greetingOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<string>(greetingOption);
+      }
+      
+      public Option<bool> janewayOption {get; set;}
+      public bool janewayOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<bool>(janewayOption);
+      }
+      
+      public Option<bool> chakotayOption {get; set;}
+      public bool chakotayOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<bool>(chakotayOption);
+      }
+      
+      public Option<bool> torresOption {get; set;}
+      public bool torresOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<bool>(torresOption);
+      }
+      
+      public Option<bool> tuvokOption {get; set;}
+      public bool tuvokOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<bool>(tuvokOption);
+      }
+      
+      public Option<bool> sevenOfNineOption {get; set;}
+      public bool sevenOfNineOptionResult(InvocationContext context)
+      {
+         return context.ParseResult.GetValueForOption<bool>(sevenOfNineOption);
+      }
+      
+   }
+   
+}

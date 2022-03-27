@@ -18,7 +18,7 @@ namespace Jackfruit.IncrementalGenerator
         // * Generic for option is blank
         // * Greeting is appearing as an option, not an arg
 
-        private const string createWithRootCommand = "CreateWithRootCommand";
+        private const string addRootCommand = "AddRootCommand";
         private const string cliRoot = "CliRoot";
         private const string rootCommandHandler = "rootCommandHandler";
         private const string commandVar = "command";
@@ -55,7 +55,7 @@ namespace Jackfruit.IncrementalGenerator
                             Members = new()
                             {
                                 Constructor(Helpers.ConsoleAppClassName).Private(),
-                                Method(createWithRootCommand,Helpers. ConsoleAppClassName)
+                                Method(addRootCommand,Helpers. ConsoleAppClassName)
                                     .Public()
                                     .Static()
                                     .Parameters(new ParameterModel(rootCommandHandler,"Delegate"))
@@ -157,20 +157,32 @@ namespace Jackfruit.IncrementalGenerator
 
         private static ClassModel GetConsoleCode(ClassModel commandCode, string commandClassName)
         {
+            var args = "args";
+            var app = "app";
             var consoleCode = new ClassModel(Helpers.ConsoleAppClassName)
             {
                 Members = new()
                 {
                     Field($"_{cliRoot}",commandClassName).Private(),
                     Constructor(Helpers.ConsoleAppClassName).Private(),
-                    Method(createWithRootCommand, Helpers. ConsoleAppClassName)
+                    Method(addRootCommand, Void())
                         .Public()
                         .Static()
-                        .Parameters(new ParameterModel(rootCommandHandler,"Delegate"))
+                        .Parameters(new ParameterModel(rootCommandHandler,"Delegate")),
+                    Method("Create", Helpers.ConsoleAppClassName)
+                        .Public()
+                        .Static()
                         .Statements(
-                            AssignWithDeclare("app", New(Helpers.ConsoleAppClassName)),
-                            Assign($"app._{cliRoot}", Invoke(commandClassName, "Create")),
-                            Return(Symbol("app"))),
+                            AssignWithDeclare(app, New(Helpers.ConsoleAppClassName)),
+                            Assign($"{app}._{cliRoot}", Invoke(commandClassName, "Create")),
+                            Return(Symbol(app))),
+                    Method("Run", "int")
+                        .Public()
+                        .Static()
+                        .Parameters(new ParameterModel(args,"string[]"))
+                        .Statements(
+                            AssignWithDeclare(app, Invoke(Helpers.ConsoleAppClassName, "Create")),
+                            Return(Invoke($"{app}.{cliRoot}","Invoke", Symbol(args)))),
                     Property(cliRoot,commandClassName)
                         .Public()
                         .Get( Return(Symbol( $"_{cliRoot}"))),

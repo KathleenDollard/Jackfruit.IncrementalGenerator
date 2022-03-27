@@ -13,7 +13,9 @@
         public static implicit operator NamedItemModel(string name) 
             => name == "void" 
                     ? new VoidNamedItemModel()
-                    : new NamedItemModel(name);
+                    : name.Trim().EndsWith("]")
+                        ? new ArrayNamedItemModel(name.Replace("[","").Replace("]", "").Trim())
+                        : new NamedItemModel(name.Trim());
 
     }
     public class VoidNamedItemModel : NamedItemModel
@@ -23,7 +25,14 @@
         }
     }
 
-        public class GenericNamedItemModel : NamedItemModel
+    public class ArrayNamedItemModel : NamedItemModel
+    {
+        public ArrayNamedItemModel(string name) : base(name)
+        {
+        }
+    }
+
+    public class GenericNamedItemModel : NamedItemModel
     {
         public GenericNamedItemModel(string name, params NamedItemModel[] genericTypes) : base(name)
         {

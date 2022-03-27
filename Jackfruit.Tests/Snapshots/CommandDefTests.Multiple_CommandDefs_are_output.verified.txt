@@ -5,7 +5,7 @@ namespace Jackfruit
 {
     public class ConsoleApplication
     {
-        public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler) { }
+        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
     }
 
     public class CliCommand
@@ -18,7 +18,7 @@ namespace Jackfruit
 
 /*
 Key:         B
-Id:          A
+Id:          MyClass.A(int)
 Path:        B
 Description: 
 Namespace:   <global namespace>
@@ -26,7 +26,7 @@ Members:
    Option
       Option Id:      i
       Name:           i
-      TypeName:       
+      TypeName:       int
       Description:    
       Aliases:        
       ArgDisplayName: 
@@ -37,7 +37,7 @@ Members:
 
 /*
 Key:         C
-Id:          A
+Id:          MyClass.A(int)
 Path:        C
 Description: 
 Namespace:   <global namespace>
@@ -45,7 +45,7 @@ Members:
    Option
       Option Id:      i
       Name:           i
-      TypeName:       
+      TypeName:       int
       Description:    
       Aliases:        
       ArgDisplayName: 
@@ -56,7 +56,7 @@ Members:
 
 /*
 Key:         D
-Id:          A
+Id:          MyClass.A(int)
 Path:        D
 Description: 
 Namespace:   <global namespace>
@@ -64,7 +64,7 @@ Members:
    Option
       Option Id:      i
       Name:           i
-      TypeName:       
+      TypeName:       int
       Description:    
       Aliases:        
       ArgDisplayName: 

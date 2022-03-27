@@ -33,7 +33,7 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.CreateWithRootCommand(A);
+        ConsoleApplication.AddRootCommand(A);
     }
 
     public void A(int i) 
@@ -60,7 +60,7 @@ public class MyClass
 {
     public void F() 
     {
-        MyClass.YesMine.Really.ConsoleApplication.CreateWithRootCommand(A);
+        MyClass.YesMine.Really.ConsoleApplication.AddRootCommand(A);
     }
     public void A(int i) 
     {
@@ -81,7 +81,7 @@ public class MyClass
 {
     public void F() 
     {
-        MyClass.YesMine.Really.ConsoleApplication.CreateWithRootCommand(null);
+        MyClass.YesMine.Really.ConsoleApplication.AddRootCommand(null);
     }
 }";
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
@@ -100,7 +100,7 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.CreateWithRootCommandX(A);
+        ConsoleApplication.AddRootCommandX(A);
     }
 
 }";
@@ -119,7 +119,7 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.CreateWithRootCommand();
+        ConsoleApplication.AddRootCommand();
     }
 
 }";
@@ -138,7 +138,7 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.CreateWithRootCommand(A, B, C);
+        ConsoleApplication.AddRootCommand(A, B, C);
     }
     public void A(int i) 
     {
@@ -177,7 +177,7 @@ public class MyClass
         public Task Command_found_in_top_level_are_output()
         {
             const string input = @"
-ConsoleApplication.CreateWithRootCommand(A);
+ConsoleApplication.AddRootCommand(A);
 static void A(int i) 
 {
 }
@@ -201,7 +201,7 @@ namespace Fred
     {
         public void F() 
         {
-            ConsoleApplication.CreateWithRootCommand(A);
+            ConsoleApplication.AddRootCommand(A);
             ConsoleApplication.A.B.AddSubCommand(A);
             ConsoleApplication.A.C.AddSubCommand(A);
             ConsoleApplication.A.B.D.AddSubCommand(A);

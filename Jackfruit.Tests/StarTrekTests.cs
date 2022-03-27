@@ -34,7 +34,7 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.CreateWithRootCommand(Handlers.Voyager);
+        ConsoleApplication.AddRootCommand(Handlers.Voyager);
     }
 
 }";
@@ -46,7 +46,7 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.CreateWithRootCommand(Handlers.StarTrek);
+        ConsoleApplication.AddRootCommand(Handlers.StarTrek);
     }
 
 }";
@@ -58,7 +58,7 @@ public class MyClass
 {
     public void F() 
     {
-        var app = ConsoleApplication.CreateWithRootCommand(Handlers.NextGeneration);
+        var app = ConsoleApplication.AddRootCommand(Handlers.NextGeneration);
     }
 
 }";

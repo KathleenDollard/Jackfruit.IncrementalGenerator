@@ -5,7 +5,7 @@ namespace Jackfruit
 {
     public class ConsoleApplication
     {
-        public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler) { }
+        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
     }
 
     public class CliCommand
@@ -18,23 +18,21 @@ namespace Jackfruit
 
 /*
 Key:         
-Id:          Handlers.StarTrek
+Id:          DemoHandlers.Handlers.StarTrek(string, bool, bool, bool)
 Path:        
 Description: This is the description for StarTrek
 Namespace:   DemoHandlers
 Members:     
    Option
-      Option Id:      greeting
+      Argumet Id:     greetingArg
       Name:           greeting
-      TypeName:       
-      Description:    What greeting to use
-      Aliases:        
-      ArgDisplayName: 
+      TypeName:       string
+      Description:    
       Required:       False
    Option
       Option Id:      kirk
       Name:           kirk
-      TypeName:       
+      TypeName:       bool
       Description:    Whether to greek Captain Kirk
       Aliases:        
       ArgDisplayName: 
@@ -42,7 +40,7 @@ Members:
    Option
       Option Id:      spock
       Name:           spock
-      TypeName:       
+      TypeName:       bool
       Description:    Whether to greek Spock
       Aliases:        
       ArgDisplayName: 
@@ -50,7 +48,7 @@ Members:
    Option
       Option Id:      uhura
       Name:           uhura
-      TypeName:       
+      TypeName:       bool
       Description:    Whether to greek Lieutenant Uhura
       Aliases:        
       ArgDisplayName: 
