@@ -37,6 +37,14 @@ namespace DemoHandlers
             return _CliRoot;
          }
       }
+      public static class Voyager
+      {
+         public static void AddSubCommand(Delegate handler)
+         {
+         }
+         
+      }
+      
    }
    
 }
@@ -60,17 +68,17 @@ namespace DemoHandlers
       public static VoyagerCommand Create()
       {
          var command = new VoyagerCommand();
-         command.greetingOption = new Option<string>("greeting");
+         command.greetingOption = new Option<string>("--greeting");
          command.Add(command.greetingOption);
-         command.janewayOption = new Option<bool>("janeway");
+         command.janewayOption = new Option<bool>("--janeway");
          command.Add(command.janewayOption);
-         command.chakotayOption = new Option<bool>("chakotay");
+         command.chakotayOption = new Option<bool>("--chakotay");
          command.Add(command.chakotayOption);
-         command.torresOption = new Option<bool>("torres");
+         command.torresOption = new Option<bool>("--torres");
          command.Add(command.torresOption);
-         command.tuvokOption = new Option<bool>("tuvok");
+         command.tuvokOption = new Option<bool>("--tuvok");
          command.Add(command.tuvokOption);
-         command.sevenOfNineOption = new Option<bool>("sevenOfNine");
+         command.sevenOfNineOption = new Option<bool>("--sevenOfNine");
          command.Add(command.sevenOfNineOption);
          command.Handler = command;
          return command;

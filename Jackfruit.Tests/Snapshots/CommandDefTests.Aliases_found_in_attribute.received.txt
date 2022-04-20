@@ -1,0 +1,34 @@
+﻿
+using System;
+
+namespace Jackfruit
+{
+    public class ConsoleApplication
+    {
+        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
+    }
+
+    public class CliCommand
+    {
+        public static CliCommand AddCommand(Delegate CommandHandler)
+    }
+}
+
+// *******************************
+
+/*
+Key:         
+Id:          MyClass.A(int)
+Path:        
+Description: 
+Namespace:   <global namespace>
+Members:     
+   Option
+      Option Id:      i
+      Name:           i
+      TypeName:       int
+      Description:    
+      Aliases:        Microsoft.CodeAnalysis.TypedConstant, Microsoft.CodeAnalysis.TypedConstant
+      ArgDisplayName: 
+      Required:       False
+*/

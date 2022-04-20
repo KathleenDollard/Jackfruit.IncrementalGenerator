@@ -54,3 +54,146 @@ Members:
       ArgDisplayName: 
       Required:       False
 */
+
+// *******************************
+
+/*
+Key:         StarTrek
+Id:          DemoHandlers.Handlers.NextGeneration(string, bool)
+Path:        StarTrek
+Description: 
+Namespace:   DemoHandlers
+Members:     
+   Option
+      Argumet Id:     greetingArg
+      Name:           greeting
+      TypeName:       string
+      Description:    
+      Required:       False
+   Option
+      Option Id:      picard
+      Name:           picard
+      TypeName:       bool
+      Description:    This is the description for Picard
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+*/
+
+// *******************************
+
+/*
+Key:         StarTrekNextGeneration
+Id:          DemoHandlers.Handlers.DeepSpaceNine(string, bool, bool, bool, bool, bool)
+Path:        StarTrek.NextGeneration
+Description: 
+Namespace:   DemoHandlers
+Members:     
+   Option
+      Option Id:      greeting
+      Name:           greeting
+      TypeName:       string
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      sisko
+      Name:           sisko
+      TypeName:       bool
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      odo
+      Name:           odo
+      TypeName:       bool
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      dax
+      Name:           dax
+      TypeName:       bool
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      worf
+      Name:           worf
+      TypeName:       bool
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      oBrien
+      Name:           oBrien
+      TypeName:       bool
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+*/
+
+// *******************************
+
+/*
+Key:         StarTrekNextGeneration
+Id:          DemoHandlers.Handlers.Voyager(string, bool, bool, bool, bool, bool)
+Path:        StarTrek.NextGeneration
+Description: 
+Namespace:   DemoHandlers
+Members:     
+   Option
+      Option Id:      greeting
+      Name:           greeting
+      TypeName:       string
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      janeway
+      Name:           janeway
+      TypeName:       bool
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      chakotay
+      Name:           chakotay
+      TypeName:       bool
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      torres
+      Name:           torres
+      TypeName:       bool
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      tuvok
+      Name:           tuvok
+      TypeName:       bool
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+   Option
+      Option Id:      sevenOfNine
+      Name:           sevenOfNine
+      TypeName:       bool
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+*/

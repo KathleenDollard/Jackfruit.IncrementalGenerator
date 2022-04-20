@@ -145,55 +145,58 @@ namespace Jackfruit.IncrementalGenerator
 
         public static Dictionary<string, Detail> AddDetailsFromAttributes(
             IMethodSymbol methodSymbol,
+            Detail commandDetail,
             Dictionary<string, Detail> details)
         {
-            AddToDetail(methodSymbol.GetAttributes(), details, CommandKey);
+            AddToDetail(methodSymbol.GetAttributes(), commandDetail);
             foreach (var param in methodSymbol.Parameters)
             {
-                AddToDetail(param.GetAttributes(), details, param.Name);
+                if (details.TryGetValue(param.Name, out var detail))
+                {
+                    AddToDetail(param.GetAttributes(), detail);
+                }
             }
 
             return details;
         }
 
-        public static void AddToDetail(
-            IEnumerable<AttributeData> attributes,
-            Dictionary<string, Detail> details,
-            string key)
+        private static void AddToDetail(IEnumerable<AttributeData> attributes, Detail detail)
         {
-            if (details.TryGetValue(key, out var detail))
+            foreach (var attrib in attributes)
             {
-                foreach (var attrib in attributes)
+                if (attrib.AttributeClass is null) { continue; }
+                switch (attrib.AttributeClass.Name)
                 {
-                    if (attrib.AttributeClass is null) { continue; }
-                    switch (attrib.AttributeClass.Name)
-                    {
-                        case "DescriptionAttribute":
-                            var arg = attrib.ConstructorArguments.FirstOrDefault();
-                            detail.Description = arg.Value?.ToString() ?? "";
-                            break;
+                    case "DescriptionAttribute":
+                    case "Description":
+                        var arg = attrib.ConstructorArguments.FirstOrDefault();
+                        detail.Description = arg.Value?.ToString() ?? "";
+                        break;
 
-                        case "AliasesAttribute":
-                            var arg1 = attrib.ConstructorArguments.FirstOrDefault();
-                            detail.Aliases = arg1.Values.Select(x => x.ToString()).ToArray();
-                            break;
+                    case "AliasesAttribute":
+                    case "Aliases":
+                        var arg1 = attrib.ConstructorArguments.FirstOrDefault();
+                        detail.Aliases = arg1.Values.Select(x => x.ToString()).ToArray();
+                        break;
 
-                        case "ArgumentAttribute":
-                            detail.MemberKind = MemberKind.Argument;
-                            break;
+                    case "ArgumentAttribute":
+                    case "Argument":
+                        detail.MemberKind = MemberKind.Argument;
+                        break;
 
-                        case "OptionArgumentNameAttribute":
-                            var arg3 = attrib.ConstructorArguments.FirstOrDefault();
-                            detail.ArgDisplayName = arg3.Value?.ToString() ?? "";
-                            break;
+                    case "OptionArgumentNameAttribute":
+                    case "OptionArgumentName":
+                        var arg3 = attrib.ConstructorArguments.FirstOrDefault();
+                        detail.ArgDisplayName = arg3.Value?.ToString() ?? "";
+                        break;
 
-                        case "RequiredAttribute":
-                            detail.Required = true;
-                            break;
+                    case "RequiredAttribute":
+                    case "Required":
+                        detail.Required = true;
+                        break;
 
-                        default:
-                            break;
-                    }
+                    default:
+                        break;
                 }
             }
         }

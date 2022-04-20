@@ -7,7 +7,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        ConsoleApp.AddRootCommand(Handlers.NextGeneration);
+        ConsoleApplication.AddRootCommand(Handlers.NextGeneration);
 
         // if you do not want to customize anything
         ConsoleApplication.Run(args);

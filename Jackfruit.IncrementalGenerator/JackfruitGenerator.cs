@@ -50,10 +50,10 @@ namespace Jackfruit.IncrementalGenerator
             // It also collects the classes together, then adds the root so we know the namespace and can name the file we output
             var commandsCodeFileModel = commandDefs
                 .Combine(rootCommandDef)
-                .Select(static (x, _) => CreateSource.GetCommandClass(x.Item1, x.Item2)) 
+                .Select(static (x, _) => CreateSource.GetCommandClass(x.Left, x.Right)) 
                 .Collect()
                 .Combine(rootCommandDef)
-                .Select(static (x, _) => CreateSource.WrapClassesInCodefile(x.Item1, x.Item2));
+                .Select(static (x, _) => CreateSource.WrapClassesInCodefile(x.Left, x.Right));
 
             // And finally, we output two files/sources
             initContext.RegisterSourceOutput(consoleCodeFileModel,
@@ -70,7 +70,6 @@ namespace Jackfruit.IncrementalGenerator
             var language = new LanguageCSharp(writer);
             language.AddCodeFile(codeFileModel);
             context.AddSource(codeFileModel.Name, writer.Output());
-
         }
 
     }

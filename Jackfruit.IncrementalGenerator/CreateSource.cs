@@ -110,16 +110,23 @@ namespace Jackfruit.IncrementalGenerator
             CommandDefBase rootCommandDef)
         {
             var commandClassName = CommandClassName(commandDef);
+            var isRoot = rootCommandDef == commandDef;
+            var constructor =
+                Constructor(commandClassName)
+                    .Private();
+            if (!isRoot)
+            {
+                constructor.Base(commandDef.Name);
+            }
             var commandCode =
                 Class(commandClassName)
                     .Public()
                     .Partial()
                     // TODO: Implement way to recognize RootCommand
-                    .InheritedFrom((rootCommandDef == commandDef) ? "RootCommand" : "Command")
+                    .InheritedFrom(isRoot ? "RootCommand" : "Command")
                     .ImplementedInterfaces("ICommandHandler")
                     .Members(
-                        Constructor(commandClassName)
-                            .Private(),
+                        constructor,
                         CreateMethod(commandDef),
                         InvokeHandlerMethod(commandDef));
             foreach (var member in commandDef.Members)
@@ -149,7 +156,7 @@ namespace Jackfruit.IncrementalGenerator
             foreach (var subCommand in commandDef.SubCommands)
             {
                 if (subCommand is CommandDef subCommandDef)
-                { commandCode.Members.Add(Property(subCommandDef.Id, CommandClassName(subCommandDef)).Public()); }
+                { commandCode.Members.Add(Property(subCommandDef.Name, CommandClassName(subCommandDef)).Public()); }
             }
 
             return commandCode;
@@ -196,11 +203,13 @@ namespace Jackfruit.IncrementalGenerator
         {
             if (i == 10) throw new IOException("Runaway recursion suspected");
             var classCode =
-                Class(commandDef.Id)
+                Class(commandDef.Name)
                     .Public()
                     .Static()
                     .Members(
                         Method(Helpers.AddSubCommand, Void())
+                            .Public()
+                            .Static()
                             .Parameters(Parameter("handler", "Delegate")));
 
             foreach (var subCommandDef in commandDef.SubCommands)
@@ -251,7 +260,7 @@ namespace Jackfruit.IncrementalGenerator
                 {
                     case OptionDef opt:
                         var optPropertyName = $"{commandVar}.{MemberPropertyName(opt)}";
-                        method.Statements.Add(Assign(optPropertyName, New(Generic("Option", opt.TypeName), opt.Id)));
+                        method.Statements.Add(Assign(optPropertyName, New(Generic("Option", opt.TypeName), $"--{opt.Name}")));
                         if (!string.IsNullOrWhiteSpace(opt.Description))
                         { method.Statements.Add(Assign($"{optPropertyName}.Description", opt.Description)); }
                         if (opt.Aliases.Any())
@@ -277,7 +286,7 @@ namespace Jackfruit.IncrementalGenerator
             {
                 if (subCommandDef is CommandDef subCommand)
                 {
-                    var toAdd = $"{commandVar}.{subCommand.Id}";
+                    var toAdd = $"{commandVar}.{subCommand.Name}";
                     method.Statements.Add(Assign(toAdd, Invoke(CommandClassName(subCommand), "Create")));
                     method.Statements.Add(SimpleCall(Invoke(commandVar, "Add", Symbol(toAdd))));
                 }

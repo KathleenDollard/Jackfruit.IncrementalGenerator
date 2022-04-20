@@ -37,6 +37,14 @@ namespace DemoHandlers
             return _CliRoot;
          }
       }
+      public static class NextGeneration
+      {
+         public static void AddSubCommand(Delegate handler)
+         {
+         }
+         
+      }
+      
    }
    
 }
@@ -62,7 +70,7 @@ namespace DemoHandlers
          var command = new NextGenerationCommand();
          command.greetingArgument = new Argument<string>("greetingArg");
          command.Add(command.greetingArgument);
-         command.picardOption = new Option<bool>("picard");
+         command.picardOption = new Option<bool>("--picard");
          command.picardOption.Description = "This is the description for Picard";
          command.Add(command.picardOption);
          command.Handler = command;

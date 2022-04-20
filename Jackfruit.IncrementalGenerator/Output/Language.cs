@@ -149,6 +149,7 @@ namespace Jackfruit.IncrementalGenerator
                     case PropertyModel property: AddProperty(property); break;
                     case FieldModel field: AddField(field); break;
                     case ConstructorModel constructor: AddConstructor(constructor); break;
+                    case ClassModel nestedClass: AddClass(nestedClass); break;
                 }
             }
 

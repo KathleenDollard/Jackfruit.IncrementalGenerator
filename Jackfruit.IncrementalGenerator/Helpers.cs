@@ -28,6 +28,62 @@ namespace Jackfruit
     {
         public static CliCommand AddCommand(Delegate CommandHandler)
     }
+
+    [System.AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, 
+                    Inherited = false, AllowMultiple = true)]
+    sealed public class AliasesAttribute : Attribute
+    {
+        public AliasesAttribute(params string[] aliases)
+        {
+            Values = aliases;
+        }
+
+        public string[] Values { get; }
+    }
+
+    [System.AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
+    sealed class ArgumentAttribute : Attribute
+    {
+        public ArgumentAttribute(bool isArgument = false)
+        {
+            IsArgument = isArgument;
+        }
+
+        public bool IsArgument { get; }
+    }
+
+    [System.AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
+    sealed class DescriptionAttribute : Attribute
+    {
+        public DescriptionAttribute(string description)
+        {
+            Description = description;
+        }
+
+        public string Description { get; }
+    }
+
+    [System.AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
+    sealed class OptionArgumentNameAttribute : Attribute
+    {
+        public OptionArgumentNameAttribute(string argumentName)
+        {
+            ArgumentName = argumentName;
+        }
+
+        public string ArgumentName { get; }
+    }
+
+    [System.AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
+    sealed class RequiredAttribute : Attribute
+    {
+        public RequiredAttribute(bool isRequired = false)
+        {
+            IsRequired = isRequired;
+        }
+
+        public bool IsRequired { get; }
+    }
 }
 ";
 
@@ -106,7 +162,7 @@ namespace Jackfruit
                 AddDescFromXmlDocComment(xDoc, commandDetail);
                 AddDescFromXmlDocComment(xDoc, memberDetails);
             }
-            AddDetailsFromAttributes(methodSymbol, memberDetails);
+            AddDetailsFromAttributes(methodSymbol, commandDetail, memberDetails);
 
 
             var members = new List<MemberDef>();

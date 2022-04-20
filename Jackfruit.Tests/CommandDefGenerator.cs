@@ -37,7 +37,7 @@ namespace Jackfruit.Tests
             OutputCommand(writer, commandDef);
             writer.AddLine("*/");
 
-            context.AddSource($"{joinedPath}.g.cs", writer.Output());
+            context.AddSource($"{joinedPath}{commandDef.Name}.g.cs", writer.Output());
 
             static void OutputCommand(IWriter writer, CommandDef commandDef)
             {
@@ -70,6 +70,7 @@ namespace Jackfruit.Tests
                 }
                 writer.DecreaseIndent();
             }
+
             static void OutputOption(IWriter writer, OptionDef option)
             {
                 writer.AddLine("Option");

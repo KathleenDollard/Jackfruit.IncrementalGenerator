@@ -38,7 +38,7 @@ public class MyClass
     }
 
 }";
-        private const string StarTrekRoot =@"
+        private const string StarTrekRoot = @"
 using DemoHandlers;
 using Jackfruit;
 
@@ -47,6 +47,9 @@ public class MyClass
     public void F() 
     {
         ConsoleApplication.AddRootCommand(Handlers.StarTrek);
+        ConsoleApplication.StarTrek.AddSubCommand(Handlers.NextGeneration);
+        ConsoleApplication.StarTrek.NextGeneration.AddSubCommand(Handlers.DeepSpaceNine);
+        ConsoleApplication.StarTrek.NextGeneration.AddSubCommand(Handlers.Voyager);
     }
 
 }";
