@@ -1,0 +1,6 @@
+﻿ string A()
+{
+   var B = true;
+   string B = true;
+}
+

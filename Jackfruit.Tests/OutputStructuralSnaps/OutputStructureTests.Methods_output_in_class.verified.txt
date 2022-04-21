@@ -1,0 +1,12 @@
+﻿ class A
+{
+    string B()
+   {
+   }
+   
+    string C()
+   {
+   }
+   
+}
+

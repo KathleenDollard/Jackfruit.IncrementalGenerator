@@ -1,28 +1,34 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections.Generic;
 using System.Xml.Linq;
-using System.Collections.Immutable;
-using System.Reflection.Metadata;
-using System.ComponentModel;
 
 namespace Jackfruit.IncrementalGenerator
 {
     internal static class RoslynHelpers
     {
+        public enum MemberKind
+        {
+            Option = 0,
+            Argument,
+            Service
+        }
+
         public class Detail
         {
             private string description = "";
-            private bool isArg;
+            private MemberKind memberKind;
             private string typeName = "";
             private string argDisplayId = "";
             private bool required;
 
-            public Detail(string id)
-            { Id = id; }
+            public Detail(string id, string name, string? typeName = null)
+            {
+                Id = id;
+                Name = name;
+                TypeName = typeName;
+            }
+
             public string Id { get; }
+            public string Name { get; set; }
             public string Description
             {
                 get => description;
@@ -35,14 +41,14 @@ namespace Jackfruit.IncrementalGenerator
                 }
             }
             public string[] Aliases { get; set; } = new string[] { };
-            public bool IsArg
+            public MemberKind MemberKind
             {
-                get => isArg;
+                get => memberKind;
                 set
                 {
-                    if (value)
+                    if (value != MemberKind.Option)
                     {
-                        isArg = value;
+                        memberKind = value;
                     }
                 }
             }
@@ -88,100 +94,104 @@ namespace Jackfruit.IncrementalGenerator
             if (expression == null) { return null; }
             var symbolInfo = semanticModel.GetSymbolInfo(expression);
             if (symbolInfo.Symbol is IMethodSymbol methodSymbol) { return methodSymbol; }
-            if (symbolInfo.CandidateSymbols.FirstOrDefault() is IMethodSymbol candidate) { return candidate; }
-            return null;
+            return symbolInfo.CandidateSymbols.FirstOrDefault() is IMethodSymbol candidate
+                    ? candidate
+                    : null;
         }
 
-        public static Dictionary<string, Detail> BasicDetails(IMethodSymbol methodSymbol)
+        public static (Detail commandDetail, Dictionary<string, Detail> memberDetail) BasicDetails(this IMethodSymbol methodSymbol)
         {
+            var commandDetail = new Detail(methodSymbol.ToDisplayString(), methodSymbol.Name, methodSymbol.ReturnType.ToString());
+
             var details = new Dictionary<string, Detail>();
-            details[CommandKey] = new Detail(methodSymbol.Name);
+
             foreach (var param in methodSymbol.Parameters)
             {
-                details[param.Name] = new Detail(param.Name)
+                details[param.Name] = new Detail(param.Name, param.Name, param.Type.ToString());
+                if (param.Name.EndsWith("Arg"))
                 {
-                    IsArg = param.Name.EndsWith("Arg")
-                };
+                    details[param.Name].MemberKind = MemberKind.Argument;
+                    details[param.Name].Name = param.Name.Substring(0, param.Name.Length - 3);
+                }
+                else if (param.Type.IsAbstract)  // Test that this is true for interfaces
+                {
+                    details[param.Name].MemberKind = MemberKind.Service;
+                }
             }
-            return details;
+            return (commandDetail, details);
         }
 
-        public static Dictionary<string, Detail> DescFromXmlDocComment(string? xmlComment, Dictionary<string, Detail> details)
+        public static void AddDescFromXmlDocComment(XDocument xDoc, Dictionary<string, Detail> details)
         {
-            if (string.IsNullOrWhiteSpace(xmlComment)) { return new Dictionary<string, Detail>(); }
-            var xDoc = XDocument.Parse(xmlComment);
-            var summaryElement = xDoc.Root.Element("summary");
-            var commandDetail = GetOrCreate(CommandKey, details);
-            commandDetail.Description =
-                    summaryElement is null
-                    ? ""
-                    : summaryElement.Value.Trim();
-
             foreach (var element in xDoc.Root.Elements("param"))
             {
                 var paramName = element.Attribute("name");
                 if (paramName is not null)
                 {
-                    var paramDetail = GetOrCreate(paramName.Value, details);
-                    paramDetail.Description = element.Value.Trim();
+                    if (details.TryGetValue(paramName.Value, out var paramDetail))
+                    { paramDetail.Description = element.Value.Trim(); }
                 }
             }
-            return details;
         }
 
-        private static Detail GetOrCreate(string key, Dictionary<string, Detail> details)
+        public static void AddDescFromXmlDocComment(XDocument xDoc, Detail commandDetail)
         {
-            if (!details.TryGetValue(key, out var detail))
-            {
-                detail = new Detail(key);
-                details[key] = detail;
-            }
-            return detail;
+            var summaryElement = xDoc.Root.Element("summary");
+            commandDetail.Description =
+                    summaryElement is null
+                    ? commandDetail.Description
+                    : summaryElement.Value.Trim();
         }
-        public static Dictionary<string, Detail> DescFromAttributes(
+
+        public static Dictionary<string, Detail> AddDetailsFromAttributes(
             IMethodSymbol methodSymbol,
+            Detail commandDetail,
             Dictionary<string, Detail> details)
         {
-            AddToDetail(methodSymbol.GetAttributes(), details, CommandKey);
+            AddToDetail(methodSymbol.GetAttributes(), commandDetail);
             foreach (var param in methodSymbol.Parameters)
             {
-                AddToDetail(param.GetAttributes(), details, param.Name);
+                if (details.TryGetValue(param.Name, out var detail))
+                {
+                    AddToDetail(param.GetAttributes(), detail);
+                }
             }
 
             return details;
         }
 
-        public static void AddToDetail(
-            IEnumerable<AttributeData> attributes,
-            Dictionary<string, Detail> details,
-            string key)
+        private static void AddToDetail(IEnumerable<AttributeData> attributes, Detail detail)
         {
-            var detail = GetOrCreate(key, details);
             foreach (var attrib in attributes)
             {
                 if (attrib.AttributeClass is null) { continue; }
                 switch (attrib.AttributeClass.Name)
                 {
                     case "DescriptionAttribute":
+                    case "Description":
                         var arg = attrib.ConstructorArguments.FirstOrDefault();
                         detail.Description = arg.Value?.ToString() ?? "";
                         break;
 
                     case "AliasesAttribute":
+                    case "Aliases":
                         var arg1 = attrib.ConstructorArguments.FirstOrDefault();
                         detail.Aliases = arg1.Values.Select(x => x.ToString()).ToArray();
                         break;
 
                     case "ArgumentAttribute":
-                        detail.IsArg = true;
+                    case "Argument":
+                        detail.MemberKind = MemberKind.Argument;
                         break;
 
                     case "OptionArgumentNameAttribute":
+                    case "OptionArgumentName":
                         var arg3 = attrib.ConstructorArguments.FirstOrDefault();
                         detail.ArgDisplayName = arg3.Value?.ToString() ?? "";
                         break;
 
                     case "RequiredAttribute":
+                    case "Required":
                         detail.Required = true;
                         break;
 

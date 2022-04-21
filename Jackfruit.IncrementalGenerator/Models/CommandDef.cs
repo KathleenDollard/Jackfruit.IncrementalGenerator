@@ -1,42 +1,70 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-
-namespace Jackfruit.Models
+﻿namespace Jackfruit.Models
 {
-    public class CommandDef
+    public abstract class CommandDefBase
+    { }
+
+    public  class EmptyCommandDef:CommandDefBase
+    { }
+
+
+    public class CommandDef : CommandDefBase
     {
         public CommandDef(
             string id,
+            IEnumerable<string> path)
+        {
+            Id = id;
+            Name = id;
+            UniqueId = string.Join("|", path);
+            Namespace = "";
+            Description = null;
+            Aliases = new string[] { };
+            Members = new List<MemberDef>();
+            HandlerMethodName = "";
+            SubCommands = new List<CommandDef>(); ;
+            Path = path;
+            ReturnType = "";
+        }
+
+        public CommandDef(
+            string id,
+            string name,
+            string uniqueId,
+            string nspace,
             IEnumerable<string> path,
-            string? description
-            //string[] aliases, 
-            //List<MemberDef> members, 
-            //string handlerMethodName, 
-            //List<CommandDef> subCommands, 
-            //string returnType
+            string? description,
+            string[] aliases,
+            IEnumerable<MemberDef> members,
+            string handlerMethodName,
+            IEnumerable<CommandDef> subCommands,
+            string returnType
             )
         {
             Id = id;
+            Name = name;
+            UniqueId = uniqueId;
+            Namespace = nspace;
             Description = description;
-            //Aliases = aliases;
-            //Members = members;
-            //HandlerMethodName = handlerMethodName;
-            //SubCommands = subCommands;
+            Aliases = aliases;
+            Members = members;
+            HandlerMethodName = handlerMethodName;
+            SubCommands = subCommands;
             Path = path;
-            //ReturnType = returnType;
+            ReturnType = returnType;
         }
 
         public string Id { get; }
+        public string Name { get; }
+        public string UniqueId { get; }
+        public string Namespace { get; }
         public string? Description { get; }
-        //public string[] Aliases { get; }
-
-        ////Options, args, and services in order of handler parameters
-        //public List<MemberDef> Members { get; }
-        //public string HandlerMethodName { get; }
-        //public List<CommandDef> SubCommands { get; }
+        public string[] Aliases { get; }
+        //Options, args, and services in order of handler parameters
+        public IEnumerable<MemberDef> Members { get; }
+        public string HandlerMethodName { get; }
+        public IEnumerable<CommandDefBase> SubCommands { get; set; }
         public IEnumerable<string> Path { get; }
-        //public string ReturnType { get; }
+        public string ReturnType { get; }
 
     }
 }

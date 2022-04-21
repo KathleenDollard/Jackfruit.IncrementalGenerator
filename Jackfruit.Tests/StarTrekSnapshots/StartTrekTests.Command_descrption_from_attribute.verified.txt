@@ -1,0 +1,40 @@
+﻿
+using System;
+
+namespace Jackfruit
+{
+    public class ConsoleApplication
+    {
+        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
+    }
+
+    public class CliCommand
+    {
+        public static CliCommand AddCommand(Delegate CommandHandler)
+    }
+}
+
+// *******************************
+
+/*
+Key:         
+Id:          DemoHandlers.Handlers.NextGeneration(string, bool)
+Path:        
+Description: 
+Namespace:   DemoHandlers
+Members:     
+   Option
+      Argumet Id:     greetingArg
+      Name:           greeting
+      TypeName:       string
+      Description:    
+      Required:       False
+   Option
+      Option Id:      picard
+      Name:           picard
+      TypeName:       bool
+      Description:    This is the description for Picard
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+*/

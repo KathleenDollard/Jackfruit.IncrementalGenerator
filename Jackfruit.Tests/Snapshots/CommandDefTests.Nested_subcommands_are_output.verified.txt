@@ -1,0 +1,91 @@
+﻿
+using System;
+
+namespace Jackfruit
+{
+    public class ConsoleApplication
+    {
+        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
+    }
+
+    public class CliCommand
+    {
+        public static CliCommand AddCommand(Delegate CommandHandler)
+    }
+}
+
+// *******************************
+
+/*
+Key:         
+Id:          Fred.MyClass.A(int)
+Path:        
+Description: 
+Namespace:   Fred
+Members:     
+   Option
+      Option Id:      i
+      Name:           i
+      TypeName:       int
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+*/
+
+// *******************************
+
+/*
+Key:         AB
+Id:          Fred.MyClass.A(int)
+Path:        A.B
+Description: 
+Namespace:   Fred
+Members:     
+   Option
+      Option Id:      i
+      Name:           i
+      TypeName:       int
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+*/
+
+// *******************************
+
+/*
+Key:         AC
+Id:          Fred.MyClass.A(int)
+Path:        A.C
+Description: 
+Namespace:   Fred
+Members:     
+   Option
+      Option Id:      i
+      Name:           i
+      TypeName:       int
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+*/
+
+// *******************************
+
+/*
+Key:         ABD
+Id:          Fred.MyClass.A(int)
+Path:        A.B.D
+Description: 
+Namespace:   Fred
+Members:     
+   Option
+      Option Id:      i
+      Name:           i
+      TypeName:       int
+      Description:    
+      Aliases:        
+      ArgDisplayName: 
+      Required:       False
+*/

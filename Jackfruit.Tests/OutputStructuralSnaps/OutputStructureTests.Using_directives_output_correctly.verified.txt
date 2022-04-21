@@ -1,0 +1,3 @@
+﻿// This file is created by a generator.
+using A;
+using C = B;

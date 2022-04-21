@@ -1,0 +1,6 @@
+﻿ class A
+{
+    int A {get; set;}
+    int B {get; set;}
+}
+

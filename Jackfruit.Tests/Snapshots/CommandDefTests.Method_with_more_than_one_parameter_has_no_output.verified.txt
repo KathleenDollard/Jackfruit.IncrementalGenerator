@@ -5,7 +5,7 @@ namespace Jackfruit
 {
     public class ConsoleApplication
     {
-        public static ConsoleApplication CreateWithRootCommand(Delegate rootCommandHandler) { }
+        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
     }
 
     public class CliCommand
@@ -13,7 +13,3 @@ namespace Jackfruit
         public static CliCommand AddCommand(Delegate CommandHandler)
     }
 }
-
-// *******************************
-
-// Handlers.Voyager - Jackfruit.ConsoleApplication - Description: 

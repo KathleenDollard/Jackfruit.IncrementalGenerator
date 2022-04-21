@@ -1,0 +1,5 @@
+﻿ string A()
+{
+   return true;
+}
+

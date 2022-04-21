@@ -27,17 +27,17 @@ namespace DemoHandlers
             /// <param name=""kirk"">Whether to greek Captain Kirk</param>
             /// <param name=""spock"">Whether to greek Spock</param>
             /// <param name=""uhura"">Whether to greek Lieutenant Uhura</param>
-            public static void StarTrek(string greeting, bool kirk, bool spock, bool uhura)
+            public static void StarTrek(string greetingArg, bool kirk, bool spock, bool uhura)
             {
-                if (kirk) { Greet(greeting, ""James T. Kirk""); }
-                if (spock) { Greet(greeting, ""Spock""); }
-                if (uhura) { Greet(greeting, ""Nyota Uhura""); }
+                if (kirk) { Greet(greetingArg, ""James T. Kirk""); }
+                if (spock) { Greet(greetingArg, ""Spock""); }
+                if (uhura) { Greet(greetingArg, ""Nyota Uhura""); }
 
             }
             [Description(""This is the description for Next Generation"")]
-            public static void NextGeneration(string greeting, [Description(""This is the description for Picard"")] bool picard)
+            public static void NextGeneration(string greetingArg, [Description(""This is the description for Picard"")] bool picard)
             {
-                if (picard) { Greet(greeting, ""Jean-Luc Picard""); }
+                if (picard) { Greet(greetingArg, ""Jean-Luc Picard""); }
             }
             public static void DeepSpaceNine(string greeting, bool sisko, bool odo, bool dax, bool worf, bool oBrien)
             {

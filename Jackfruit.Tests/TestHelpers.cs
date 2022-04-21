@@ -19,7 +19,8 @@ internal class TestHelpers
     public static (ImmutableArray<Diagnostic> Diagnostics, string Output) GetGeneratedOutput<T>(IEnumerable<SyntaxTree> syntaxTrees)
         where T : IIncrementalGenerator, new()
     {
-        var references = AppDomain.CurrentDomain.GetAssemblies()
+        System.Reflection.Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        var references = assemblies
             .Where(_ => !_.IsDynamic && !string.IsNullOrWhiteSpace(_.Location))
             .Select(_ => MetadataReference.CreateFromFile(_.Location))
             .Concat(new[]
@@ -32,6 +33,7 @@ internal class TestHelpers
             syntaxTrees,
             references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        var inputDiagnostics = compilation.GetDiagnostics();
 
         var originalTreeCount = compilation.SyntaxTrees.Length;
         var generator = new T();

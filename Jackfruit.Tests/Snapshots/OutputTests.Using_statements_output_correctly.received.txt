@@ -1,0 +1,32 @@
+﻿
+using System;
+
+namespace Jackfruit
+{
+    public class ConsoleApplication
+    {
+        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
+    }
+
+    public class CliCommand
+    {
+        public static CliCommand AddCommand(Delegate CommandHandler)
+    }
+}
+
+// *******************************
+
+// 
+Key:         ConsoleApplication
+Id:          A
+Path:        ConsoleApplication
+Description: 
+Members:     
+
+         Option Id:      i
+         Name:           i
+         TypeName:       
+         Description:    
+         Aliases:        
+         ArgDisplayName: 
+         Required:       False

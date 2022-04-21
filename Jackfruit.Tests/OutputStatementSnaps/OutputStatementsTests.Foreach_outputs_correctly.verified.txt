@@ -1,0 +1,8 @@
+﻿ string A()
+{
+   {
+   foreach (var x in xList)
+      B = false;
+   }
+}
+
