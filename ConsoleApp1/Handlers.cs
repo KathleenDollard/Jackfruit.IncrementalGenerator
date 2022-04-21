@@ -1,28 +1,4 @@
-# Jackfruit.IncrementalGenerator
-
-Please try this demo:
-
-* (Temporary) Obtain the NuGet package. Either I sent it to you or you can build and place the package in a local source. 
-* Create a new package
-* Add the package `Jackfruit.IncrementalGenerator`
-* Replace `program.cs` with this code:
-
-```c#
-using DemoHandlers;
-
-ConsoleApplication.AddRootCommand(Handlers.StarTrek);
-ConsoleApplication.StarTrek.AddSubCommand(Handlers.NextGeneration);
-ConsoleApplication.StarTrek.NextGeneration.AddSubCommand(Handlers.DeepSpaceNine);
-ConsoleApplication.StarTrek.NextGeneration.AddSubCommand(Handlers.Voyager);
-
-// if you do not want to customize anything
-ConsoleApplication.Run(args);
-```
-
-* Add a new file `Handlers.cs` and add this code:
-
-```c#
-using System.ComponentModel;
+﻿using System.ComponentModel;
 namespace DemoHandlers
 {
     public static class Handlers
@@ -76,7 +52,3 @@ namespace DemoHandlers
         }
     }
 }
-```
-
-* Build
-* Run. Use Help to figure out what you want to do and ensure it all works

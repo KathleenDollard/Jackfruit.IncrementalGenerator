@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jackfruit.Tests", "Jackfrui
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleOutput", "ExampleOutput\ExampleOutput.csproj", "{D360C5B2-D484-427D-B575-B4E9CDEA5BCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jackfruit.IntegrationTests", "Jackfruit.IntegrationTests\Jackfruit.IntegrationTests.csproj", "{6B0D4C52-5772-4643-BE61-F47027988987}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jackfruit.IntegrationTests", "Jackfruit.IntegrationTests\Jackfruit.IntegrationTests.csproj", "{6B0D4C52-5772-4643-BE61-F47027988987}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jackfruit.Runtime", "Jackfruit.Runtime\Jackfruit.Runtime.csproj", "{EC75BA93-FC2F-4A6F-8965-2DABE11E1C5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jackfruit.Runtime", "Jackfruit.Runtime\Jackfruit.Runtime.csproj", "{EC75BA93-FC2F-4A6F-8965-2DABE11E1C5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{60FF7833-A332-422F-9E9F-01A03DEC5D51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{EC75BA93-FC2F-4A6F-8965-2DABE11E1C5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC75BA93-FC2F-4A6F-8965-2DABE11E1C5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC75BA93-FC2F-4A6F-8965-2DABE11E1C5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60FF7833-A332-422F-9E9F-01A03DEC5D51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60FF7833-A332-422F-9E9F-01A03DEC5D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60FF7833-A332-422F-9E9F-01A03DEC5D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60FF7833-A332-422F-9E9F-01A03DEC5D51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
