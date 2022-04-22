@@ -1,11 +1,7 @@
-﻿using System.Text;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
+﻿using Microsoft.CodeAnalysis;
 using Jackfruit.Models;
 using Jackfruit.IncrementalGenerator;
-using Newtonsoft.Json;
 using Jackfruit.IncrementalGenerator.Output;
-using System.Management;
 
 namespace Jackfruit.Tests
 {
@@ -14,9 +10,9 @@ namespace Jackfruit.Tests
     {
         public void Initialize(IncrementalGeneratorInitializationContext initContext)
         {
-            initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource(
-                "ConsoleApplication.g.cs",
-                SourceText.From(Helpers.ConsoleClass, Encoding.UTF8)));
+            //initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource(
+            //    "ConsoleApplication.g.cs",
+            //    SourceText.From(Helpers.ConsoleClass, Encoding.UTF8)));
 
             IncrementalValuesProvider<CommandDef> commandDefs = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
@@ -42,13 +38,13 @@ namespace Jackfruit.Tests
             static void OutputCommand(IWriter writer, CommandDef commandDef)
             {
             var joinedPath = string.Join("", commandDef.Path);
-                writer.AddLine($"Key:         {joinedPath}");
-                writer.AddLine($"Id:          {commandDef.Id}");
                 var path = string.Join(".", commandDef.Path);
-                writer.AddLine($"Path:        {path}");
-                writer.AddLine($"Description: {commandDef.Description}");
-                writer.AddLine($"Namespace:   {commandDef.Namespace}");
-                writer.AddLine($"Members:     ");
+                writer.AddLine($"//Key:         {joinedPath}");
+                writer.AddLine($"//Id:          {commandDef.Id}");
+                writer.AddLine($"//Path:        {path}");
+                writer.AddLine($"//Description: {commandDef.Description}");
+                writer.AddLine($"//Namespace:   {commandDef.Namespace}");
+                writer.AddLine($"//Members:     ");
                 writer.IncreaseIndent();
                 foreach (var member in commandDef.Members)
                 {
@@ -73,38 +69,38 @@ namespace Jackfruit.Tests
 
             static void OutputOption(IWriter writer, OptionDef option)
             {
-                writer.AddLine("Option");
+                writer.AddLine("//Option:");
                 writer.IncreaseIndent();
-                writer.AddLine($"Option Id:      {option.Id}");
-                writer.AddLine($"Name:           {option.Name}");
-                writer.AddLine($"TypeName:       {option.TypeName}");
-                writer.AddLine($"Description:    {option.Description}");
-                writer.AddLine($"Aliases:        {string.Join(", ", option.Aliases)}");
-                writer.AddLine($"ArgDisplayName: {option.ArgDisplayName}");
-                writer.AddLine($"Required:       {option.Required}");
+                writer.AddLine($"//Option Id:      {option.Id}");
+                writer.AddLine($"//Name:           {option.Name}");
+                writer.AddLine($"//TypeName:       {option.TypeName}");
+                writer.AddLine($"//Description:    {option.Description}");
+                writer.AddLine($"//Aliases:        {string.Join(", ", option.Aliases)}");
+                writer.AddLine($"//ArgDisplayName: {option.ArgDisplayName}");
+                writer.AddLine($"//Required:       {option.Required}");
                 writer.DecreaseIndent();
             }
 
             static void OutputArgument(IWriter writer, ArgumentDef option)
             {
-                writer.AddLine("Option");
+                writer.AddLine("//Argument:");
                 writer.IncreaseIndent();
-                writer.AddLine($"Argumet Id:     {option.Id}");
-                writer.AddLine($"Name:           {option.Name}");
-                writer.AddLine($"TypeName:       {option.TypeName}");
-                writer.AddLine($"Description:    {option.Description}");
-                writer.AddLine($"Required:       {option.Required}");
+                writer.AddLine($"//Argumet Id:     {option.Id}");
+                writer.AddLine($"//Name:           {option.Name}");
+                writer.AddLine($"//TypeName:       {option.TypeName}");
+                writer.AddLine($"//Description:    {option.Description}");
+                writer.AddLine($"//Required:       {option.Required}");
                 writer.DecreaseIndent();
             }
 
             static void OutputService(IWriter writer, ServiceDef option)
             {
-                writer.AddLine("Option");
+                writer.AddLine("//Service:");
                 writer.IncreaseIndent();
-                writer.AddLine($"Service Id:     {option.Id}");
-                writer.AddLine($"Name:           {option.Name}");
-                writer.AddLine($"TypeName:       {option.TypeName}");
-                writer.AddLine($"Description:    {option.Description}");
+                writer.AddLine($"//Service Id:     {option.Id}");
+                writer.AddLine($"//Name:           {option.Name}");
+                writer.AddLine($"//TypeName:       {option.TypeName}");
+                writer.AddLine($"//Description:    {option.Description}");
                 writer.DecreaseIndent();
             }
         }

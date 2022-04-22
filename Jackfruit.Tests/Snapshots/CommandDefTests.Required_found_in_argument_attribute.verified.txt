@@ -1,1 +1,14 @@
-﻿
+﻿/*
+//Key:         
+//Id:          MyClass.A(int)
+//Path:        
+//Description: 
+//Namespace:   <global namespace>
+//Members:     
+   //Argument:
+      //Argumet Id:     i
+      //Name:           i
+      //TypeName:       int
+      //Description:    
+      //Required:       True
+*/

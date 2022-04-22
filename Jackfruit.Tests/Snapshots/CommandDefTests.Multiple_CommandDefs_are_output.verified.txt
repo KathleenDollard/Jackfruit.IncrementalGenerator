@@ -1,72 +1,54 @@
-﻿
-using System;
-
-namespace Jackfruit
-{
-    public class ConsoleApplication
-    {
-        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
-    }
-
-    public class CliCommand
-    {
-        public static CliCommand AddCommand(Delegate CommandHandler)
-    }
-}
-
-// *******************************
-
-/*
-Key:         B
-Id:          MyClass.A(int)
-Path:        B
-Description: 
-Namespace:   <global namespace>
-Members:     
-   Option
-      Option Id:      i
-      Name:           i
-      TypeName:       int
-      Description:    
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
+﻿/*
+//Key:         B
+//Id:          MyClass.A(int)
+//Path:        B
+//Description: 
+//Namespace:   <global namespace>
+//Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           i
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
 */
 
 // *******************************
 
 /*
-Key:         C
-Id:          MyClass.A(int)
-Path:        C
-Description: 
-Namespace:   <global namespace>
-Members:     
-   Option
-      Option Id:      i
-      Name:           i
-      TypeName:       int
-      Description:    
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
+//Key:         C
+//Id:          MyClass.A(int)
+//Path:        C
+//Description: 
+//Namespace:   <global namespace>
+//Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           i
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
 */
 
 // *******************************
 
 /*
-Key:         D
-Id:          MyClass.A(int)
-Path:        D
-Description: 
-Namespace:   <global namespace>
-Members:     
-   Option
-      Option Id:      i
-      Name:           i
-      TypeName:       int
-      Description:    
-      Aliases:        
-      ArgDisplayName: 
-      Required:       False
+//Key:         D
+//Id:          MyClass.A(int)
+//Path:        D
+//Description: 
+//Namespace:   <global namespace>
+//Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           i
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
 */
