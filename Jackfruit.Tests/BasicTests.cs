@@ -270,6 +270,30 @@ public class MyClass
         }
 
         [Fact]
+        public Task Description_found_in_argument_Attribute()
+        {
+            const string input = @"
+using Jackfruit;
+public class MyClass
+{
+    public void F() 
+    {
+        ConsoleApplication.AddRootCommand(A);
+    }
+
+    public void A(
+            [Description(""Member description in Attribute"")][Argument] int i) 
+    {
+    }
+
+}";
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+
+            Assert.Empty(diagnostics);
+            return Verifier.Verify(output).UseDirectory("Snapshots");
+        }
+
+        [Fact]
         public Task IsArgument_found_in_Attribute()
         {
             const string input = @"
@@ -319,30 +343,6 @@ public class MyClass
 
 
         [Fact]
-        public Task Description_found_in_argument_Attribute()
-        {
-            const string input = @"
-using Jackfruit;
-public class MyClass
-{
-    public void F() 
-    {
-        ConsoleApplication.AddRootCommand(A);
-    }
-
-    public void A(
-            [Description(""Member description in Attribute"")][Argument] int i) 
-    {
-    }
-
-}";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
-
-            Assert.Empty(diagnostics);
-            return Verifier.Verify(output).UseDirectory("Snapshots");
-        }
-
-        [Fact]
         public Task Required_found_in_argument_attribute()
         {
             const string input = @"
@@ -355,7 +355,7 @@ public class MyClass
     }
 
     public void A(
-            [Argument] int i) 
+            [Argument][Required] int i) 
     {
     }
 

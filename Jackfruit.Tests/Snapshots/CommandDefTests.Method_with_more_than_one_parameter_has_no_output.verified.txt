@@ -1,15 +1,1 @@
-﻿
-using System;
-
-namespace Jackfruit
-{
-    public class ConsoleApplication
-    {
-        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
-    }
-
-    public class CliCommand
-    {
-        public static CliCommand AddCommand(Delegate CommandHandler)
-    }
-}
+﻿emptyString
