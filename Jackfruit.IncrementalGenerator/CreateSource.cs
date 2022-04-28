@@ -45,7 +45,7 @@ namespace Jackfruit.IncrementalGenerator
             return new CodeFileModel(Helpers.ConsoleAppClassName)
             {
                 Usings = { new("System") },
-                Namespace = new("System.CommandLine")  // not sure what nspace to put this in
+                Namespace = new("Jackfruit")  // not sure what nspace to put this in
                 {
                     Classes = new()
                     {
@@ -73,7 +73,7 @@ namespace Jackfruit.IncrementalGenerator
             var nspace = rootCommandDef is CommandDef rootCommand
                 ? rootCommand.Namespace
                 : "RootNamespace";
-            var codeFile = new CodeFileModel("Whereisthisused")
+            var codeFile = new CodeFileModel("CommandCli")
             {
                 Usings = { "System", "System.CommandLine", "System.CommandLine.Invocation", "System.Threading.Tasks" },
                 Namespace = new(nspace)  // not sure what nspace to put this in
@@ -92,8 +92,8 @@ namespace Jackfruit.IncrementalGenerator
             }
             var codeFile = new CodeFileModel(Helpers.ConsoleAppClassName)
             {
-                Usings = { "System", "System.CommandLine", "System.CommandLine.Invocation", "System.Threading.Tasks" },
-                Namespace = new(commandDef.Namespace)  // not sure what nspace to put this in
+                Usings = { "System", "System.CommandLine", "System.CommandLine.Invocation", "System.Threading.Tasks", commandDef.Namespace },
+                Namespace = new("Jackfruit")  // the console app needs to be in the same namespace as the static partial with AddRootNamespace
                 {
                     Classes = new List<ClassModel>
                     {
@@ -166,36 +166,35 @@ namespace Jackfruit.IncrementalGenerator
         {
             var args = "args";
             var app = "app";
-            var consoleCode = new ClassModel(Helpers.ConsoleAppClassName)
-            {
-                Members = new()
-                {
-                    Field($"_{cliRoot}",commandClassName).Private(),
-                    Constructor(Helpers.ConsoleAppClassName).Private(),
-                    Method(addRootCommand, Void())
-                        .Public()
-                        .Static()
-                        .Parameters(new ParameterModel(rootCommandHandler,"Delegate")),
-                    Method("Create", Helpers.ConsoleAppClassName)
-                        .Public()
-                        .Static()
-                        .Statements(
-                            AssignWithDeclare(app, New(Helpers.ConsoleAppClassName)),
-                            Assign($"{app}._{cliRoot}", Invoke(commandClassName, "Create")),
-                            Return(Symbol(app))),
-                    Method("Run", "int")
-                        .Public()
-                        .Static()
-                        .Parameters(new ParameterModel(args,"string[]"))
-                        .Statements(
-                            AssignWithDeclare(app, Invoke(Helpers.ConsoleAppClassName, "Create")),
-                            Return(Invoke($"{app}.{cliRoot}","Invoke", Symbol(args)))),
-                    Property(cliRoot,commandClassName)
-                        .Public()
-                        .Get( Return(Symbol( $"_{cliRoot}"))),
-                    commandCode
-                }
-            };
+            var consoleCode =
+                Class(Helpers.ConsoleAppClassName)
+                    .Public()
+                    .Partial()
+                    .Members(
+                        Field($"_{cliRoot}", commandClassName).Private(),
+                        Constructor(Helpers.ConsoleAppClassName).Private(),
+                        //Method(addRootCommand, Void())
+                        //    .Public()
+                        //    .Static()
+                        //    .Parameters(new ParameterModel(rootCommandHandler, "Delegate")),
+                        Method("Create", Helpers.ConsoleAppClassName)
+                            .Public()
+                            .Static()
+                            .Statements(
+                                AssignWithDeclare(app, New(Helpers.ConsoleAppClassName)),
+                                Assign($"{app}._{cliRoot}", Invoke(commandClassName, "Create")),
+                                Return(Symbol(app))),
+                        Method("Run", "int")
+                            .Public()
+                            .Static()
+                            .Parameters(new ParameterModel(args, "string[]"))
+                            .Statements(
+                                AssignWithDeclare(app, Invoke(Helpers.ConsoleAppClassName, "Create")),
+                                Return(Invoke($"{app}.{cliRoot}", "Invoke", Symbol(args)))),
+                        Property(cliRoot, commandClassName)
+                            .Public()
+                            .Get(Return(Symbol($"_{cliRoot}"))),
+                        commandCode);
             return consoleCode;
         }
 

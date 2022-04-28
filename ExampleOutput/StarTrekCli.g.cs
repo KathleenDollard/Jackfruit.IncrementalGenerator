@@ -18,13 +18,13 @@ namespace DemoHandlers
             command.greetingArgument = new Argument<string>("greetingArg");
             command.Add(command.greetingArgument);
             command.kirkOption = new Option<bool>("--kirk");
-            command.kirkOption.Description = "Whether to greek Captain Kirk";
+            command.kirkOption.Description = "Whether to greet Captain Kirk";
             command.Add(command.kirkOption);
             command.spockOption = new Option<bool>("--spock");
-            command.spockOption.Description = "Whether to greek Spock";
+            command.spockOption.Description = "Whether to greet Spock";
             command.Add(command.spockOption);
             command.uhuraOption = new Option<bool>("--uhura");
-            command.uhuraOption.Description = "Whether to greek Lieutenant Uhura";
+            command.uhuraOption.Description = "Whether to greet Lieutenant Uhura";
             command.Add(command.uhuraOption);
             command.NextGeneration = NextGenerationCommand.Create();
             command.Add(command.NextGeneration);

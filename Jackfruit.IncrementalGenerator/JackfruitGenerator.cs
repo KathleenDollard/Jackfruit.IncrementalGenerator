@@ -25,6 +25,19 @@ namespace Jackfruit.IncrementalGenerator
     {
         public void Initialize(IncrementalGeneratorInitializationContext initContext)
         {
+            const string consolePartial = @"//
+namespace Jackfruit
+{
+    public partial class ConsoleApplication
+    {
+        public static void AddRootCommand(Delegate rootCommandHandler) { }
+    }
+}
+";
+
+            initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource(
+                "ConsoleApplicationPartial.g.cs",
+                SourceText.From(consolePartial, Encoding.UTF8)));
 
             // Gather invocations from the dummy static methods for creating the console app
             // and adding subcommands. Then find the specified delegate and turn into a CommandDef

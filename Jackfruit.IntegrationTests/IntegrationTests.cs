@@ -1,7 +1,6 @@
 using Xunit;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using System.Threading.Tasks;
+using Jackfruit;
+
 namespace Jackfruit.Tests
 {
     public class IntegrationTests
@@ -11,7 +10,7 @@ namespace Jackfruit.Tests
         [Fact]
         public void Invocation_outputs_correctly()
         {
-            var starTrekApp = DemoHandlers.ConsoleApplication.Create();
+            var starTrekApp = ConsoleApplication.Create();
             Assert.NotNull(starTrekApp);
             Assert.NotNull(starTrekApp.CliRoot);
             Assert.NotNull(starTrekApp.CliRoot.NextGeneration);

@@ -24,9 +24,9 @@ namespace DemoHandlers
             /// This is the description for StarTrek
             /// </summary>
             /// <param name=""greeting"">What greeting to use</param>
-            /// <param name=""kirk"">Whether to greek Captain Kirk</param>
-            /// <param name=""spock"">Whether to greek Spock</param>
-            /// <param name=""uhura"">Whether to greek Lieutenant Uhura</param>
+            /// <param name=""kirk"">Whether to greet Captain Kirk</param>
+            /// <param name=""spock"">Whether to greet Spock</param>
+            /// <param name=""uhura"">Whether to greet Lieutenant Uhura</param>
             public static void StarTrek(string greetingArg, bool kirk, bool spock, bool uhura)
             {
                 if (kirk) { Greet(greetingArg, ""James T. Kirk""); }

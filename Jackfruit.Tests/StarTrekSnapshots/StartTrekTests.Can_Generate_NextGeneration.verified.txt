@@ -1,19 +1,27 @@
-﻿// This file is created by a generator.
+﻿//
+namespace Jackfruit
+{
+    public partial class ConsoleApplication
+    {
+        public static void AddRootCommand(Delegate rootCommandHandler) { }
+    }
+}
+
+// *******************************
+
+// This file is created by a generator.
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Threading.Tasks;
+using DemoHandlers;
 
-namespace DemoHandlers
+namespace Jackfruit
 {
-    class ConsoleApplication
+   public partial class ConsoleApplication
    {
       private NextGenerationCommand _CliRoot;
       private ConsoleApplication()
-      {
-      }
-      
-      public static void AddRootCommand(Delegate rootCommandHandler)
       {
       }
       

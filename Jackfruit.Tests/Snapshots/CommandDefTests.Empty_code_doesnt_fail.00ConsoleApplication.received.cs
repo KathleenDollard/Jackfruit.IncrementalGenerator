@@ -2,7 +2,7 @@
 // This file is created by a generator.
 using System;
 
-namespace System.CommandLine
+namespace Jackfruit
 {
     partial class ConsoleApplication
    {
