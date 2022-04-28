@@ -3,8 +3,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using VerifyXunit;
-
-using System.Threading;
 using System.Threading.Tasks;
 using Jackfruit.IncrementalGenerator;
 using System.Collections.Immutable;

@@ -15,7 +15,7 @@
       //Option Id:      kirk
       //Name:           kirk
       //TypeName:       bool
-      //Description:    Whether to greek Captain Kirk
+      //Description:    Whether to greet Captain Kirk
       //Aliases:        
       //ArgDisplayName: 
       //Required:       False
@@ -23,7 +23,7 @@
       //Option Id:      spock
       //Name:           spock
       //TypeName:       bool
-      //Description:    Whether to greek Spock
+      //Description:    Whether to greet Spock
       //Aliases:        
       //ArgDisplayName: 
       //Required:       False
@@ -31,7 +31,7 @@
       //Option Id:      uhura
       //Name:           uhura
       //TypeName:       bool
-      //Description:    Whether to greek Lieutenant Uhura
+      //Description:    Whether to greet Lieutenant Uhura
       //Aliases:        
       //ArgDisplayName: 
       //Required:       False
