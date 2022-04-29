@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <Folder Include="FutureLibrary\" />
+    <None Include="validation-example.fsx" />
   </ItemGroup>
 
   <ItemGroup>
