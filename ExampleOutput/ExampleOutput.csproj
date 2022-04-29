@@ -11,8 +11,12 @@
 		<ProjectReference Include="..\Jackfruit.IncrementalGenerator\Jackfruit.IncrementalGenerator.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="validation-example.fsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
+  </ItemGroup>
 
 </Project>
