@@ -2,15 +2,22 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
+using DemoHandlers;
 
-namespace DemoHandlers
+namespace Jackfruit
 {
-    public partial class StarTrekCommand : RootCommand, ICommandHandler
+
+
+    public partial class StarTrekCommand : GeneratedCommandBase, ICommandHandler
     {
-        private StarTrekCommand()
+
+        private StarTrekCommand() : base("rootCommand")
         {
         }
+
+        public void AddCommand(Delegate handler)
+        { }
 
         public static StarTrekCommand Create()
         {
@@ -26,8 +33,8 @@ namespace DemoHandlers
             command.uhuraOption = new Option<bool>("--uhura");
             command.uhuraOption.Description = "Whether to greet Lieutenant Uhura";
             command.Add(command.uhuraOption);
-            command.NextGeneration = NextGenerationCommand.Create();
-            command.Add(command.NextGeneration);
+            command.NextGenerationCommand = NextGenerationCommand.Create();
+            command.Add(command.NextGenerationCommand.Command);
             command.Handler = command;
             return command;
         }
@@ -36,6 +43,12 @@ namespace DemoHandlers
         {
             Handlers.StarTrek(greetingArgumentResult(context), kirkOptionResult(context), spockOptionResult(context), uhuraOptionResult(context));
             return Task.FromResult(context.ExitCode);
+        }
+
+        public int Invoke(InvocationContext context)
+        {
+            Handlers.StarTrek(greetingArgumentResult(context), kirkOptionResult(context), spockOptionResult(context), uhuraOptionResult(context));
+            return context.ExitCode;
         }
 
         public Argument<string> greetingArgument { get; set; }
@@ -62,31 +75,46 @@ namespace DemoHandlers
             return context.ParseResult.GetValueForOption<bool>(uhuraOption);
         }
 
-        public NextGenerationCommand NextGeneration { get; set; }
+        public NextGenerationCommand NextGenerationCommand { get; set; }
     }
 
-    public partial class NextGenerationCommand : Command, ICommandHandler
+    public partial class NextGenerationCommand : GeneratedCommandBase, ICommandHandler
     {
         private NextGenerationCommand() : base("NextGeneration")
         {
         }
+        public void AddCommand(Delegate handler)
+        { }
+
+        // asdf.SetValidator(Delegate x)
+        public void Validate(string picard)
+        { }
 
         public static NextGenerationCommand Create()
         {
             var command = new NextGenerationCommand();
-            command.greetingArgument = new Argument<string>("greetingArg");
+            command.greetingArgument = new Argument<string>("GREETING");
             command.Add(command.greetingArgument);
-            command.picardOption = new Option<bool>("--picard");
-            command.picardOption.Description = "This is the description for Picard";
-            command.Add(command.picardOption);
+            command.PicardOption = new Option<bool>("--picard");
+            command.PicardOption.Description = "This is the description for Picard";
+            command.Add(command.PicardOption);
+            command.DeepSpaceNine = DeepSpaceNineCommand.Create();
+            command.Add(command.DeepSpaceNine.Command);
             command.Handler = command;
             return command;
         }
 
         public Task<int> InvokeAsync(InvocationContext context)
         {
-            Handlers.NextGeneration(greetingArgumentResult(context), picardOptionResult(context));
+            Handlers.NextGeneration(greetingArgumentResult(context), PicardOptionResult(context));
             return Task.FromResult(context.ExitCode);
+        }
+
+
+        public int Invoke(InvocationContext context)
+        {
+            Handlers.NextGeneration(greetingArgumentResult(context), PicardOptionResult(context));
+            return context.ExitCode;
         }
 
         public Argument<string> greetingArgument { get; set; }
@@ -95,19 +123,24 @@ namespace DemoHandlers
             return context.ParseResult.GetValueForArgument<string>(greetingArgument);
         }
 
-        public Option<bool> picardOption { get; set; }
-        public bool picardOptionResult(InvocationContext context)
+        public Option<bool> PicardOption { get; private set; }
+        public bool PicardOptionResult(InvocationContext context)
         {
-            return context.ParseResult.GetValueForOption<bool>(picardOption);
+            return context.ParseResult.GetValueForOption<bool>(PicardOption);
         }
 
+        public DeepSpaceNineCommand DeepSpaceNine { get; private set; }
+        public VoyagerCommand Voyager { get; private set; }
     }
 
-    public partial class DeepSpaceNineCommand : Command, ICommandHandler
+    public partial class DeepSpaceNineCommand : GeneratedCommandBase, ICommandHandler
     {
         private DeepSpaceNineCommand() : base("DeepSpaceNine")
         {
         }
+
+        public void AddCommand(Delegate handler)
+        { }
 
         public static DeepSpaceNineCommand Create()
         {
@@ -172,11 +205,14 @@ namespace DemoHandlers
 
     }
 
-    public partial class VoyagerCommand : Command, ICommandHandler
+    public partial class VoyagerCommand : GeneratedCommandBase, ICommandHandler
     {
         private VoyagerCommand() : base("Voyager")
         {
         }
+
+        public void AddCommand(Delegate handler)
+        { }
 
         public static VoyagerCommand Create()
         {
@@ -242,3 +278,5 @@ namespace DemoHandlers
     }
 
 }
+
+
