@@ -1,280 +1,313 @@
 ﻿// This file is created by a generator.
-using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.Security.Cryptography.X509Certificates;
-using DemoHandlers;
+using System.CommandLine.Parsing;
+using DemoHandlersUpdated;
 
 namespace Jackfruit
 {
-
-
-    public partial class StarTrekCommand : GeneratedCommandBase, ICommandHandler
+    public partial class FranshiseCommand : GeneratedCommandBase<FranshiseCommand.Result>
     {
-
-        private StarTrekCommand() : base("rootCommand")
+        private FranshiseCommand() : base("rootCommand")
         {
         }
 
-        public void AddCommand(Delegate handler)
-        { }
+        public static FranshiseCommand Create()
+        {
+            var command = new FranshiseCommand();
+            command.GreetingArgument = new Argument<string>("greetingArg");
+            command.Add(command.GreetingArgument);
+            command.StarTrekCommand = StarTrekCommand.Create(command);
+            command.Add(command.StarTrekCommand.SystemCommandLineCommand);
+            return command;
+        }
 
-        public static StarTrekCommand Create()
+        public struct Result
+        {
+            internal Result(FranshiseCommand command, ParseResult parseResult)
+            {
+                Greeting = parseResult.GetValueForArgument(command.GreetingArgument);
+            }
+            public string Greeting { get; }
+        }
+
+        public override Result GetResult(ParseResult parseResult) => new Result(this, parseResult);
+
+        public Argument<string> GreetingArgument { get; private set; }
+
+        public StarTrekCommand StarTrekCommand { get; private set; }
+
+        public override string Validate(ParseResult parseResult)
+        {
+            var result = new Result(this, parseResult);
+            var messages = new List<string>();
+            AddMessageOnFail(messages, Validators.ValidatePoliteness(result.Greeting));
+            return String.Join(Environment.NewLine, messages);
+        }
+    }
+
+    public partial class StarTrekCommand : GeneratedCommandBase<StarTrekCommand.Result, FranshiseCommand>, ICommandHandler
+    {
+        private StarTrekCommand() : base("StarTrek")
+        {
+        }
+
+        internal static StarTrekCommand Create(FranshiseCommand parent)
         {
             var command = new StarTrekCommand();
-            command.greetingArgument = new Argument<string>("greetingArg");
-            command.Add(command.greetingArgument);
-            command.kirkOption = new Option<bool>("--kirk");
-            command.kirkOption.Description = "Whether to greet Captain Kirk";
-            command.Add(command.kirkOption);
-            command.spockOption = new Option<bool>("--spock");
-            command.spockOption.Description = "Whether to greet Spock";
-            command.Add(command.spockOption);
-            command.uhuraOption = new Option<bool>("--uhura");
-            command.uhuraOption.Description = "Whether to greet Lieutenant Uhura";
-            command.Add(command.uhuraOption);
-            command.NextGenerationCommand = NextGenerationCommand.Create();
-            command.Add(command.NextGenerationCommand.Command);
+            command.parent = parent;
+            command.KirkOption = new Option<bool>("--kirk");
+            command.KirkOption.Description = "Whether to greet Captain Kirk";
+            command.Add(command.KirkOption);
+            command.SpockOption = new Option<bool>("--spock");
+            command.SpockOption.Description = "Whether to greet Spock";
+            command.Add(command.SpockOption);
+            command.UhuraOption = new Option<bool>("--uhura");
+            command.UhuraOption.Description = "Whether to greet Lieutenant Uhura";
+            command.Add(command.UhuraOption);
+            command.NextGenerationCommand = NextGenerationCommand.Create(command);
+            command.Add(command.NextGenerationCommand.SystemCommandLineCommand);
             command.Handler = command;
             return command;
         }
 
+        public struct Result
+        {
+            internal Result(StarTrekCommand command, ParseResult parseResult)
+            {
+                var parentResult = command.parent.GetResult(parseResult);
+                Greeting = parentResult.Greeting;
+                Kirk = parseResult.GetValueForOption(command.KirkOption);
+                Spock = parseResult.GetValueForOption(command.SpockOption);
+                Uhura = parseResult.GetValueForOption(command.UhuraOption);
+            }
+            public string Greeting { get; }
+            public bool Kirk { get; }
+            public bool Spock { get; }
+            public bool Uhura { get; }
+        }
+
+        public override Result GetResult(ParseResult parseResult) => new Result(this, parseResult);
+
         public Task<int> InvokeAsync(InvocationContext context)
         {
-            Handlers.StarTrek(greetingArgumentResult(context), kirkOptionResult(context), spockOptionResult(context), uhuraOptionResult(context));
+            var result = GetResult(context);
+            Handlers.StarTrek(result.Greeting, result.Kirk, result.Spock, result.Uhura);
             return Task.FromResult(context.ExitCode);
         }
 
         public int Invoke(InvocationContext context)
         {
-            Handlers.StarTrek(greetingArgumentResult(context), kirkOptionResult(context), spockOptionResult(context), uhuraOptionResult(context));
+            var result = GetResult(context);
+            Handlers.StarTrek(result.Greeting, result.Kirk, result.Spock, result.Uhura);
             return context.ExitCode;
         }
 
-        public Argument<string> greetingArgument { get; set; }
-        public string greetingArgumentResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForArgument<string>(greetingArgument);
-        }
+        public Option<bool> KirkOption { get; private set; }
 
-        public Option<bool> kirkOption { get; set; }
-        public bool kirkOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(kirkOption);
-        }
+        public Option<bool> SpockOption { get; private set; }
 
-        public Option<bool> spockOption { get; set; }
-        public bool spockOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(spockOption);
-        }
+        public Option<bool> UhuraOption { get; private set; }
 
-        public Option<bool> uhuraOption { get; set; }
-        public bool uhuraOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(uhuraOption);
-        }
-
-        public NextGenerationCommand NextGenerationCommand { get; set; }
+        public NextGenerationCommand NextGenerationCommand { get; private set; }
     }
 
-    public partial class NextGenerationCommand : GeneratedCommandBase, ICommandHandler
+    public partial class NextGenerationCommand : GeneratedCommandBase<NextGenerationCommand.Result, StarTrekCommand>, ICommandHandler
     {
         private NextGenerationCommand() : base("NextGeneration")
         {
         }
-        public void AddCommand(Delegate handler)
-        { }
 
-        // asdf.SetValidator(Delegate x)
-        public void Validate(string picard)
-        { }
-
-        public static NextGenerationCommand Create()
+        internal static NextGenerationCommand Create(StarTrekCommand parent)
         {
             var command = new NextGenerationCommand();
-            command.greetingArgument = new Argument<string>("GREETING");
-            command.Add(command.greetingArgument);
+            command.parent = parent;
             command.PicardOption = new Option<bool>("--picard");
             command.PicardOption.Description = "This is the description for Picard";
             command.Add(command.PicardOption);
-            command.DeepSpaceNine = DeepSpaceNineCommand.Create();
-            command.Add(command.DeepSpaceNine.Command);
+            command.DeepSpaceNine = DeepSpaceNineCommand.Create(command);
+            command.Add(command.DeepSpaceNine.SystemCommandLineCommand);
+            command.Voyager = VoyagerCommand.Create(command);
+            command.Add(command.Voyager.SystemCommandLineCommand);
             command.Handler = command;
             return command;
         }
 
+        public struct Result
+        {
+            public Result(NextGenerationCommand command, ParseResult parseResult)
+            {
+                var parentResult = command.parent.GetResult(parseResult);
+                Greeting = parentResult.Greeting;
+                Picard = parseResult.GetValueForOption(command.PicardOption);
+            }
+            public string Greeting { get; }
+            public bool Picard { get; }
+        }
+
+        public override Result GetResult(ParseResult parseResult) => new Result(this, parseResult);
+
         public Task<int> InvokeAsync(InvocationContext context)
         {
-            Handlers.NextGeneration(greetingArgumentResult(context), PicardOptionResult(context));
+
+            var result = GetResult(context);
+            Handlers.NextGeneration(result.Greeting, result.Picard);
             return Task.FromResult(context.ExitCode);
         }
 
-
         public int Invoke(InvocationContext context)
         {
-            Handlers.NextGeneration(greetingArgumentResult(context), PicardOptionResult(context));
+            var result = GetResult(context);
+            Handlers.NextGeneration(result.Greeting, result.Picard);
             return context.ExitCode;
         }
 
-        public Argument<string> greetingArgument { get; set; }
-        public string greetingArgumentResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForArgument<string>(greetingArgument);
-        }
-
         public Option<bool> PicardOption { get; private set; }
-        public bool PicardOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(PicardOption);
-        }
 
         public DeepSpaceNineCommand DeepSpaceNine { get; private set; }
         public VoyagerCommand Voyager { get; private set; }
     }
 
-    public partial class DeepSpaceNineCommand : GeneratedCommandBase, ICommandHandler
+    public partial class DeepSpaceNineCommand : GeneratedCommandBase<DeepSpaceNineCommand.Result, NextGenerationCommand>, ICommandHandler
     {
         private DeepSpaceNineCommand() : base("DeepSpaceNine")
         {
         }
 
-        public void AddCommand(Delegate handler)
-        { }
-
-        public static DeepSpaceNineCommand Create()
+        internal static DeepSpaceNineCommand Create(NextGenerationCommand parent)
         {
             var command = new DeepSpaceNineCommand();
-            command.greetingOption = new Option<string>("--greeting");
-            command.Add(command.greetingOption);
-            command.siskoOption = new Option<bool>("--sisko");
-            command.Add(command.siskoOption);
-            command.odoOption = new Option<bool>("--odo");
-            command.Add(command.odoOption);
-            command.daxOption = new Option<bool>("--dax");
-            command.Add(command.daxOption);
-            command.worfOption = new Option<bool>("--worf");
-            command.Add(command.worfOption);
-            command.oBrienOption = new Option<bool>("--oBrien");
-            command.Add(command.oBrienOption);
+            command.parent = parent;
+            command.SiskoOption = new Option<bool>("--sisko");
+            command.Add(command.SiskoOption);
+            command.OdoOption = new Option<bool>("--odo");
+            command.Add(command.OdoOption);
+            command.DaxOption = new Option<bool>("--dax");
+            command.Add(command.DaxOption);
+            command.WorfOption = new Option<bool>("--worf");
+            command.Add(command.WorfOption);
+            command.OBrienOption = new Option<bool>("--o-brien");
+            command.Add(command.OBrienOption);
             command.Handler = command;
             return command;
         }
 
+        public struct Result
+        {
+            public Result(DeepSpaceNineCommand command, ParseResult parseResult)
+            {
+                var parentResult = command.parent.GetResult(parseResult);
+                Greeting = parentResult.Greeting;
+                Sisko = parseResult.GetValueForOption(command.SiskoOption);
+                Odo = parseResult.GetValueForOption(command.OdoOption);
+                Dax = parseResult.GetValueForOption(command.DaxOption);
+                Worf = parseResult.GetValueForOption(command.WorfOption);
+                OBrien = parseResult.GetValueForOption(command.OBrienOption);
+            }
+            public string Greeting { get; }
+            public bool Sisko { get; }
+            public bool Odo { get; }
+            public bool Dax { get; }
+            public bool Worf { get; }
+            public bool OBrien { get; }
+        }
+
+        public override Result GetResult(ParseResult parseResult) => new Result(this, parseResult);
+
         public Task<int> InvokeAsync(InvocationContext context)
         {
-            Handlers.DeepSpaceNine(greetingOptionResult(context), siskoOptionResult(context), odoOptionResult(context), daxOptionResult(context), worfOptionResult(context), oBrienOptionResult(context));
+            var result = GetResult(context);
+            Handlers.DeepSpaceNine(result.Greeting, result.Sisko, result.Odo, result.Dax, result.Worf, result.OBrien);
             return Task.FromResult(context.ExitCode);
         }
 
-        public Option<string> greetingOption { get; set; }
-        public string greetingOptionResult(InvocationContext context)
+        public int Invoke(InvocationContext context)
         {
-            return context.ParseResult.GetValueForOption<string>(greetingOption);
+            var result = GetResult(context);
+            Handlers.DeepSpaceNine(result.Greeting, result.Sisko, result.Odo, result.Dax, result.Worf, result.OBrien);
+            return context.ExitCode;
         }
 
-        public Option<bool> siskoOption { get; set; }
-        public bool siskoOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(siskoOption);
-        }
+        public Option<bool> SiskoOption { get; private set; }
 
-        public Option<bool> odoOption { get; set; }
-        public bool odoOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(odoOption);
-        }
+        public Option<bool> OdoOption { get; private set; }
 
-        public Option<bool> daxOption { get; set; }
-        public bool daxOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(daxOption);
-        }
+        public Option<bool> DaxOption { get; private set; }
 
-        public Option<bool> worfOption { get; set; }
-        public bool worfOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(worfOption);
-        }
+        public Option<bool> WorfOption { get; private set; }
 
-        public Option<bool> oBrienOption { get; set; }
-        public bool oBrienOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(oBrienOption);
-        }
-
+        public Option<bool> OBrienOption { get; private set; }
     }
 
-    public partial class VoyagerCommand : GeneratedCommandBase, ICommandHandler
+    public partial class VoyagerCommand : GeneratedCommandBase<VoyagerCommand.Result, NextGenerationCommand>, ICommandHandler
     {
         private VoyagerCommand() : base("Voyager")
         {
         }
 
-        public void AddCommand(Delegate handler)
-        { }
-
-        public static VoyagerCommand Create()
+        internal static VoyagerCommand Create(NextGenerationCommand parent)
         {
             var command = new VoyagerCommand();
-            command.greetingOption = new Option<string>("--greeting");
-            command.Add(command.greetingOption);
-            command.janewayOption = new Option<bool>("--janeway");
-            command.Add(command.janewayOption);
-            command.chakotayOption = new Option<bool>("--chakotay");
-            command.Add(command.chakotayOption);
-            command.torresOption = new Option<bool>("--torres");
-            command.Add(command.torresOption);
-            command.tuvokOption = new Option<bool>("--tuvok");
-            command.Add(command.tuvokOption);
-            command.sevenOfNineOption = new Option<bool>("--sevenOfNine");
-            command.Add(command.sevenOfNineOption);
+            command.parent = parent;
+            command.JanewayOption = new Option<bool>("--janeway");
+            command.Add(command.JanewayOption);
+            command.ChakotayOption = new Option<bool>("--chakotay");
+            command.Add(command.ChakotayOption);
+            command.TorresOption = new Option<bool>("--torres");
+            command.Add(command.TorresOption);
+            command.TuvokOption = new Option<bool>("--tuvok");
+            command.Add(command.TuvokOption);
+            command.SevenOfNineOption = new Option<bool>("--sevenOfNine");
+            command.Add(command.SevenOfNineOption);
             command.Handler = command;
             return command;
         }
 
+        public struct Result
+        {
+            public Result(VoyagerCommand command, ParseResult parseResult)
+            {
+                var parentResult = command.parent.GetResult(parseResult);
+                Greeting = parentResult.Greeting;
+                Janeway = parseResult.GetValueForOption(command.JanewayOption);
+                Chakotay = parseResult.GetValueForOption(command.ChakotayOption);
+                Torres = parseResult.GetValueForOption(command.TorresOption);
+                Tuvok = parseResult.GetValueForOption(command.TuvokOption);
+                SevenOfNine = parseResult.GetValueForOption(command.SevenOfNineOption);
+            }
+            public string Greeting { get; }
+            public bool Janeway { get; }
+            public bool Chakotay { get; }
+            public bool Torres { get; }
+            public bool Tuvok { get; }
+            public bool SevenOfNine { get; }
+        }
+
+        public override Result GetResult(ParseResult parseResult) => new Result(this, parseResult);
+
         public Task<int> InvokeAsync(InvocationContext context)
         {
-            Handlers.Voyager(greetingOptionResult(context), janewayOptionResult(context), chakotayOptionResult(context), torresOptionResult(context), tuvokOptionResult(context), sevenOfNineOptionResult(context));
+            var result = GetResult(context);
+            Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
             return Task.FromResult(context.ExitCode);
         }
 
-        public Option<string> greetingOption { get; set; }
-        public string greetingOptionResult(InvocationContext context)
+        public int Invoke(InvocationContext context)
         {
-            return context.ParseResult.GetValueForOption<string>(greetingOption);
+            var result = GetResult(context);
+            Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+            return context.ExitCode;
         }
 
-        public Option<bool> janewayOption { get; set; }
-        public bool janewayOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(janewayOption);
-        }
+        public Option<bool> JanewayOption { get; private set; }
 
-        public Option<bool> chakotayOption { get; set; }
-        public bool chakotayOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(chakotayOption);
-        }
+        public Option<bool> ChakotayOption { get; private set; }
 
-        public Option<bool> torresOption { get; set; }
-        public bool torresOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(torresOption);
-        }
+        public Option<bool> TorresOption { get; private set; }
 
-        public Option<bool> tuvokOption { get; set; }
-        public bool tuvokOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(tuvokOption);
-        }
+        public Option<bool> TuvokOption { get; private set; }
 
-        public Option<bool> sevenOfNineOption { get; set; }
-        public bool sevenOfNineOptionResult(InvocationContext context)
-        {
-            return context.ParseResult.GetValueForOption<bool>(sevenOfNineOption);
-        }
-
+        public Option<bool> SevenOfNineOption { get; private set; }
     }
 
 }

@@ -1,4 +1,4 @@
-﻿using DemoHandlers;
+﻿using DemoHandlersUpdated;
 using Jackfruit;
 
 namespace ExampleOutput;
@@ -8,14 +8,15 @@ public class Program
     public static void Main(string[] args)
     {
         var app = ConsoleApplication.Create();
-        app.SetRootCommand(Handlers.StarTrek);
-        app.RootCommand.AddCommand(Handlers.NextGeneration);
-        app.RootCommand.NextGenerationCommand.AddCommand(Handlers.DeepSpaceNine);
-        app.RootCommand.NextGenerationCommand.AddCommand(Handlers.Voyager);
-
-
-        var x = app.RootCommand.NextGenerationCommand;
-        x.PicardOption.AddAlias("-p");
+        app.SetRootCommand(Handlers.Franchise);
+        app.RootCommand.AddCommand(Handlers.StarTrek);
+        app.RootCommand.StarTrekCommand.AddCommand(Handlers.NextGeneration);
+        app.RootCommand.StarTrekCommand.NextGenerationCommand.AddCommand(Handlers.DeepSpaceNine);
+        app.RootCommand.StarTrekCommand.NextGenerationCommand.AddCommand(Handlers.Voyager); 
+        
+        var nextGen = app.RootCommand.StarTrekCommand.NextGenerationCommand;
+        nextGen.AddValidator(Validators.ValidatePoliteness, nextGen.PicardOption);
+        nextGen.PicardOption.AddAlias("-p");
 
         app.Run(args);
 

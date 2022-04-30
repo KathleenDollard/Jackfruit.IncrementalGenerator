@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DemoHandlers
+namespace DemoHandlersUpdated
 {
     public static class Handlers
     {
@@ -10,6 +10,11 @@ namespace DemoHandlers
             Console.WriteLine($"{greeting ?? defaultGreeting}, {name}");
             return;
         }
+
+        public static void Franchise(string greetingArg)
+        { }
+
+
         /// <summary>
         /// This is the description for StarTrek
         /// </summary>

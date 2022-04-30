@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DemoHandlers
+namespace DemoHandlersUpdated
 {
     public static class Handlers
     {
