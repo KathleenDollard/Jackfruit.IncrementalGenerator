@@ -1,7 +1,9 @@
 ﻿using System.CommandLine;
 using System.CommandLine.Completions;
 using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
 
+// *** Assume everything in this file will be in a library after we settle ****
 namespace Jackfruit
 {
     public partial class ConsoleApplication
@@ -10,20 +12,60 @@ namespace Jackfruit
         public void SetRootCommand(Delegate action) { }
 
         public void AddCommand(Delegate action) { }
-
-
     }
 
-    public class GeneratedCommandBase
+    public abstract class GeneratedCommandBase
     {
+        public void AddCommand(Delegate handler)
+        { }
+    }
+
+    public abstract class GeneratedCommandBase<TResult, TParent> : GeneratedCommandBase<TResult>
+        where TParent : GeneratedCommandBase
+        where TResult : new()
+    {
+        protected GeneratedCommandBase(string name, string? description = null)
+            : base(name, description) { }
+
+        protected TParent parent;
+    }
+
+    public abstract class GeneratedCommandBase<TResult> : GeneratedCommandBase
+        where TResult : new()
+    {
+        public abstract TResult GetResult(ParseResult parseResult);
+
         private readonly Command sclCommand;
         protected GeneratedCommandBase(string name, string? description = null)
         {
             sclCommand = new Command(name, description);
         }
 
-        internal Command Command => sclCommand;
+        public void AddValidator(Delegate action, params object[] values) { }
 
+        public virtual string Validate(ParseResult parseResult)
+        {
+            return "";
+        }
+
+        protected void AddMessageOnFail(List<string> messages, string? newMessage)
+        {
+            if (string.IsNullOrWhiteSpace(newMessage))
+            { messages.Add(newMessage); }
+        }
+
+        protected void AddMessagesOnFail(List<string> messages, IEnumerable<string?> newMessages)
+        {
+            if (newMessages is not null || newMessages.Any())
+            { messages.AddRange(newMessages); }
+        }
+
+        public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult);
+
+        public Command SystemCommandLineCommand => sclCommand;
+
+
+        //*** Put SCL wrappers below. Avoiding regions to avoid antagonizing region haters
         /// <summary>
         /// Gets the set of strings that can be used on the command line to specify the symbol.
         /// </summary>
@@ -86,20 +128,20 @@ namespace Jackfruit
         /// Adds an <see cref="Option"/> to the command.
         /// </summary>
         /// <param name="option">The option to add to the command.</param>
-        private protected void Add(Option option) => sclCommand.AddOption(option);
+        protected void Add(Option option) => sclCommand.AddOption(option);
 
         /// <summary>
         /// Adds an <see cref="Argument"/> to the command.
         /// </summary>
         /// <param name="argument">The argument to add to the command.</param>
-        private protected void Add(Argument argument) => sclCommand.AddArgument(argument);
+        protected void Add(Argument argument) => sclCommand.AddArgument(argument);
 
         /// <summary>
         /// Adds a subcommand to the command.
         /// </summary>
         /// <param name="command">The subcommand to add to the command.</param>
         /// <remarks>Commands can be nested to an arbitrary depth.</remarks>
-        private protected void Add(Command command) => sclCommand.AddCommand(command);
+        protected void Add(Command command) => sclCommand.AddCommand(command);
 
         /// <summary>
         /// Gets or sets the <see cref="ICommandHandler"/> for the command. The handler represents the action
@@ -109,11 +151,12 @@ namespace Jackfruit
         /// <para>Use one of the <see cref="Handler.SetHandler(Command, Action)" /> overloads to construct a handler.</para>
         /// <para>If the handler is not specified, parser errors will be generated for command line input that
         /// invokes this command.</para></remarks>
-        private protected ICommandHandler? Handler
+        protected ICommandHandler? Handler
         {
             get => sclCommand.Handler;
             set => sclCommand.Handler = value;
         }
+
 
 
     }
