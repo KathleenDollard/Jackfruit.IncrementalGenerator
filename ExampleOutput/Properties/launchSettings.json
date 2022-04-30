@@ -2,7 +2,7 @@
   "profiles": {
     "ExampleOutput": {
       "commandName": "Project",
-      "commandLineArgs": "HelloYou StarTrek --kirk NextGeneration  --picard"
+      "commandLineArgs": "Hello StarTrek --kirk NextGeneration  --picard"
     }
   }
 }

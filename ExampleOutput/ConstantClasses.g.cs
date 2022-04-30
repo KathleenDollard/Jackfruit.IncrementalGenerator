@@ -14,12 +14,6 @@ namespace Jackfruit
         public void AddCommand(Delegate action) { }
     }
 
-    public abstract class GeneratedCommandBase
-    {
-        public void AddCommand(Delegate handler)
-        { }
-    }
-
     public abstract class GeneratedCommandBase<TResult, TParent> : GeneratedCommandBase<TResult>
         where TParent : GeneratedCommandBase
         where TResult : new()
@@ -28,12 +22,28 @@ namespace Jackfruit
             : base(name, description) { }
 
         protected TParent parent;
+
+        public override void Validate(CommandResult commandResult)
+        {
+            parent.Validate(commandResult);
+        }
     }
 
     public abstract class GeneratedCommandBase<TResult> : GeneratedCommandBase
         where TResult : new()
     {
-        public abstract TResult GetResult(ParseResult parseResult);
+        protected GeneratedCommandBase(string name, string? description = null)
+            : base(name, description) { }
+
+        public abstract TResult GetResult(CommandResult commandResult);
+
+        public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
+    }
+
+    public abstract class GeneratedCommandBase
+    {
+        public void AddCommand(Delegate handler)
+        { }
 
         private readonly Command sclCommand;
         protected GeneratedCommandBase(string name, string? description = null)
@@ -43,15 +53,14 @@ namespace Jackfruit
 
         public void AddValidator(Delegate action, params object[] values) { }
 
-        public virtual string Validate(ParseResult parseResult)
-        {
-            return "";
-        }
+        public virtual void Validate(CommandResult commandResult)
+        { }
 
         protected void AddMessageOnFail(List<string> messages, string? newMessage)
         {
             if (string.IsNullOrWhiteSpace(newMessage))
-            { messages.Add(newMessage); }
+            { return; }
+            messages.Add(newMessage);
         }
 
         protected void AddMessagesOnFail(List<string> messages, IEnumerable<string?> newMessages)
@@ -59,8 +68,6 @@ namespace Jackfruit
             if (newMessages is not null || newMessages.Any())
             { messages.AddRange(newMessages); }
         }
-
-        public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult);
 
         public Command SystemCommandLineCommand => sclCommand;
 
