@@ -19,30 +19,31 @@ namespace Jackfruit
             command.Add(command.GreetingArgument);
             command.StarTrekCommand = StarTrekCommand.Create(command);
             command.Add(command.StarTrekCommand.SystemCommandLineCommand);
+            command.SystemCommandLineCommand.AddValidator(command.Validate);
             return command;
         }
 
         public struct Result
         {
-            internal Result(FranshiseCommand command, ParseResult parseResult)
+            internal Result(FranshiseCommand command, CommandResult commandResult)
             {
-                Greeting = parseResult.GetValueForArgument(command.GreetingArgument);
+                Greeting = commandResult.GetValueForArgument(command.GreetingArgument);
             }
             public string Greeting { get; }
         }
 
-        public override Result GetResult(ParseResult parseResult) => new Result(this, parseResult);
+        public override Result GetResult(CommandResult commandResult) => new Result(this, commandResult);
 
         public Argument<string> GreetingArgument { get; private set; }
 
         public StarTrekCommand StarTrekCommand { get; private set; }
 
-        public override string Validate(ParseResult parseResult)
+        public override void Validate(CommandResult commandResult)
         {
-            var result = new Result(this, parseResult);
+            var result = GetResult(commandResult);
             var messages = new List<string>();
             AddMessageOnFail(messages, Validators.ValidatePoliteness(result.Greeting));
-            return String.Join(Environment.NewLine, messages);
+            commandResult.ErrorMessage += String.Join(Environment.NewLine, messages);
         }
     }
 
@@ -67,19 +68,20 @@ namespace Jackfruit
             command.Add(command.UhuraOption);
             command.NextGenerationCommand = NextGenerationCommand.Create(command);
             command.Add(command.NextGenerationCommand.SystemCommandLineCommand);
+            command.SystemCommandLineCommand.AddValidator(command.Validate);
             command.Handler = command;
             return command;
         }
 
         public struct Result
         {
-            internal Result(StarTrekCommand command, ParseResult parseResult)
+            internal Result(StarTrekCommand command, CommandResult commandResult)
             {
-                var parentResult = command.parent.GetResult(parseResult);
+                var parentResult = command.parent.GetResult(commandResult);
                 Greeting = parentResult.Greeting;
-                Kirk = parseResult.GetValueForOption(command.KirkOption);
-                Spock = parseResult.GetValueForOption(command.SpockOption);
-                Uhura = parseResult.GetValueForOption(command.UhuraOption);
+                Kirk = commandResult.GetValueForOption(command.KirkOption);
+                Spock = commandResult.GetValueForOption(command.SpockOption);
+                Uhura = commandResult.GetValueForOption(command.UhuraOption);
             }
             public string Greeting { get; }
             public bool Kirk { get; }
@@ -87,7 +89,7 @@ namespace Jackfruit
             public bool Uhura { get; }
         }
 
-        public override Result GetResult(ParseResult parseResult) => new Result(this, parseResult);
+        public override Result GetResult(CommandResult commandResult) => new Result(this, commandResult);
 
         public Task<int> InvokeAsync(InvocationContext context)
         {
@@ -129,23 +131,24 @@ namespace Jackfruit
             command.Add(command.DeepSpaceNine.SystemCommandLineCommand);
             command.Voyager = VoyagerCommand.Create(command);
             command.Add(command.Voyager.SystemCommandLineCommand);
+            command.SystemCommandLineCommand.AddValidator(command.Validate);
             command.Handler = command;
             return command;
         }
 
         public struct Result
         {
-            public Result(NextGenerationCommand command, ParseResult parseResult)
+            public Result(NextGenerationCommand command, CommandResult commandResult)
             {
-                var parentResult = command.parent.GetResult(parseResult);
+                var parentResult = command.parent.GetResult(commandResult);
                 Greeting = parentResult.Greeting;
-                Picard = parseResult.GetValueForOption(command.PicardOption);
+                Picard = commandResult.GetValueForOption(command.PicardOption);
             }
             public string Greeting { get; }
             public bool Picard { get; }
         }
 
-        public override Result GetResult(ParseResult parseResult) => new Result(this, parseResult);
+        public override Result GetResult(CommandResult commandResult) => new Result(this, commandResult);
 
         public Task<int> InvokeAsync(InvocationContext context)
         {
@@ -188,21 +191,22 @@ namespace Jackfruit
             command.Add(command.WorfOption);
             command.OBrienOption = new Option<bool>("--o-brien");
             command.Add(command.OBrienOption);
+            command.SystemCommandLineCommand.AddValidator(command.Validate);
             command.Handler = command;
             return command;
         }
 
         public struct Result
         {
-            public Result(DeepSpaceNineCommand command, ParseResult parseResult)
+            public Result(DeepSpaceNineCommand command, CommandResult commandResult)
             {
-                var parentResult = command.parent.GetResult(parseResult);
+                var parentResult = command.parent.GetResult(commandResult);
                 Greeting = parentResult.Greeting;
-                Sisko = parseResult.GetValueForOption(command.SiskoOption);
-                Odo = parseResult.GetValueForOption(command.OdoOption);
-                Dax = parseResult.GetValueForOption(command.DaxOption);
-                Worf = parseResult.GetValueForOption(command.WorfOption);
-                OBrien = parseResult.GetValueForOption(command.OBrienOption);
+                Sisko = commandResult.GetValueForOption(command.SiskoOption);
+                Odo = commandResult.GetValueForOption(command.OdoOption);
+                Dax = commandResult.GetValueForOption(command.DaxOption);
+                Worf = commandResult.GetValueForOption(command.WorfOption);
+                OBrien = commandResult.GetValueForOption(command.OBrienOption);
             }
             public string Greeting { get; }
             public bool Sisko { get; }
@@ -212,7 +216,7 @@ namespace Jackfruit
             public bool OBrien { get; }
         }
 
-        public override Result GetResult(ParseResult parseResult) => new Result(this, parseResult);
+        public override Result GetResult(CommandResult commandResult) => new Result(this, commandResult);
 
         public Task<int> InvokeAsync(InvocationContext context)
         {
@@ -259,21 +263,22 @@ namespace Jackfruit
             command.Add(command.TuvokOption);
             command.SevenOfNineOption = new Option<bool>("--sevenOfNine");
             command.Add(command.SevenOfNineOption);
+            command.SystemCommandLineCommand.AddValidator(command.Validate);
             command.Handler = command;
             return command;
         }
 
         public struct Result
         {
-            public Result(VoyagerCommand command, ParseResult parseResult)
+            public Result(VoyagerCommand command, CommandResult commandResult)
             {
-                var parentResult = command.parent.GetResult(parseResult);
+                var parentResult = command.parent.GetResult(commandResult);
                 Greeting = parentResult.Greeting;
-                Janeway = parseResult.GetValueForOption(command.JanewayOption);
-                Chakotay = parseResult.GetValueForOption(command.ChakotayOption);
-                Torres = parseResult.GetValueForOption(command.TorresOption);
-                Tuvok = parseResult.GetValueForOption(command.TuvokOption);
-                SevenOfNine = parseResult.GetValueForOption(command.SevenOfNineOption);
+                Janeway = commandResult.GetValueForOption(command.JanewayOption);
+                Chakotay = commandResult.GetValueForOption(command.ChakotayOption);
+                Torres = commandResult.GetValueForOption(command.TorresOption);
+                Tuvok = commandResult.GetValueForOption(command.TuvokOption);
+                SevenOfNine = commandResult.GetValueForOption(command.SevenOfNineOption);
             }
             public string Greeting { get; }
             public bool Janeway { get; }
@@ -283,7 +288,7 @@ namespace Jackfruit
             public bool SevenOfNine { get; }
         }
 
-        public override Result GetResult(ParseResult parseResult) => new Result(this, parseResult);
+        public override Result GetResult(CommandResult commandResult) => new Result(this, commandResult);
 
         public Task<int> InvokeAsync(InvocationContext context)
         {
