@@ -4,29 +4,10 @@ using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 
 #nullable enable
-
-// *** Assume everything in this file will be in a library after we settle ****
-
 namespace Jackfruit
 {
-    public partial class CliRoot
-    {
-        private CliRoot() { }
 
-        public static CliRoot Create(Delegate operation)
-        {
-            return new CliRoot();
-        }
-
-        // no op: for generation
-        public void AddCommand(Delegate method) { }
-        public void AddCommands(params Delegate[] method) { }
-        public void AddCommand<TAttachTo>(Delegate method) { }
-        public void AddCommands<TAttachTo>(params Delegate[] method) { }
-    }
-
-
-
+    // *** Assume everything below in this file will be in a library after we settle ****
     public abstract class GeneratedCommandBase<TSelf, TResult, TParent> : GeneratedCommandBase<TSelf, TResult>
         where TSelf : GeneratedCommandBase<TSelf, TResult>
         where TResult : new()
@@ -61,15 +42,13 @@ namespace Jackfruit
 
     public abstract class GeneratedCommandBase
     {
-        public void AddCommand(Delegate handler)
-        {// For generation
-        }
-        public virtual void Validate(CommandResult commandResult)
-        {// For generation
-        }
-        public void AddValidator(Delegate action, params object[] values)
-        {// For generation
-        }
+        // no op: for generation
+        public void AddCommand(Delegate method) { }
+        public void AddCommands(params Delegate[] method) { }
+        public void AddCommand<TAttachTo>(Delegate method) { }
+        public void AddCommands<TAttachTo>(params Delegate[] method) { }
+        public virtual void Validate(CommandResult commandResult) { }
+        public void AddValidator(Delegate action, params object[] values) { }
 
         private readonly Command sclCommand;
         protected GeneratedCommandBase(string name, string? description = null)
@@ -193,5 +172,12 @@ namespace Jackfruit
 
 
 
+    }
+
+    public class EmptyCommand : GeneratedCommandBase
+    {
+        public EmptyCommand() : base("<EmptyCommand>", null)
+        {
+        }
     }
 }

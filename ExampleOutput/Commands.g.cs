@@ -6,59 +6,61 @@ using Jackfruit;
 
 namespace DemoHandlersUpdated
 {
-    public class Commands
+    public partial class CliRoot : GeneratedCommandBase<CliRoot, CliRoot.Result>
     {
-        internal static GeneratedCommandBase CreateRoot()
-           => Franchise.Create();
-
-        public class Franchise : GeneratedCommandBase<Franchise, Franchise.Result>
+        public static CliRoot Create(Delegate methodToRun)
         {
-            private Franchise() : base("rootCommand")
-            {
-            }
-
-            public static Franchise Create()
-            {
-                var command = new Franchise();
-                command.GreetingArgument = new Argument<string>("greetingArg");
-                command.Add(command.GreetingArgument);
-                command.StarTrekCommand = Commands.StarTrek.Create(command);
-                command.AddCommandToScl(command.StarTrekCommand);
-                command.SystemCommandLineCommand.AddValidator(command.Validate);
-                return command;
-            }
-
-            public struct Result
-            {
-                internal Result(Franchise command, CommandResult commandResult)
-                {
-                    Greeting = commandResult.GetValueForArgument(command.GreetingArgument);
-                }
-                public string Greeting { get; }
-            }
-
-            public override Result GetResult(CommandResult commandResult) => new Result(this, commandResult);
-
-            public Argument<string> GreetingArgument { get; private set; }
-
-            public Commands.StarTrek StarTrekCommand { get; private set; }
-
-            public override void Validate(CommandResult commandResult)
-            {
-                var result = GetResult(commandResult);
-                var messages = new List<string>();
-                AddMessageOnFail(messages, Validators.ValidatePoliteness(result.Greeting));
-                commandResult.ErrorMessage += String.Join(Environment.NewLine, messages);
-            }
+            return Create();
         }
 
-        public partial class StarTrek : GeneratedCommandBase<StarTrek, StarTrek.Result, Franchise>, ICommandHandler
+        private CliRoot() : base("rootCommand")
         {
-            private StarTrek(Franchise parent) : base("StarTrek", parent)
+        }
+
+        public static CliRoot Create()
+        {
+            var command = new CliRoot();
+            command.GreetingArgument = new Argument<string>("greetingArg");
+            command.Add(command.GreetingArgument);
+            command.StarTrekCommand = Commands.StarTrek.Create(command);
+            command.AddCommandToScl(command.StarTrekCommand);
+            command.SystemCommandLineCommand.AddValidator(command.Validate);
+            return command;
+        }
+
+        public struct Result
+        {
+            internal Result(CliRoot command, CommandResult commandResult)
+            {
+                Greeting = commandResult.GetValueForArgument(command.GreetingArgument);
+            }
+            public string Greeting { get; }
+        }
+
+        public override Result GetResult(CommandResult commandResult) => new Result(this, commandResult);
+
+        public Argument<string> GreetingArgument { get; private set; }
+
+        public Commands.StarTrek StarTrekCommand { get; private set; }
+
+        public override void Validate(CommandResult commandResult)
+        {
+            var result = GetResult(commandResult);
+            var messages = new List<string>();
+            AddMessageOnFail(messages, Validators.ValidatePoliteness(result.Greeting));
+            commandResult.ErrorMessage += String.Join(Environment.NewLine, messages);
+        }
+    }
+
+    public class Commands
+    {
+        public partial class StarTrek : GeneratedCommandBase<StarTrek, StarTrek.Result, CliRoot>, ICommandHandler
+        {
+            private StarTrek(CliRoot parent) : base("StarTrek", parent)
             {
             }
 
-            internal static StarTrek Create(Franchise parent)
+            internal static StarTrek Create(CliRoot parent)
             {
                 var command = new StarTrek(parent);
                 command.KirkOption = new Option<bool>("--kirk");

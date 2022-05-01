@@ -8,7 +8,10 @@ public class Program
     public static void Main(string[] args)
     {
         // Should the root be a command or an abstraction of a CLI? Something else?
-        var cliRoot = CliRoot.Create(Handlers.Franchise);
+        // I have not been able to make this not-static. With it being static, multiple CLIRoots are impossible.
+        // The prblem is Create returning the correct, generated, type.
+        // I am using CliFactory, instead of CliRoot to be in the right namespace
+        var cliRoot =  CliRoot.Create(Handlers.Franchise);
         // I like that this makes simple APIs look simple and cleanly expresses the shape of complex APIs
         cliRoot.AddCommands(Handlers.StarTrek);
         cliRoot.AddCommands<Commands.StarTrek>(Handlers.NextGeneration);
@@ -16,6 +19,7 @@ public class Program
                 Handlers.DeepSpaceNine,
                 Handlers.Voyager);
 
+        // Altenrate syntax, same thing as above
         cliRoot.AddCommand(Handlers.StarTrek);
         cliRoot.AddCommand<Commands.StarTrek>(Handlers.NextGeneration);
         cliRoot.AddCommand<Commands.StarTrek.NextGeneration>(Handlers.DeepSpaceNine);
@@ -26,26 +30,20 @@ public class Program
         var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand; // cliroot.Franchise.StarTrek... could also be supported
         nextGen.PicardOption.AddAlias("-p");
 
-        // For strongly typed simple support, it needs to be generated
-        AddValidator<Franchise>(Validators.ValidatePoliteness, cliRoot.Franchise.GreetingArgument);
-
-        // This can be supported because this is on NextGen because of the delegate, not the call (only the method name and delegate are used)
-        // So all 4 of the following could be supported (we should pick one).
-        // * Nothing, we could use the convention that a method ending in Validator with a single result argument is a validator
-        AddValidator(NextGenerationResultValidator);
-        cliRoot.AddValidator(NextGenerationResultValidator);
+        cliRoot.AddValidator(Validators.ValidatePoliteness, cliRoot.GreetingArgument);
         nextGen.AddValidator(NextGenerationResultValidator);
-
 
         cliRoot.Run(args);
 
-        // exampleoutput nextgeneration --foo voyager --greeting Hello -- janeway
+        // exe Hello startrek nextgeneration voyager -- janeway
 
     }
 
     private static IEnumerable<string> NextGenerationResultValidator(Commands.StarTrek.NextGeneration.Result result)
     { return Enumerable.Empty<string>(); }
 
+
+    //Work on an instance design
     // tl;dr; Generation is to a type, not an instance. Type from instance before type is generated is hard/impossible
     // It will be difficult or impossible to implement this version, unless we require that people 
     // follow limited patterns. For example, creating a local variable for NextGeneration and setting
