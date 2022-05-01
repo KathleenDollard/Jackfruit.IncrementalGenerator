@@ -8,28 +8,29 @@ using Jackfruit;
 
 namespace Jackfruit
 {
-    public partial class ConsoleApplication
+    public partial class CliRoot<T>
+        where T : GeneratedCommandBase<T>
     {
-        private FranshiseCommand _rootCommand;
-        private ConsoleApplication()
+        private CliRoot()
         {
         }
 
         public int Run(string[] args)
         {
-            return RootCommand.SystemCommandLineCommand.Invoke(args);
+            return RootCommand.Run(args);
         }
 
-        public Jackfruit.FranshiseCommand RootCommand
+        private T? _rootCommand;
+        public T RootCommand
         {
             get
             {
                 if (_rootCommand is null)
                 {
 
-                    _rootCommand = FranshiseCommand.Create();
+                    _rootCommand = T.Create();
                 }
-                return _rootCommand;
+                return _rootCommand ?? throw new Exception();
             }
         }
 

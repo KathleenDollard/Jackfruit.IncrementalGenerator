@@ -2,12 +2,12 @@
 {
     public abstract class MemberDef
     {
-        protected MemberDef(string id, string name, string description, string typeName)
+        protected MemberDef(string id, string name, string description, string? typeName)
         {
             Id = id;
             Name= name;
             Description = description;
-            TypeName = typeName;
+            TypeName = typeName ?? "System.Boolean";
         }
 
         public string Id { get; }
@@ -23,7 +23,7 @@
             string id,
             string name,
             string description,
-            string typeName,
+            string? typeName,
             IEnumerable<string> aliases,
             string argDisplayName,
             bool required)
@@ -45,7 +45,7 @@
             string id,
             string name,
             string description,
-            string typeName,
+            string? typeName,
             bool required)
             : base(id, name,description, typeName)
         {
@@ -61,7 +61,7 @@
             string id,
             string name,
             string description,
-            string typeName)
+            string? typeName)
             : base(id,name, description, typeName)
         { }
     }
