@@ -10,11 +10,17 @@ public class Program
         // Should the root be a command or an abstraction of a CLI? Something else?
         var cliRoot = CliRoot.Create(Handlers.Franchise);
         // I like that this makes simple APIs look simple and cleanly expresses the shape of complex APIs
-        cliRoot.AddCommands<Franchise>(Handlers.StarTrek);
-        cliRoot.AddCommands<Franchise.StarTrek>(Handlers.NextGeneration);
-        cliRoot.AddCommands<Franchise.StarTrek.NextGeneration>(
+        cliRoot.AddCommands(Handlers.StarTrek);
+        cliRoot.AddCommands<Commands.StarTrek>(Handlers.NextGeneration);
+        cliRoot.AddCommands<Commands.StarTrek.NextGeneration>(
                 Handlers.DeepSpaceNine,
-                Handlers.DeepSpaceNine);
+                Handlers.Voyager);
+
+        cliRoot.AddCommand(Handlers.StarTrek);
+        cliRoot.AddCommand<Commands.StarTrek>(Handlers.NextGeneration);
+        cliRoot.AddCommand<Commands.StarTrek.NextGeneration>(Handlers.DeepSpaceNine);
+        cliRoot.AddCommand<Commands.StarTrek.NextGeneration>(Handlers.Voyager);
+
 
         // This is a runtime change to the parse tree
         var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand; // cliroot.Franchise.StarTrek... could also be supported
@@ -37,7 +43,7 @@ public class Program
 
     }
 
-    private static IEnumerable<string> NextGenerationResultValidator(Franchise.StarTrek.NextGeneration.Result result)
+    private static IEnumerable<string> NextGenerationResultValidator(Commands.StarTrek.NextGeneration.Result result)
     { return Enumerable.Empty<string>(); }
 
     // tl;dr; Generation is to a type, not an instance. Type from instance before type is generated is hard/impossible
@@ -67,4 +73,23 @@ public class Program
     //    // exampleoutput nextgeneration --foo voyager --greeting Hello -- janeway
 
     //}
+
+    // After a design session with Benson Joeris, I think we may be able to do an instance based approach 
+    // with guardrails against reusing the savee variable enforced via return types. I still see dragons here
+    // and think it may be an order of magnitude more difficult  than the generic approach. more notes:
+    // THere also may be more Intellisense weirdnesses here.
+    //So, if AddCommands returns the new type, and AddCommand only works on leaves,
+    //to block variance, then this code will not compile
+    //var starTrek = cli.AddCommand(Handlers.StarTrek);
+    //var nextGeneration = starTrek.AddCommand(Handlers.NextGeneration);
+    //var voyager = nextGeneration.AddCommand(Handlers.Voyager);
+    //var deepSpaceNine = nextGeneration.AddCommand(Handlers.DeepSpaceNine);
+
+    //cli.Startrek.AddCommand(Handlers.NextGeneration);
+    ////cli.Startrek.NextGeneration. // at this point Intellisense is to returning object, after line complete, strong type return
+    //cli.Startrek.NextGeneration.AddCommand(Handlers.Voyager);
+    //cli.Startrek.NextGeneration.AddCommand(Handlers.DeepSpaceNine);
+
+    //cli.Startrek.AddCommand(Handlers.NextGeneration);
+    //nextGeneration.AddCommands(Handlers.DeepSpaceNine, Handlers.Voyager);
 }

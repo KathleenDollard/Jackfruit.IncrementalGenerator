@@ -6,20 +6,31 @@ using System.CommandLine.Parsing;
 #nullable enable
 
 // *** Assume everything in this file will be in a library after we settle ****
+
 namespace Jackfruit
 {
-    public partial class ConsoleApplication
+    public partial class CliRoot
     {
-        public static ConsoleApplication Create() { return new ConsoleApplication(); }
-        public void SetRootCommand(Delegate action) { }
+        private CliRoot() { }
 
-        public void AddCommand(Delegate action) { }
+        public static CliRoot Create(Delegate operation)
+        {
+            return new CliRoot();
+        }
+
+        // no op: for generation
+        public void AddCommand(Delegate method) { }
+        public void AddCommands(params Delegate[] method) { }
+        public void AddCommand<TAttachTo>(Delegate method) { }
+        public void AddCommands<TAttachTo>(params Delegate[] method) { }
     }
 
+
+
     public abstract class GeneratedCommandBase<TSelf, TResult, TParent> : GeneratedCommandBase<TSelf, TResult>
-        where TSelf : GeneratedCommandBase<TSelf>, new()
+        where TSelf : GeneratedCommandBase<TSelf, TResult>
         where TResult : new()
-        where TParent : GeneratedCommandBase<TParent>
+        where TParent : GeneratedCommandBase
     {
         protected GeneratedCommandBase(string name, TParent parent, string? description = null)
             : base(name, description)
@@ -36,8 +47,8 @@ namespace Jackfruit
         }
     }
 
-    public abstract class GeneratedCommandBase<TSelf, TResult> : GeneratedCommandBase<TSelf>
-        where TSelf : GeneratedCommandBase<TSelf>, new()
+    public abstract class GeneratedCommandBase<TSelf, TResult> : GeneratedCommandBase
+        where TSelf : GeneratedCommandBase
         where TResult : new()
     {
         protected GeneratedCommandBase(string name, string? description = null)
@@ -48,11 +59,8 @@ namespace Jackfruit
         public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
     }
 
-    public abstract class GeneratedCommandBase<TSelf>
-        where TSelf : GeneratedCommandBase<TSelf>, new()
+    public abstract class GeneratedCommandBase
     {
-        protected abstract void Fill(TSelf command);
-
         public void AddCommand(Delegate handler)
         {// For generation
         }
@@ -89,16 +97,9 @@ namespace Jackfruit
         /// </summary>
         /// <param name="command">The subcommand to add to the command.</param>
         /// <remarks>Commands can be nested to an arbitrary depth.</remarks>
-        protected void Add<T>(GeneratedCommandBase<T> command)
-            where T : GeneratedCommandBase<T>, new()
+        protected void AddCommandToScl(GeneratedCommandBase command)
             => sclCommand.AddCommand(command.SystemCommandLineCommand);
 
-        internal static TSelf Create()
-        {
-            var command = new TSelf();
-
-            return command;
-        }
 
         internal int Run(string[] args)
         {

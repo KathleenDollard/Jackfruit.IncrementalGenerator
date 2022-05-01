@@ -6,46 +6,51 @@ using Jackfruit;
 
 namespace DemoHandlersUpdated
 {
-    public partial class Franchise : GeneratedCommandBase<Franchise, Franchise.Result>
+    public class Commands
     {
-        private Franchise() : base("rootCommand")
-        {
-        }
+        internal static GeneratedCommandBase CreateRoot()
+           => Franchise.Create();
 
-        public static Franchise Create()
+        public class Franchise : GeneratedCommandBase<Franchise, Franchise.Result>
         {
-            var command = new Franchise();
-            command.GreetingArgument = new Argument<string>("greetingArg");
-            command.Add(command.GreetingArgument);
-            command.StarTrekCommand = StarTrek.Create(command);
-            command.Add(command.StarTrekCommand);
-            command.SystemCommandLineCommand.AddValidator(command.Validate);
-            return command;
-        }
-
-        public struct Result
-        {
-            internal Result(Franchise command, CommandResult commandResult)
+            private Franchise() : base("rootCommand")
             {
-                Greeting = commandResult.GetValueForArgument(command.GreetingArgument);
             }
-            public string Greeting { get; }
+
+            public static Franchise Create()
+            {
+                var command = new Franchise();
+                command.GreetingArgument = new Argument<string>("greetingArg");
+                command.Add(command.GreetingArgument);
+                command.StarTrekCommand = Commands.StarTrek.Create(command);
+                command.AddCommandToScl(command.StarTrekCommand);
+                command.SystemCommandLineCommand.AddValidator(command.Validate);
+                return command;
+            }
+
+            public struct Result
+            {
+                internal Result(Franchise command, CommandResult commandResult)
+                {
+                    Greeting = commandResult.GetValueForArgument(command.GreetingArgument);
+                }
+                public string Greeting { get; }
+            }
+
+            public override Result GetResult(CommandResult commandResult) => new Result(this, commandResult);
+
+            public Argument<string> GreetingArgument { get; private set; }
+
+            public Commands.StarTrek StarTrekCommand { get; private set; }
+
+            public override void Validate(CommandResult commandResult)
+            {
+                var result = GetResult(commandResult);
+                var messages = new List<string>();
+                AddMessageOnFail(messages, Validators.ValidatePoliteness(result.Greeting));
+                commandResult.ErrorMessage += String.Join(Environment.NewLine, messages);
+            }
         }
-
-        public override Result GetResult(CommandResult commandResult) => new Result(this, commandResult);
-
-        public Argument<string> GreetingArgument { get; private set; }
-
-        public StarTrek StarTrekCommand { get; private set; }
-
-        public override void Validate(CommandResult commandResult)
-        {
-            var result = GetResult(commandResult);
-            var messages = new List<string>();
-            AddMessageOnFail(messages, Validators.ValidatePoliteness(result.Greeting));
-            commandResult.ErrorMessage += String.Join(Environment.NewLine, messages);
-        }
-
 
         public partial class StarTrek : GeneratedCommandBase<StarTrek, StarTrek.Result, Franchise>, ICommandHandler
         {
@@ -66,7 +71,7 @@ namespace DemoHandlersUpdated
                 command.UhuraOption.Description = "Whether to greet Lieutenant Uhura";
                 command.Add(command.UhuraOption);
                 command.NextGenerationCommand = NextGeneration.Create(command);
-                command.Add(command.NextGenerationCommand);
+                command.AddCommandToScl(command.NextGenerationCommand);
                 command.SystemCommandLineCommand.AddValidator(command.Validate);
                 command.Handler = command;
                 return command;
@@ -126,9 +131,9 @@ namespace DemoHandlersUpdated
                     command.PicardOption.Description = "This is the description for Picard";
                     command.Add(command.PicardOption);
                     command.DeepSpaceNineCommand = DeepSpaceNine.Create(command);
-                    command.Add(command.DeepSpaceNineCommand);
+                    command.AddCommandToScl(command.DeepSpaceNineCommand);
                     command.VoyagerCommand = Voyager.Create(command);
-                    command.Add(command.VoyagerCommand);
+                    command.AddCommandToScl(command.VoyagerCommand);
                     command.SystemCommandLineCommand.AddValidator(command.Validate);
                     command.Handler = command;
                     return command;
@@ -315,5 +320,6 @@ namespace DemoHandlersUpdated
         }
     }
 }
+
 
 
