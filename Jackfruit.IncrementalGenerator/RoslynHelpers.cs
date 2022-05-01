@@ -16,7 +16,7 @@ namespace Jackfruit.IncrementalGenerator
         {
             private string description = "";
             private MemberKind memberKind;
-            private string typeName = "";
+            private string? typeName = "";
             private string argDisplayId = "";
             private bool required;
 
@@ -52,7 +52,7 @@ namespace Jackfruit.IncrementalGenerator
                     }
                 }
             }
-            public string TypeName
+            public string? TypeName
             {
                 get => typeName;
                 set
@@ -93,8 +93,9 @@ namespace Jackfruit.IncrementalGenerator
         {
             if (expression == null) { return null; }
             var symbolInfo = semanticModel.GetSymbolInfo(expression);
-            if (symbolInfo.Symbol is IMethodSymbol methodSymbol) { return methodSymbol; }
-            return symbolInfo.CandidateSymbols.FirstOrDefault() is IMethodSymbol candidate
+            return symbolInfo.Symbol is IMethodSymbol methodSymbol
+                ? methodSymbol
+                : symbolInfo.CandidateSymbols.FirstOrDefault() is IMethodSymbol candidate
                     ? candidate
                     : null;
         }

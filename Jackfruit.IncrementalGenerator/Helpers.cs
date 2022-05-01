@@ -10,8 +10,8 @@ namespace Jackfruit.IncrementalGenerator
     public static class Helpers
     {
         internal const string ConsoleAppClassName = "ConsoleApplication";
-        internal const string AddSubCommand = "AddSubCommand";
-        internal const string AddRootCommand = "AddRootCommand";
+        internal const string AddSubCommand = "AddCommand";
+        internal const string AddRootCommand = "SetRootCommand";
         private static readonly string[] names = { AddSubCommand, AddRootCommand };
 
 //        public const string ConsoleClass = @"

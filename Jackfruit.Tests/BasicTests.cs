@@ -253,7 +253,8 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(A);
+        var app = ConsoleApplication.Create();
+        app.SetRootCommand(A);
     }
 
     [Description(""Command description in Attribute"")]
@@ -278,7 +279,8 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(A);
+        var app = ConsoleApplication.Create();
+        app.SetRootCommand(A);
     }
 
     public void A(
@@ -302,7 +304,8 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(A);
+        var app = ConsoleApplication.Create();
+        app.SetRootCommand(A);
     }
 
     public void A(
@@ -326,7 +329,8 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(A);
+        var app = ConsoleApplication.Create();
+        app.SetRootCommand(A);
     }
 
     public void A(
@@ -351,7 +355,8 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(A);
+        var app = ConsoleApplication.Create();
+        app.SetRootCommand(A);
     }
 
     public void A(
@@ -376,7 +381,8 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(A);
+        var app = ConsoleApplication.Create();
+        app.SetRootCommand(A);
     }
 
     [Aliases(""C1"")]
@@ -403,7 +409,8 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(A);
+        var app = ConsoleApplication.Create();
+        app.SetRootCommand(A);
     }
 
     public void A(

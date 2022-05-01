@@ -3,25 +3,24 @@ using System.CommandLine.Completions;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 
-// *** Assume everything in this file will be in a library after we settle ****
+#nullable enable
 namespace Jackfruit
 {
-    public partial class ConsoleApplication
-    {
-        public static ConsoleApplication Create() { return new ConsoleApplication(); }
-        public void SetRootCommand(Delegate action) { }
 
-        public void AddCommand(Delegate action) { }
-    }
-
-    public abstract class GeneratedCommandBase<TResult, TParent> : GeneratedCommandBase<TResult>
-        where TParent : GeneratedCommandBase
+    // *** Assume everything below in this file will be in a library after we settle ****
+    public abstract class GeneratedCommandBase<TSelf, TResult, TParent> : GeneratedCommandBase<TSelf, TResult>
+        where TSelf : GeneratedCommandBase<TSelf, TResult>
         where TResult : new()
+        where TParent : GeneratedCommandBase
     {
-        protected GeneratedCommandBase(string name, string? description = null)
-            : base(name, description) { }
+        protected GeneratedCommandBase(string name, TParent parent, string? description = null)
+            : base(name, description)
+        {
+            this.parent = parent;
+        }
 
-        protected TParent parent;
+        private readonly TParent parent;
+        protected TParent Parent => parent;
 
         public override void Validate(CommandResult commandResult)
         {
@@ -29,7 +28,8 @@ namespace Jackfruit
         }
     }
 
-    public abstract class GeneratedCommandBase<TResult> : GeneratedCommandBase
+    public abstract class GeneratedCommandBase<TSelf, TResult> : GeneratedCommandBase
+        where TSelf : GeneratedCommandBase
         where TResult : new()
     {
         protected GeneratedCommandBase(string name, string? description = null)
@@ -42,19 +42,19 @@ namespace Jackfruit
 
     public abstract class GeneratedCommandBase
     {
-        public void AddCommand(Delegate handler)
-        { }
+        // no op: for generation
+        public void AddCommand(Delegate method) { }
+        public void AddCommands(params Delegate[] method) { }
+        public void AddCommand<TAttachTo>(Delegate method) { }
+        public void AddCommands<TAttachTo>(params Delegate[] method) { }
+        public virtual void Validate(CommandResult commandResult) { }
+        public void AddValidator(Delegate action, params object[] values) { }
 
         private readonly Command sclCommand;
         protected GeneratedCommandBase(string name, string? description = null)
         {
             sclCommand = new Command(name, description);
         }
-
-        public void AddValidator(Delegate action, params object[] values) { }
-
-        public virtual void Validate(CommandResult commandResult)
-        { }
 
         protected void AddMessageOnFail(List<string> messages, string? newMessage)
         {
@@ -63,14 +63,27 @@ namespace Jackfruit
             messages.Add(newMessage);
         }
 
-        protected void AddMessagesOnFail(List<string> messages, IEnumerable<string?> newMessages)
+        protected void AddMessagesOnFail(List<string> messages, IEnumerable<string>? newMessages)
         {
-            if (newMessages is not null || newMessages.Any())
+            if (newMessages is not null && newMessages.Any())
             { messages.AddRange(newMessages); }
         }
 
-        public Command SystemCommandLineCommand => sclCommand;
+        protected Command SystemCommandLineCommand => sclCommand;
 
+        /// <summary>
+        /// Adds a subcommand to the command.
+        /// </summary>
+        /// <param name="command">The subcommand to add to the command.</param>
+        /// <remarks>Commands can be nested to an arbitrary depth.</remarks>
+        protected void AddCommandToScl(GeneratedCommandBase command)
+            => sclCommand.AddCommand(command.SystemCommandLineCommand);
+
+
+        internal int Run(string[] args)
+        {
+            return sclCommand.Invoke(args);
+        }
 
         //*** Put SCL wrappers below. Avoiding regions to avoid antagonizing region haters
         /// <summary>
@@ -144,13 +157,6 @@ namespace Jackfruit
         protected void Add(Argument argument) => sclCommand.AddArgument(argument);
 
         /// <summary>
-        /// Adds a subcommand to the command.
-        /// </summary>
-        /// <param name="command">The subcommand to add to the command.</param>
-        /// <remarks>Commands can be nested to an arbitrary depth.</remarks>
-        protected void Add(Command command) => sclCommand.AddCommand(command);
-
-        /// <summary>
         /// Gets or sets the <see cref="ICommandHandler"/> for the command. The handler represents the action
         /// that will be performed when the command is invoked.
         /// </summary>
@@ -166,5 +172,12 @@ namespace Jackfruit
 
 
 
+    }
+
+    public class EmptyCommand : GeneratedCommandBase
+    {
+        public EmptyCommand() : base("<EmptyCommand>", null)
+        {
+        }
     }
 }
