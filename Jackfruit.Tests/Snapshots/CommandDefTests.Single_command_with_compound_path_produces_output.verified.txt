@@ -1,8 +1,29 @@
 ﻿/*
-//Key:         MyClassYesMineReally
+//Key:         
 //Id:          MyClass.A(int)
-//Path:        MyClass.YesMine.Really
+//Path:        
 //Description: 
+//Aliases:     
+//Namespace:   <global namespace>
+//Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           i
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
+*/
+
+// *******************************
+
+/*
+//Key:         CliRootMyClassYesMineReally
+//Id:          MyClass.B(int)
+//Path:        CliRoot.MyClass.YesMine.Really
+//Description: 
+//Aliases:     
 //Namespace:   <global namespace>
 //Members:     
    //Option:

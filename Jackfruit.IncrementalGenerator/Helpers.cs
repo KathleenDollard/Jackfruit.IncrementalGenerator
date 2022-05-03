@@ -10,21 +10,13 @@ namespace Jackfruit.IncrementalGenerator
     public static class Helpers
     {
         internal const string ConsoleAppClassName = "ConsoleApplication";
-        internal const string AddSubCommand = "AddCommand";
-        internal const string AddRootCommand = "SetRootCommand";
-        private static readonly string[] names = { AddSubCommand, AddRootCommand };
-
-//        public const string ConsoleClass = @"
-//using System;
-
-//namespace Jackfruit
-//{
-//    public class ConsoleApplication
-//    {
-//        public static ConsoleApplication AddRootCommand(Delegate rootCommandHandler) { }
-//    }
-//}
-//";
+        internal const string AddCommandName = "AddCommand";
+        //private const string AddCommandsName = "AddCommands";
+        private const string CreateName = "Create";
+        private const string CliRoot = "CliRoot";
+        private const string NestedCommandsClassName = "Commands";
+        //internal const string AddRootCommand = "SetRootCommand";
+        private static readonly string[] names = { AddCommandName };
 
         public static bool IsSyntaxInteresting(SyntaxNode node)
         {
@@ -34,42 +26,73 @@ namespace Jackfruit.IncrementalGenerator
             //      * Parameter count of 1
             if (node is InvocationExpressionSyntax invocation)
             {
-                if (invocation.ArgumentList.Arguments.Count != 1)
+
+                int argCount = invocation.ArgumentList.Arguments.Count;
+                if (argCount == 0)
                 { return false; }
                 var name = GetName(invocation.Expression);
-                return name is not null && names.Contains(name);
+                return name == null
+                    ? false
+                    : name == AddCommandName && argCount == 1
+                        ? true
+                        : name == CreateName && argCount == 1 && GetCaller(invocation.Expression) == CliRoot
+                            ? true
+                            : false;
             }
-            else
-            { return false; }
+            return false;
 
         }
 
-        private static string? GetName(SyntaxNode expression)
-        {
-            var name = expression switch
-            {
-                MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
-                    => memberAccess.Name.ToString(),
-                IdentifierNameSyntax identifier
-                     => identifier.ToString(),
-                _ => null
-            };
+        private static string? GetName(SyntaxNode expression) 
+            => expression switch
+                {
+                    MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                        => memberAccess.Name is GenericNameSyntax genericName 
+                            ? genericName.Identifier.ValueText
+                            : memberAccess.Name.ToString(),
+                    IdentifierNameSyntax identifier
+                         => identifier.ToString(),
+                    _ => null
+                };
 
-            return name;
-        }
+        private static string? GetCaller(SyntaxNode expression)
+            => expression switch
+                {
+                    MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                        => memberAccess.Expression.ToString(),
+                    IdentifierNameSyntax identifier
+                         => "",
+                    _ => null
+                };
 
         private static string GetPath(SyntaxNode expression)
         {
+            var name = GetName(expression);
             var path = expression switch
             {
                 MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
-                    => memberAccess.Expression.ToString(),
+                    => name == CreateName
+                        ? ""
+                        : name != AddCommandName 
+                            ? ""
+                            : memberAccess.Name is GenericNameSyntax genericName
+                                ? $"{CliRoot}.{PathFromGenericTypes(genericName.TypeArgumentList.Arguments.First())}"
+                                : CliRoot,
+
                 IdentifierNameSyntax identifier
                      => "",
                 _ => ""
             };
 
-            return path.Replace(ConsoleAppClassName, "");
+            return path;
+
+            static string PathFromGenericTypes(TypeSyntax type)
+            {
+                var typeName = type.ToString();
+                return typeName.StartsWith(NestedCommandsClassName)
+                                ? typeName.Substring(NestedCommandsClassName.Length)
+                                : typeName;
+            }
         }
 
         public static CommandDef? GetCommandDef(GeneratorSyntaxContext context)
@@ -87,7 +110,7 @@ namespace Jackfruit.IncrementalGenerator
             }
             var path = GetPath(invocation.Expression).Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             
-            //We creawte details first because at this point we don't know what is an argument or option
+            //We create details first because at this point we don't know what is an argument or option
             var delegateArg = invocation.ArgumentList.Arguments[0].Expression;
             var methodSymbol = MethodOrCandidateSymbol(context.SemanticModel, delegateArg);
             if (methodSymbol is null) { return null; }

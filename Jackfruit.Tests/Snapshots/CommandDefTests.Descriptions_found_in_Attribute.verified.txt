@@ -3,6 +3,7 @@
 //Id:          MyClass.A(int)
 //Path:        
 //Description: Command description in Attribute
+//Aliases:     
 //Namespace:   <global namespace>
 //Members:     
    //Option:

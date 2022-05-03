@@ -1,8 +1,9 @@
 ﻿/*
-//Key:         B
+//Key:         
 //Id:          MyClass.A(int)
-//Path:        B
+//Path:        
 //Description: 
+//Aliases:     
 //Namespace:   <global namespace>
 //Members:     
    //Option:
@@ -18,10 +19,11 @@
 // *******************************
 
 /*
-//Key:         C
-//Id:          MyClass.A(int)
-//Path:        C
+//Key:         CliRoot
+//Id:          MyClass.B(int)
+//Path:        CliRoot
 //Description: 
+//Aliases:     
 //Namespace:   <global namespace>
 //Members:     
    //Option:
@@ -37,10 +39,31 @@
 // *******************************
 
 /*
-//Key:         D
-//Id:          MyClass.A(int)
-//Path:        D
+//Key:         CliRoot
+//Id:          MyClass.C(int)
+//Path:        CliRoot
 //Description: 
+//Aliases:     
+//Namespace:   <global namespace>
+//Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           i
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
+*/
+
+// *******************************
+
+/*
+//Key:         CliRoot
+//Id:          MyClass.D(int)
+//Path:        CliRoot
+//Description: 
+//Aliases:     
 //Namespace:   <global namespace>
 //Members:     
    //Option:

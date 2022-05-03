@@ -177,7 +177,12 @@ namespace Jackfruit.IncrementalGenerator
                     case "AliasesAttribute":
                     case "Aliases":
                         var arg1 = attrib.ConstructorArguments.FirstOrDefault();
-                        detail.Aliases = arg1.Values.Select(x => x.ToString()).ToArray();
+                        detail.Aliases = 
+                            arg1.Kind == TypedConstantKind.Array
+                                ? arg1.Values.Select(x => x.Value is null ? "" : x.Value.ToString()).ToArray()
+                                : arg1.Value is null
+                                    ? new string[] { }
+                                    : new string[] { arg1.Value.ToString() }; 
                         break;
 
                     case "ArgumentAttribute":

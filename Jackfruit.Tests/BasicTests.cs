@@ -25,7 +25,7 @@ namespace Jackfruit.Tests
         }
 
         [Fact]
-        public Task Single_command_with_single_path_produces_output()
+        public Task Single_root_command_with_single_path_produces_output()
         {
             const string input = @"
 using Jackfruit;
@@ -33,7 +33,7 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(A);
+        var cliRoot = CliRoot.Create(A);
     }
 
     public void A(int i) 
@@ -47,10 +47,36 @@ public class MyClass
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
 
+
+        [Fact]
+        public Task Single_command_with_single_path_produces_output()
+        {
+            const string input = @"
+using Jackfruit;
+public class MyClass
+{
+    public void F() 
+    {
+        var cliRoot = CliRoot.Create(A);
+        cliRoot.AddCommand(B);
+    }
+
+    public void A(int i) 
+    {
+    }
+    public void B(int i) 
+    {
+    }
+}";
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+
+            Assert.Empty(diagnostics);
+            return Verifier.Verify(output).UseDirectory("Snapshots");
+        }
         /// <summary>
-        /// This test is important for the AddCommand where the classes in the complex path are part of generation
-        /// </summary>
-        /// <returns></returns>
+                 /// This test is important for the AddCommand where the classes in the complex path are part of generation
+                 /// </summary>
+                 /// <returns></returns>
         [Fact]
         public Task Single_command_with_compound_path_produces_output()
         {
@@ -60,9 +86,13 @@ public class MyClass
 {
     public void F() 
     {
-        MyClass.YesMine.Really.ConsoleApplication.AddRootCommand(A);
+        var cliRoot = CliRoot.Create(A);
+        cliRoot.AddCommand<MyClass.YesMine.Really>(B);
     }
     public void A(int i) 
+    {
+    }
+    public void B(int i) 
     {
     }
 }";
@@ -81,9 +111,13 @@ public class MyClass
 {
     public void F() 
     {
-        MyClass.YesMine.Really.ConsoleApplication.AddRootCommand(null);
+        cliRoot.AddCommand<MyClass.YesMine.Really>(null);
     }
-}";
+    public void A(int i) 
+    {
+    }
+}
+";
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
@@ -100,7 +134,10 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommandX(A);
+        var cliRoot = CliRoot.CreateX(A);
+    }
+    public void A(int i) 
+    {
     }
 
 }";
@@ -119,7 +156,7 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand();
+        var cliRoot = CliRoot.Create();
     }
 
 }";
@@ -138,9 +175,15 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(A, B, C);
+        var cliRoot = CliRoot.Create(A,B,C);
     }
     public void A(int i) 
+    {
+    }
+    public void B(int i) 
+    {
+    }
+    public void C(int i) 
     {
     }
 }";
@@ -159,11 +202,21 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.B.AddSubCommand(A);
-        ConsoleApplication.C.AddSubCommand(A);
-        ConsoleApplication.D.AddSubCommand(A);
+        var cliRoot = CliRoot.Create(A);
+        cliRoot.AddCommand(B);
+        cliRoot.AddCommand(C);
+        cliRoot.AddCommand(D);
     }
     public void A(int i) 
+    {
+    }
+    public void B(int i) 
+    {
+    }
+    public void C(int i) 
+    {
+    }
+    public void D(int i) 
     {
     }
 }";
@@ -177,7 +230,7 @@ public class MyClass
         public Task Command_found_in_top_level_are_output()
         {
             const string input = @"
-ConsoleApplication.AddRootCommand(A);
+var cliRoot = CliRoot.Create(A);
 static void A(int i) 
 {
 }
@@ -201,15 +254,27 @@ namespace Fred
     {
         public void F() 
         {
-            ConsoleApplication.AddRootCommand(A);
-            ConsoleApplication.A.B.AddSubCommand(A);
-            ConsoleApplication.A.C.AddSubCommand(A);
-            ConsoleApplication.A.B.D.AddSubCommand(A);
+            // This is deliberately a wee tad goofy
+            var cliRoot = CliRoot.Create(A);
+            cliRoot.AddCommand(B);
+            cliRoot.AddCommand(C);
+            cliRoot.AddCommand<Commands.B.C>(D);
+            cliRoot.AddCommand<Commands.B.C>(C);
+            cliRoot.AddCommand<Commands.B.D>(C);
         }
         public void A(int i) 
         {
         }
-    }
+        public void B(int i) 
+        {
+        }
+        public void C(int i) 
+        {
+        }
+        public void D(int i) 
+        {
+        } 
+}
 }";
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -226,7 +291,7 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(A);
+        var cliRoot = CliRoot.Create(A);
     }
 
     /// <summary>
@@ -253,8 +318,7 @@ public class MyClass
 {
     public void F() 
     {
-        var app = ConsoleApplication.Create();
-        app.SetRootCommand(A);
+        var cliRoot = CliRoot.Create(A);
     }
 
     [Description(""Command description in Attribute"")]
@@ -279,8 +343,7 @@ public class MyClass
 {
     public void F() 
     {
-        var app = ConsoleApplication.Create();
-        app.SetRootCommand(A);
+        var cliRoot = CliRoot.Create(A);
     }
 
     public void A(
@@ -304,8 +367,7 @@ public class MyClass
 {
     public void F() 
     {
-        var app = ConsoleApplication.Create();
-        app.SetRootCommand(A);
+        var cliRoot = CliRoot.Create(A);
     }
 
     public void A(
@@ -329,8 +391,7 @@ public class MyClass
 {
     public void F() 
     {
-        var app = ConsoleApplication.Create();
-        app.SetRootCommand(A);
+        var cliRoot = CliRoot.Create(A);
     }
 
     public void A(
@@ -355,8 +416,7 @@ public class MyClass
 {
     public void F() 
     {
-        var app = ConsoleApplication.Create();
-        app.SetRootCommand(A);
+        var cliRoot = CliRoot.Create(A);
     }
 
     public void A(
@@ -381,8 +441,7 @@ public class MyClass
 {
     public void F() 
     {
-        var app = ConsoleApplication.Create();
-        app.SetRootCommand(A);
+        var cliRoot = CliRoot.Create(A);
     }
 
     [Aliases(""C1"")]
@@ -409,8 +468,7 @@ public class MyClass
 {
     public void F() 
     {
-        var app = ConsoleApplication.Create();
-        app.SetRootCommand(A);
+        var cliRoot = CliRoot.Create(A);
     }
 
     public void A(

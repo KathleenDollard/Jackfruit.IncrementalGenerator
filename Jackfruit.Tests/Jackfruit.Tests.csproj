@@ -29,6 +29,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Jackfruit.IncrementalGenerator\Jackfruit.IncrementalGenerator.csproj" />
+		<!--<ProjectReference Include="..\Jackfruit.Runtime\Jackfruit.Runtime.csproj" />-->
 	</ItemGroup>
 
 	<ItemGroup>

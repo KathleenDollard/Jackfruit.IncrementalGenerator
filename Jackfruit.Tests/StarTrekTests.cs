@@ -32,7 +32,7 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(Handlers.Voyager);
+        var cliRoot = CliRoot.Create(Handlers.Voyager);
     }
 
 }";
@@ -44,10 +44,10 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(Handlers.StarTrek);
-        ConsoleApplication.StarTrek.AddSubCommand(Handlers.NextGeneration);
-        ConsoleApplication.StarTrek.NextGeneration.AddSubCommand(Handlers.DeepSpaceNine);
-        ConsoleApplication.StarTrek.NextGeneration.AddSubCommand(Handlers.Voyager);
+        var cliRoot = CliRoot.Create(Handlers.StarTrek);
+        cliRoot.AddCommand(Handlers.NextGeneration);
+        cliRoot.AddCommand<Commands.NextGeneration>(Handlers.DeepSpaceNine);
+        cliRoot.AddCommand<Commands.NextGeneration>(Handlers.Voyager);
 
         var cliRoot = ConsoleApplication.RootCommand;
         var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();
@@ -64,7 +64,7 @@ public class MyClass
 {
     public void F() 
     {
-        var app = ConsoleApplication.AddRootCommand(Handlers.NextGeneration);
+        var cliRoot = CliRoot.Create(Handlers.NextGeneration);
     }
 
 }";

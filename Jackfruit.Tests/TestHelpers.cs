@@ -28,6 +28,7 @@ internal class TestHelpers
                 MetadataReference.CreateFromFile(typeof(T).Assembly.Location),
                 //MetadataReference.CreateFromFile(typeof(EnumExtensionsAttribute).Assembly.Location)
             });
+        var temp = references.Where(x => x.FilePath.Contains("Jackfruit", StringComparison.OrdinalIgnoreCase));
         var compilation = CSharpCompilation.Create(
             "generator",
             syntaxTrees,

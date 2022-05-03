@@ -47,7 +47,7 @@ namespace Jackfruit
       }
       public static class NextGeneration
       {
-         public static void AddSubCommand(Delegate handler)
+         public static void AddCommand(Delegate handler)
          {
          }
          

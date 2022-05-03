@@ -3,6 +3,7 @@
 //Id:          DemoHandlers.Handlers.StarTrek(string, bool, bool, bool)
 //Path:        
 //Description: This is the description for StarTrek
+//Aliases:     
 //Namespace:   DemoHandlers
 //Members:     
    //Argument:
@@ -40,10 +41,11 @@
 // *******************************
 
 /*
-//Key:         StarTrek
+//Key:         CliRoot
 //Id:          DemoHandlers.Handlers.NextGeneration(string, bool)
-//Path:        StarTrek
+//Path:        CliRoot
 //Description: This is the description for Next Generation
+//Aliases:     
 //Namespace:   DemoHandlers
 //Members:     
    //Argument:
@@ -65,10 +67,11 @@
 // *******************************
 
 /*
-//Key:         StarTrekNextGeneration
+//Key:         CliRootNextGeneration
 //Id:          DemoHandlers.Handlers.DeepSpaceNine(string, bool, bool, bool, bool, bool)
-//Path:        StarTrek.NextGeneration
+//Path:        CliRoot.NextGeneration
 //Description: 
+//Aliases:     
 //Namespace:   DemoHandlers
 //Members:     
    //Option:
@@ -124,10 +127,11 @@
 // *******************************
 
 /*
-//Key:         StarTrekNextGeneration
+//Key:         CliRootNextGeneration
 //Id:          DemoHandlers.Handlers.Voyager(string, bool, bool, bool, bool, bool)
-//Path:        StarTrek.NextGeneration
+//Path:        CliRoot.NextGeneration
 //Description: 
+//Aliases:     
 //Namespace:   DemoHandlers
 //Members:     
    //Option:

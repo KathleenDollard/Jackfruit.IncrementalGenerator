@@ -47,19 +47,19 @@ namespace Jackfruit
       }
       public static class StarTrek
       {
-         public static void AddSubCommand(Delegate handler)
+         public static void AddCommand(Delegate handler)
          {
          }
          
          public static class NextGeneration
          {
-            public static void AddSubCommand(Delegate handler)
+            public static void AddCommand(Delegate handler)
             {
             }
             
             public static class DeepSpaceNine
             {
-               public static void AddSubCommand(Delegate handler)
+               public static void AddCommand(Delegate handler)
                {
                }
                

@@ -206,7 +206,7 @@ namespace Jackfruit.IncrementalGenerator
                     .Public()
                     .Static()
                     .Members(
-                        Method(Helpers.AddSubCommand, Void())
+                        Method(Helpers.AddCommandName, Void())
                             .Public()
                             .Static()
                             .Parameters(Parameter("handler", "Delegate")));

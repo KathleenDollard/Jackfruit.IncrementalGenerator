@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jackfruit.IncrementalGenerator.Lib
+﻿namespace Jackfruit
 {
     [System.AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
-    sealed class DescriptionAttribute : Attribute
+    public sealed class DescriptionAttribute : Attribute
     {
         public DescriptionAttribute(string description)
         {
