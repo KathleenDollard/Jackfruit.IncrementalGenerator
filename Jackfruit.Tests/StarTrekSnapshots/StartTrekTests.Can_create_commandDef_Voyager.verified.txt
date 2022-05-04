@@ -6,17 +6,15 @@
 //Aliases:     
 //Namespace:   DemoHandlers
 //Members:     
-   //Option:
-      //Option Id:      greeting
-      //Name:           greeting
+   //Argument:
+      //Argumet Id:     greetingArg
+      //Name:           Greeting
       //TypeName:       string
       //Description:    
-      //Aliases:        
-      //ArgDisplayName: 
       //Required:       False
    //Option:
       //Option Id:      janeway
-      //Name:           janeway
+      //Name:           Janeway
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -24,7 +22,7 @@
       //Required:       False
    //Option:
       //Option Id:      chakotay
-      //Name:           chakotay
+      //Name:           Chakotay
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -32,7 +30,7 @@
       //Required:       False
    //Option:
       //Option Id:      torres
-      //Name:           torres
+      //Name:           Torres
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -40,7 +38,7 @@
       //Required:       False
    //Option:
       //Option Id:      tuvok
-      //Name:           tuvok
+      //Name:           Tuvok
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -48,7 +46,7 @@
       //Required:       False
    //Option:
       //Option Id:      sevenOfNine
-      //Name:           sevenOfNine
+      //Name:           SevenOfNine
       //TypeName:       bool
       //Description:    
       //Aliases:        

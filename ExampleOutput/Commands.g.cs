@@ -270,7 +270,7 @@ namespace DemoHandlersUpdated
                         command.Handler = command;
                         return command;
                     }
-
+                        
                     public struct Result
                     {
                         public Result(Voyager command, CommandResult commandResult)

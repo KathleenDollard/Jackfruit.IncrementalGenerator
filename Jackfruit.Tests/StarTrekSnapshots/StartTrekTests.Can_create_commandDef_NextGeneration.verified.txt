@@ -8,13 +8,13 @@
 //Members:     
    //Argument:
       //Argumet Id:     greetingArg
-      //Name:           greeting
+      //Name:           Greeting
       //TypeName:       string
       //Description:    
       //Required:       False
    //Option:
       //Option Id:      picard
-      //Name:           picard
+      //Name:           Picard
       //TypeName:       bool
       //Description:    This is the description for Picard
       //Aliases:        

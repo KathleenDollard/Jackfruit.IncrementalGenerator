@@ -1,7 +1,7 @@
-﻿namespace Jackfruit
-{
-    public class ConsoleAppBase
-    {
+﻿//namespace Jackfruit
+//{
+//    public class ConsoleAppBase
+//    {
 
-    }
-}
+//    }
+//}

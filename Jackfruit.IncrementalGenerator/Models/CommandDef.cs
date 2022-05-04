@@ -54,7 +54,7 @@
         }
 
         public string Id { get; }
-        public string Name { get; }
+        public string Name { get; internal set; }
         public string UniqueId { get; }
         public string Namespace { get; }
         public string? Description { get; }

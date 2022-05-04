@@ -1,108 +1,71 @@
-﻿//
-namespace Jackfruit
-{
-    public partial class ConsoleApplication
-    {
-        public static void AddRootCommand(Delegate rootCommandHandler) { }
-    }
-}
-
-// *******************************
-
-// This file is created by a generator.
+﻿// This file is created by a generator.
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.Threading.Tasks;
-using DemoHandlers;
-
-namespace Jackfruit
-{
-   public partial class ConsoleApplication
-   {
-      private NextGenerationCommand _CliRoot;
-      private ConsoleApplication()
-      {
-      }
-      
-      public static ConsoleApplication Create()
-      {
-         var app = new ConsoleApplication();
-         app._CliRoot = NextGenerationCommand.Create();
-         return app;
-      }
-      
-      public static int Run(string[] args)
-      {
-         var app = ConsoleApplication.Create();
-         return app.CliRoot.Invoke(args);
-      }
-      
-      public NextGenerationCommand CliRoot
-      {
-         get
-         {
-            return _CliRoot;
-         }
-      }
-      public static class NextGeneration
-      {
-         public static void AddCommand(Delegate handler)
-         {
-         }
-         
-      }
-      
-   }
-   
-}
-
-// *******************************
-
-// This file is created by a generator.
-using System;
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.Threading.Tasks;
+using System.CommandLine.Parsing;
+using Jackfruit;
 
 namespace DemoHandlers
 {
-   public partial class NextGenerationCommand : RootCommand, ICommandHandler
+   public partial class CliRoot : GeneratedCommandBase<CliRoot, CliRoot.Result>, ICommandHandler
    {
-      private NextGenerationCommand()
+      public static CliRoot Create(Delegate MethodToRun)
+      {
+         return Create();
+      }
+      
+      private CliRoot() : base("CliRoot")
       {
       }
       
-      public static NextGenerationCommand Create()
+      public static CliRoot Create()
       {
-         var command = new NextGenerationCommand();
-         command.greetingArgument = new Argument<string>("greetingArg");
-         command.Add(command.greetingArgument);
-         command.picardOption = new Option<bool>("--picard");
-         command.picardOption.Description = "This is the description for Picard";
-         command.Add(command.picardOption);
+         var command = new CliRoot();
+         command.GreetingArgument = new Argument<string>("greetingArg");
+         command.Add(command.GreetingArgument);
+         command.PicardOption = new Option<bool>("--Picard");
+         command.PicardOption.Description = "This is the description for Picard";
+         command.Add(command.PicardOption);
+         command.SystemCommandLineCommand.AddValidator(command.Validate);
          command.Handler = command;
          return command;
       }
       
+      public class Result
+      {
+         internal Result(CliRoot command, CommandResult result)
+         {
+            Greeting = CommandResult.GetValueForArgument(command.GreetingArgument);
+            Picard = CommandResult.GetValueForOption(command.PicardOption);
+         }
+         
+          string Greeting {get; set;}
+          bool Picard {get; set;}
+      }
+      
+      public override Result GetResult(CommandResult result)
+      {
+         return new Result(this, result);
+      }
+      
+      public int Invoke(InvocationContext context)
+      {
+         Handlers.NextGeneration(result.GreetingArgument, result.PicardOption);
+         return context.ExitCode;
+      }
+      
       public Task<int> InvokeAsync(InvocationContext context)
       {
-         Handlers.NextGeneration(greetingArgumentResult(context), picardOptionResult(context));
+         Handlers.NextGeneration(result.GreetingArgument, result.PicardOption);
          return Task.FromResult(context.ExitCode);
       }
       
-      public Argument<string> greetingArgument {get; set;}
-      public string greetingArgumentResult(InvocationContext context)
-      {
-         return context.ParseResult.GetValueForArgument<string>(greetingArgument);
-      }
-      
-      public Option<bool> picardOption {get; set;}
-      public bool picardOptionResult(InvocationContext context)
-      {
-         return context.ParseResult.GetValueForOption<bool>(picardOption);
-      }
-      
+      public Argument<string> GreetingArgument {get; set;}
+      public Option<bool> PicardOption {get; set;}
+   }
+   
+   public class Commands
+   {
    }
    
 }

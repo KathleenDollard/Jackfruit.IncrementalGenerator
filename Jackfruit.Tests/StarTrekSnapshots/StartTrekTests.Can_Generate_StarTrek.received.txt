@@ -140,11 +140,10 @@ namespace DemoHandlers
          
          public Argument<string> GreetingArgument {get; set;}
          public Option<bool> PicardOption {get; set;}
-// The following has an issue in ConsoleApp14
          public Commands.NextGeneration.DeepSpaceNine DeepSpaceNineCommand {get; set;}
          public partial class DeepSpaceNine : GeneratedCommandBase<DeepSpaceNine, DeepSpaceNine.Result, NextGeneration>, ICommandHandler
          {
-            private DeepSpaceNine(Commands.NextGeneration parent) : base("DeepSpaceNine", parent)
+            private DeepSpaceNine(Commands.NextGeneration.NextGeneration parent) : base("DeepSpaceNine", parent)
             {
             }
             
@@ -225,8 +224,6 @@ namespace DemoHandlers
          }
          
       }
-
-// Voyager is missing
       
    }
    

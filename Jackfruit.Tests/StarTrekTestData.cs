@@ -39,21 +39,21 @@ namespace DemoHandlers
             {
                 if (picard) { Greet(greetingArg, ""Jean-Luc Picard""); }
             }
-            public static void DeepSpaceNine(string greeting, bool sisko, bool odo, bool dax, bool worf, bool oBrien)
+            public static void DeepSpaceNine(string greetingArg, bool sisko, bool odo, bool dax, bool worf, bool oBrien)
             {
-                if (sisko) { Greet(greeting, ""Benjamin Sisko""); }
-                if (odo) { Greet(greeting, ""Constable Odo""); }
-                if (dax) { Greet(greeting, ""Ezri Dax""); }
-                if (worf) { Greet(greeting, ""Worf""); }
-                if (oBrien) { Greet(greeting, ""Miles O'Brien""); }
+                if (sisko) { Greet(greetingArg, ""Benjamin Sisko""); }
+                if (odo) { Greet(greetingArg, ""Constable Odo""); }
+                if (dax) { Greet(greetingArg, ""Ezri Dax""); }
+                if (worf) { Greet(greetingArg, ""Worf""); }
+                if (oBrien) { Greet(greetingArg, ""Miles O'Brien""); }
             }
-            public static void Voyager(string greeting, bool janeway, bool chakotay, bool torres, bool tuvok, bool sevenOfNine)
+            public static void Voyager(string greetingArg, bool janeway, bool chakotay, bool torres, bool tuvok, bool sevenOfNine)
             {
-                if (janeway) { Greet(greeting, ""Kathryn Janeway""); }
-                if (chakotay) { Greet(greeting, ""Chakotay""); }
-                if (torres) { Greet(greeting, ""B'Elanna Torres""); }
-                if (tuvok) { Greet(greeting, ""Tuvok""); }
-                if (sevenOfNine) { Greet(greeting, ""Sevan of Nine""); }
+                if (janeway) { Greet(greetingArg, ""Kathryn Janeway""); }
+                if (chakotay) { Greet(greetingArg, ""Chakotay""); }
+                if (torres) { Greet(greetingArg, ""B'Elanna Torres""); }
+                if (tuvok) { Greet(greetingArg, ""Tuvok""); }
+                if (sevenOfNine) { Greet(greetingArg, ""Sevan of Nine""); }
             }
         }
     }

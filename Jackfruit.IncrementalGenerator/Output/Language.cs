@@ -31,6 +31,7 @@ namespace Jackfruit.IncrementalGenerator
 
         public abstract string StaticKeyword { get; }
         public abstract string AsyncKeyword { get; }
+        public abstract string OverrideKeyword { get; }
         public abstract string PartialKeyword { get; }
         public abstract string AbstractKeyword { get; }
         public abstract string ReadonlyKeyword { get; }
@@ -43,6 +44,7 @@ namespace Jackfruit.IncrementalGenerator
         public abstract string UsingKeyword { get; }
         public abstract string NamespaceKeyword { get; }
         public abstract string ClassKeyword { get; }
+        public abstract string ThrowKeyword { get; }
         public abstract string GetKeyword { get; }
         public abstract string SetKeyword { get; }
         public abstract string IfKeyword { get; }
@@ -108,6 +110,8 @@ namespace Jackfruit.IncrementalGenerator
         public abstract IEnumerable<string> Return(ExpressionBase expression);
         public abstract IEnumerable<string> SimpleCall(ExpressionBase expression);
         public abstract IEnumerable<string> Comment(string text);
+        public abstract IEnumerable<string> Throw(NamedItemModel exception, params ExpressionBase[] args);
+
 
         // expressions
         public abstract string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments);
@@ -258,6 +262,9 @@ namespace Jackfruit.IncrementalGenerator
                         break;
                     case CommentModel commentModel:
                         writer.AddLines(Comment(commentModel.Text));
+                        break;
+                    case ThrowModel throwModel:
+                        writer.AddLines(Throw(throwModel.Exception, throwModel.Args));
                         break;
                     default:
                         throw new NotImplementedException();

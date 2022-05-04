@@ -8,7 +8,7 @@
 //Members:     
    //Option:
       //Option Id:      i
-      //Name:           i
+      //Name:           I
       //TypeName:       int
       //Description:    
       //Aliases:        
@@ -28,7 +28,7 @@
 //Members:     
    //Option:
       //Option Id:      i
-      //Name:           i
+      //Name:           I
       //TypeName:       int
       //Description:    
       //Aliases:        

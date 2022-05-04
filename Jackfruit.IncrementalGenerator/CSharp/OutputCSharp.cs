@@ -15,6 +15,7 @@ namespace Jackfruit.IncrementalGenerator
         public override string PrivateProtectedKeyword { get; } = "private protected";
 
         public override string StaticKeyword { get; } = "static";
+        public override string OverrideKeyword { get; } = "override";
         public override string AsyncKeyword { get; } = "async";
         public override string PartialKeyword { get; } = "partial";
         public override string AbstractKeyword { get; } = "abstract";
@@ -25,6 +26,7 @@ namespace Jackfruit.IncrementalGenerator
         public override string UsingKeyword { get; } = "using";
         public override string NamespaceKeyword { get; } = "namespace";
         public override string ClassKeyword { get; } = "class";
+        public override string ThrowKeyword { get; } = "throw";
         public override string GetKeyword { get; } = "get";
         public override string SetKeyword { get; } = "set";
         public override string IfKeyword { get; } = "if";
@@ -125,6 +127,7 @@ namespace Jackfruit.IncrementalGenerator
         public override IEnumerable<string> MethodOpen(MethodModel model)
         {
             var keywords = $"{OptionalKeyword(model.IsStatic, StaticKeyword)}" +
+                $"{OptionalKeyword(model.IsOverride, OverrideKeyword)}" +
                 $"{OptionalKeyword(model.IsAsync, AsyncKeyword)}" +
                 $"{OptionalKeyword(model.IsPartial, PartialKeyword)}";
             return new List<string>
@@ -343,6 +346,13 @@ namespace Jackfruit.IncrementalGenerator
                 {
                     $"// {text}"
                 };
+
+        public override IEnumerable<string> Throw(NamedItemModel exception, params ExpressionBase[] args)
+            => new List<string>
+                {
+                    $"{ThrowKeyword} {exception}({string.Join(", ", args.Select(a=>Expression(a).ToString()))});"
+                };
+
 
         // Expressions
         public override string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments)

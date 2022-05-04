@@ -8,13 +8,13 @@
 //Members:     
    //Argument:
       //Argumet Id:     greetingArg
-      //Name:           greeting
+      //Name:           Greeting
       //TypeName:       string
       //Description:    
       //Required:       False
    //Option:
       //Option Id:      kirk
-      //Name:           kirk
+      //Name:           Kirk
       //TypeName:       bool
       //Description:    Whether to greet Captain Kirk
       //Aliases:        
@@ -22,7 +22,7 @@
       //Required:       False
    //Option:
       //Option Id:      spock
-      //Name:           spock
+      //Name:           Spock
       //TypeName:       bool
       //Description:    Whether to greet Spock
       //Aliases:        
@@ -30,7 +30,7 @@
       //Required:       False
    //Option:
       //Option Id:      uhura
-      //Name:           uhura
+      //Name:           Uhura
       //TypeName:       bool
       //Description:    Whether to greet Lieutenant Uhura
       //Aliases:        
@@ -50,13 +50,13 @@
 //Members:     
    //Argument:
       //Argumet Id:     greetingArg
-      //Name:           greeting
+      //Name:           Greeting
       //TypeName:       string
       //Description:    
       //Required:       False
    //Option:
       //Option Id:      picard
-      //Name:           picard
+      //Name:           Picard
       //TypeName:       bool
       //Description:    This is the description for Picard
       //Aliases:        
@@ -74,17 +74,15 @@
 //Aliases:     
 //Namespace:   DemoHandlers
 //Members:     
-   //Option:
-      //Option Id:      greeting
-      //Name:           greeting
+   //Argument:
+      //Argumet Id:     greetingArg
+      //Name:           Greeting
       //TypeName:       string
       //Description:    
-      //Aliases:        
-      //ArgDisplayName: 
       //Required:       False
    //Option:
       //Option Id:      sisko
-      //Name:           sisko
+      //Name:           Sisko
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -92,7 +90,7 @@
       //Required:       False
    //Option:
       //Option Id:      odo
-      //Name:           odo
+      //Name:           Odo
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -100,7 +98,7 @@
       //Required:       False
    //Option:
       //Option Id:      dax
-      //Name:           dax
+      //Name:           Dax
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -108,7 +106,7 @@
       //Required:       False
    //Option:
       //Option Id:      worf
-      //Name:           worf
+      //Name:           Worf
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -116,7 +114,7 @@
       //Required:       False
    //Option:
       //Option Id:      oBrien
-      //Name:           oBrien
+      //Name:           OBrien
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -134,17 +132,15 @@
 //Aliases:     
 //Namespace:   DemoHandlers
 //Members:     
-   //Option:
-      //Option Id:      greeting
-      //Name:           greeting
+   //Argument:
+      //Argumet Id:     greetingArg
+      //Name:           Greeting
       //TypeName:       string
       //Description:    
-      //Aliases:        
-      //ArgDisplayName: 
       //Required:       False
    //Option:
       //Option Id:      janeway
-      //Name:           janeway
+      //Name:           Janeway
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -152,7 +148,7 @@
       //Required:       False
    //Option:
       //Option Id:      chakotay
-      //Name:           chakotay
+      //Name:           Chakotay
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -160,7 +156,7 @@
       //Required:       False
    //Option:
       //Option Id:      torres
-      //Name:           torres
+      //Name:           Torres
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -168,7 +164,7 @@
       //Required:       False
    //Option:
       //Option Id:      tuvok
-      //Name:           tuvok
+      //Name:           Tuvok
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -176,7 +172,7 @@
       //Required:       False
    //Option:
       //Option Id:      sevenOfNine
-      //Name:           sevenOfNine
+      //Name:           SevenOfNine
       //TypeName:       bool
       //Description:    
       //Aliases:        
