@@ -19,7 +19,7 @@ namespace Jackfruit
         {
         }
 
-        Result GetResult(CommandResult CommandResult)
+        public override Result GetResult(CommandResult CommandResult)
         {
             throw Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel("Result not available");
         }

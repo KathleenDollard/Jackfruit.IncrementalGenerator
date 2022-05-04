@@ -10,10 +10,6 @@ namespace Jackfruit.Tests
     {
         public void Initialize(IncrementalGeneratorInitializationContext initContext)
         {
-            //initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource(
-            //    "ConsoleApplication.g.cs",
-            //    SourceText.From(Helpers.ConsoleClass, Encoding.UTF8)));
-
             IncrementalValuesProvider<CommandDef> commandDefs = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => Helpers.IsSyntaxInteresting(s),

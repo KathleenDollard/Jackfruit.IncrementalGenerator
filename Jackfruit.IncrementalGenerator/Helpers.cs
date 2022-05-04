@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 using static Jackfruit.IncrementalGenerator.RoslynHelpers;
 
@@ -43,27 +44,27 @@ namespace Jackfruit.IncrementalGenerator
 
         }
 
-        private static string? GetName(SyntaxNode expression) 
+        private static string? GetName(SyntaxNode expression)
             => expression switch
-                {
-                    MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
-                        => memberAccess.Name is GenericNameSyntax genericName 
-                            ? genericName.Identifier.ValueText
-                            : memberAccess.Name.ToString(),
-                    IdentifierNameSyntax identifier
-                         => identifier.ToString(),
-                    _ => null
-                };
+            {
+                MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                    => memberAccess.Name is GenericNameSyntax genericName
+                        ? genericName.Identifier.ValueText
+                        : memberAccess.Name.ToString(),
+                IdentifierNameSyntax identifier
+                     => identifier.ToString(),
+                _ => null
+            };
 
         private static string? GetCaller(SyntaxNode expression)
             => expression switch
-                {
-                    MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
-                        => memberAccess.Expression.ToString(),
-                    IdentifierNameSyntax identifier
-                         => "",
-                    _ => null
-                };
+            {
+                MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                    => memberAccess.Expression.ToString(),
+                IdentifierNameSyntax identifier
+                     => "",
+                _ => null
+            };
 
         private static string GetPath(SyntaxNode expression)
         {
@@ -73,7 +74,7 @@ namespace Jackfruit.IncrementalGenerator
                 MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
                     => name == CreateName
                         ? ""
-                        : name != AddCommandName 
+                        : name != AddCommandName
                             ? ""
                             : memberAccess.Name is GenericNameSyntax genericName
                                 ? $"{CliRoot}.{PathFromGenericTypes(genericName.TypeArgumentList.Arguments.First())}"
@@ -109,7 +110,7 @@ namespace Jackfruit.IncrementalGenerator
                 return null;
             }
             var path = GetPath(invocation.Expression).Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-            
+
             //We create details first because at this point we don't know what is an argument or option
             var delegateArg = invocation.ArgumentList.Arguments[0].Expression;
             var methodSymbol = MethodOrCandidateSymbol(context.SemanticModel, delegateArg);
@@ -172,30 +173,43 @@ namespace Jackfruit.IncrementalGenerator
                 commandDetail.TypeName ?? "Unknown");
         }
 
-        public static CommandDefBase TreeFromList(this IEnumerable<CommandDef> commandDefs, int pos)
+        public static CommandDefBase TreeFromList(this IEnumerable<CommandDef> commandDefs, int pos = 0)
+            => TreeFromListInternal(commandDefs, pos).FirstOrDefault() ?? new EmptyCommandDef();
+
+
+        public static IEnumerable<CommandDefBase> TreeFromListInternal(this IEnumerable<CommandDef> commandDefs, int pos)
         {
             if (pos > 10) { throw new InvalidOperationException("Runaway recursion suspected"); }
             // This throws on badly formed trees. not sure whether to just let that happen and catch, or do more work here
             var roots = commandDefs.Where(x => GroupKey(x, pos) is null);
-            var root = roots.FirstOrDefault();
-            if (root is null) { return new EmptyCommandDef(); }
 
-            var remaining = commandDefs.Except(roots);
-            if (remaining.Any())
+            foreach (var root in roots)
             {
-                var groups = remaining.GroupBy(x => GroupKey(x, pos));
-                var subCommands = new List<CommandDefBase>();
-                foreach (var group in groups)
-                {
-                    var subCommand = group.TreeFromList(pos + 1);
-                    subCommands.Add(subCommand);
-                }
+                var subCommands = ProcessRoot(pos, commandDefs, roots, root);
                 root.SubCommands = subCommands;
             }
-            return root;
+
+
+            return roots;
 
             static string? GroupKey(CommandDef commandDef, int pos)
                 => commandDef.Path.Skip(pos).FirstOrDefault();
+
+            static IEnumerable<CommandDefBase> ProcessRoot(int pos, IEnumerable<CommandDef> commandDefs, IEnumerable<CommandDef> roots, CommandDefBase root)
+            {
+                var subCommands = new List<CommandDefBase>();
+                var remaining = commandDefs.Except(roots);
+                if (remaining.Any())
+                {
+                    var groups = remaining.GroupBy(x => GroupKey(x, pos));
+                    foreach (var group in groups)
+                    {
+                        var newSubCommands = group.TreeFromListInternal(pos + 1);
+                        subCommands.AddRange(newSubCommands);
+                    }
+                }
+                return subCommands;
+            }
         }
     }
 }

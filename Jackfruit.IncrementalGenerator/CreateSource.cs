@@ -27,8 +27,8 @@ namespace Jackfruit.IncrementalGenerator
         private static string CommandFullClassName(IEnumerable<CommandDef> ancestors, CommandDef? parent, CommandDef commandDef)
         {
             if (commandDef.Name == Helpers.CliRootName)
-            { return Helpers.CliRootName;  }
-            var ancestorList = 
+            { return Helpers.CliRootName; }
+            var ancestorList =
                     parent is null
                     ? ancestors
                     : new List<CommandDef> { parent }.Union(ancestors);
@@ -134,7 +134,7 @@ namespace Jackfruit.IncrementalGenerator
         private static ClassModel SubCommands(CommandDef commandDef)
              => Class("Commands")
                 .Public()
-                .Members(SubCommandClasses(Array.Empty<CommandDef>(), commandDef));
+                .Members(SubCommandClasses(Array.Empty<CommandDef>(), commandDef.Members, commandDef));
 
         private static IMember[] RootCommandMembers(CommandDef commandDef)
         {
@@ -146,22 +146,33 @@ namespace Jackfruit.IncrementalGenerator
                     .Parameters(Parameter(methodToRun, "Delegate"))
                     .Statements(
                         Return(Invoke("", create))));
-            members.AddRange(CommonClassMembers(Enumerable.Empty<CommandDef>(), commandDef));
+            members.AddRange(CommonClassMembers(Enumerable.Empty<CommandDef>(), Enumerable.Empty<MemberDef>(), commandDef.Members, commandDef));
             return members.ToArray();
         }
 
-        private static IMember[] SubCommandClasses(IEnumerable<CommandDef> ancestors, CommandDef commandDef)
+        private static IMember[] SubCommandClasses(IEnumerable<CommandDef> ancestors,
+                                                   IEnumerable<MemberDef> ancestorMembers,
+                                                   CommandDef commandDef)
         {
+            // TODO: Consider moving Ancestors and ancestor members to CommandDef. These would be null until the tree is built.
             var myAncestors = ancestors.ToList();
             myAncestors.Insert(0, commandDef);
+            // TODO: have a force option
+            var myMembers = NonAncestorMembers(ancestorMembers, commandDef);
+            var newAncestorMembers = ancestorMembers.Union(myMembers).ToList();
+
             return commandDef.SubCommands
                     .OfType<CommandDef>()
                     .Select(cmd =>
                          CommandClassDeclaration(cmd)
                             .InheritedFrom(GeneratedCommandBase(CommandClassName(cmd), CommandClassName(commandDef)))
-                            .Members(CommonClassMembers(myAncestors, cmd)
-                                .Union(SubCommandClasses(myAncestors, cmd)).ToArray()))
+                            .Members(CommonClassMembers(myAncestors, newAncestorMembers, NonAncestorMembers(ancestorMembers,cmd), cmd)
+                                .Union(SubCommandClasses(myAncestors, newAncestorMembers, cmd)).ToArray()))
                     .ToArray();
+            static IEnumerable<MemberDef> NonAncestorMembers(IEnumerable<MemberDef> ancestorMembers, CommandDef commandDef)
+                => commandDef.Members
+                    .Where(m => !ancestorMembers.Any(a => a.Name.Equals(m.Name)))
+                    .ToList();
         }
 
         private static ClassModel CommandClassDeclaration(CommandDef commandDef)
@@ -173,29 +184,29 @@ namespace Jackfruit.IncrementalGenerator
                         ? Array.Empty<NamedItemModel>()
                         : new NamedItemModel[] { "ICommandHandler" });
 
-        private static IMember[] CommonClassMembers(IEnumerable<CommandDef> ancestors, CommandDef commandDef)
+        private static IMember[] CommonClassMembers(IEnumerable<CommandDef> ancestors,
+                                                    IEnumerable<MemberDef> ancestorMembers,
+                                                    IEnumerable<MemberDef> myMembers,
+                                                    CommandDef commandDef)
         {
-            var ancestorMembers = ancestors.SelectMany(m => m.Members).Where(m => m is OptionDef or ArgumentDef);
-            // TODO: have a force option
-            var myMembers = commandDef.Members.Where(m => !ancestorMembers.Any(a => a.Name.Equals(m.Name)));
 
             List<IMember> members = new()
             {
                 ancestors.Any()
                     ? Constructor(CommandClassName(commandDef))
                         .Private()
-                        .Parameters(Parameter("parent", CommandFullClassName(ancestors.Skip(1), ancestors.First(), ancestors.First())))
+                        .Parameters(Parameter("parent", CommandFullClassName(ancestors.Skip(1), null, ancestors.First())))
                         .Base(commandDef.Name, Symbol("parent"))
                     : Constructor(CommandClassName(commandDef))
                         .Private()
                         .Base(commandDef.Name),
-                CreateMethod(ancestors, commandDef),
+                CreateMethod(ancestors, myMembers, commandDef),
                 ResultClass(ancestorMembers, myMembers, commandDef),
                 GetResultMethod(commandDef),
                 InvokeHandlerMethod(commandDef),
                 InvokeAsyncHandlerMethod(commandDef)
             };
-            members.AddRange(commandDef.Members
+            members.AddRange(myMembers
                 .Where(m => m is OptionDef || m is ArgumentDef)
                 .Select(m => Property(MemberPropertyName(m), Generic(MemberPropertyStyle(m), m.TypeName))
                                 .Public()));
@@ -230,7 +241,7 @@ namespace Jackfruit.IncrementalGenerator
 
         private static MethodModel InvokeAsyncHandlerMethod(CommandDef commandDef)
         {
-
+            // This should be commandDef.Members, not myMembers because it should include parent members as requested
             var arguments = commandDef.Members
                     .Select(m => Symbol($"{result}.{MemberPropertyName(m)}"));
             var method =
@@ -252,7 +263,7 @@ namespace Jackfruit.IncrementalGenerator
 
         private static MethodModel InvokeHandlerMethod(CommandDef commandDef)
         {
-
+            // This should be commandDef.Members, not myMembers because it should include parent members as requested
             var arguments = commandDef.Members
                     .Select(m => Symbol($"{result}.{MemberPropertyName(m)}"));
             var method =
@@ -271,15 +282,15 @@ namespace Jackfruit.IncrementalGenerator
             return method;
         }
 
-        private static MethodModel CreateMethod(IEnumerable<CommandDef> ancestors, CommandDef commandDef)
+        private static MethodModel CreateMethod(IEnumerable<CommandDef> ancestors, IEnumerable<MemberDef> myMembers, CommandDef commandDef)
         {
             var method =
-                    Method("Create", CommandClassName(commandDef))
+                    Method(create, CommandClassName(commandDef))
                     .Public()
                     .Static()
                     .Statements(
                         AssignWithDeclare(commandVar, New(CommandFullClassName(ancestors, null, commandDef))));
-            foreach (var member in commandDef.Members)
+            foreach (var member in myMembers)
             {
                 switch (member)
                 {

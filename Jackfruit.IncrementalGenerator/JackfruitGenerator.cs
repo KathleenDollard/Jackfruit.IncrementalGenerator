@@ -38,7 +38,7 @@ namespace Jackfruit.IncrementalGenerator
             // Create a tree in the shape of the CLI. We will use both the listand the and tree to generate
             var rootCommandDef = commandDefs
                 .Collect()
-                .Select(static (x, _) => x.TreeFromList(0));
+                .Select(static (x, _) => x.TreeFromList());
 
             // Generate classes for each command. This code creates the System.CommandLine tree and includes the handler
             // It also collects the classes together, then adds the root so we know the namespace and can name the file we output

@@ -4,7 +4,7 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<PackageVersion>0.0.1-alpha9</PackageVersion>
+		<PackageVersion>0.0.1-alphaA</PackageVersion>
 		<LangVersion>10.0</LangVersion>
 	</PropertyGroup>
 

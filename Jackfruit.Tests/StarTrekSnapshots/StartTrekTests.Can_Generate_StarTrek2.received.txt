@@ -90,13 +90,13 @@ namespace DemoHandlers
          public static NextGeneration Create()
          {
             var command = new Commands.NextGeneration();
+            command.GreetingArgument = new Argument<string>("greetingArg");
+            command.Add(command.GreetingArgument);
             command.PicardOption = new Option<bool>("--Picard");
             command.PicardOption.Description = "This is the description for Picard";
             command.Add(command.PicardOption);
             command.DeepSpaceNineCommand = Commands.NextGeneration.DeepSpaceNine.Create();
             command.Add(command.DeepSpaceNineCommand);
-            command.VoyagerCommand = Commands.NextGeneration.Voyager.Create();
-            command.Add(command.VoyagerCommand);
             command.SystemCommandLineCommand.AddValidator(command.Validate);
             command.Handler = command;
             return command;
@@ -138,9 +138,9 @@ namespace DemoHandlers
             return Task.FromResult(context.ExitCode);
          }
          
+         public Argument<string> GreetingArgument {get; set;}
          public Option<bool> PicardOption {get; set;}
          public Commands.NextGeneration.DeepSpaceNine DeepSpaceNineCommand {get; set;}
-         public Commands.NextGeneration.Voyager VoyagerCommand {get; set;}
          public partial class DeepSpaceNine : GeneratedCommandBase<DeepSpaceNine, DeepSpaceNine.Result, NextGeneration>, ICommandHandler
          {
             private DeepSpaceNine(Commands.NextGeneration parent) : base("DeepSpaceNine", parent)
@@ -150,6 +150,8 @@ namespace DemoHandlers
             public static DeepSpaceNine Create()
             {
                var command = new Commands.NextGeneration.DeepSpaceNine();
+               command.GreetingArgument = new Argument<string>("greetingArg");
+               command.Add(command.GreetingArgument);
                command.SiskoOption = new Option<bool>("--Sisko");
                command.Add(command.SiskoOption);
                command.OdoOption = new Option<bool>("--Odo");
@@ -211,88 +213,12 @@ namespace DemoHandlers
                return Task.FromResult(context.ExitCode);
             }
             
+            public Argument<string> GreetingArgument {get; set;}
             public Option<bool> SiskoOption {get; set;}
             public Option<bool> OdoOption {get; set;}
             public Option<bool> DaxOption {get; set;}
             public Option<bool> WorfOption {get; set;}
             public Option<bool> OBrienOption {get; set;}
-         }
-         
-         public partial class Voyager : GeneratedCommandBase<Voyager, Voyager.Result, NextGeneration>, ICommandHandler
-         {
-            private Voyager(Commands.NextGeneration parent) : base("Voyager", parent)
-            {
-            }
-            
-            public static Voyager Create()
-            {
-               var command = new Commands.NextGeneration.Voyager();
-               command.JanewayOption = new Option<bool>("--Janeway");
-               command.Add(command.JanewayOption);
-               command.ChakotayOption = new Option<bool>("--Chakotay");
-               command.Add(command.ChakotayOption);
-               command.TorresOption = new Option<bool>("--Torres");
-               command.Add(command.TorresOption);
-               command.TuvokOption = new Option<bool>("--Tuvok");
-               command.Add(command.TuvokOption);
-               command.SevenOfNineOption = new Option<bool>("--SevenOfNine");
-               command.Add(command.SevenOfNineOption);
-               command.SystemCommandLineCommand.AddValidator(command.Validate);
-               command.Handler = command;
-               return command;
-            }
-            
-            public class Result
-            {
-               internal Result(Voyager command, CommandResult result)
-               {
-                  var parentResult = command.Parent.GetResult(result);
-                  Greeting = parentResult.Greeting;
-                  Kirk = parentResult.Kirk;
-                  Spock = parentResult.Spock;
-                  Uhura = parentResult.Uhura;
-                  Picard = parentResult.Picard;
-                  Janeway = CommandResult.GetValueForOption(command.JanewayOption);
-                  Chakotay = CommandResult.GetValueForOption(command.ChakotayOption);
-                  Torres = CommandResult.GetValueForOption(command.TorresOption);
-                  Tuvok = CommandResult.GetValueForOption(command.TuvokOption);
-                  SevenOfNine = CommandResult.GetValueForOption(command.SevenOfNineOption);
-               }
-               
-                string Greeting {get; set;}
-                bool Kirk {get; set;}
-                bool Spock {get; set;}
-                bool Uhura {get; set;}
-                bool Picard {get; set;}
-                bool Janeway {get; set;}
-                bool Chakotay {get; set;}
-                bool Torres {get; set;}
-                bool Tuvok {get; set;}
-                bool SevenOfNine {get; set;}
-            }
-            
-            public override Result GetResult(CommandResult result)
-            {
-               return new Result(this, result);
-            }
-            
-            public int Invoke(InvocationContext context)
-            {
-               Handlers.Voyager(result.GreetingArgument, result.JanewayOption, result.ChakotayOption, result.TorresOption, result.TuvokOption, result.SevenOfNineOption);
-               return context.ExitCode;
-            }
-            
-            public Task<int> InvokeAsync(InvocationContext context)
-            {
-               Handlers.Voyager(result.GreetingArgument, result.JanewayOption, result.ChakotayOption, result.TorresOption, result.TuvokOption, result.SevenOfNineOption);
-               return Task.FromResult(context.ExitCode);
-            }
-            
-            public Option<bool> JanewayOption {get; set;}
-            public Option<bool> ChakotayOption {get; set;}
-            public Option<bool> TorresOption {get; set;}
-            public Option<bool> TuvokOption {get; set;}
-            public Option<bool> SevenOfNineOption {get; set;}
          }
          
       }
