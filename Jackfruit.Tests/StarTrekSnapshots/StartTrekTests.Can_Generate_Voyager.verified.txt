@@ -42,20 +42,20 @@ namespace DemoHandlers
       {
          internal Result(CliRoot command, CommandResult result)
          {
-            Greeting = CommandResult.GetValueForArgument(command.GreetingArgument);
-            Janeway = CommandResult.GetValueForOption(command.JanewayOption);
-            Chakotay = CommandResult.GetValueForOption(command.ChakotayOption);
-            Torres = CommandResult.GetValueForOption(command.TorresOption);
-            Tuvok = CommandResult.GetValueForOption(command.TuvokOption);
-            SevenOfNine = CommandResult.GetValueForOption(command.SevenOfNineOption);
+            Greeting = result.GetValueForArgument(command.GreetingArgument);
+            Janeway = result.GetValueForOption(command.JanewayOption);
+            Chakotay = result.GetValueForOption(command.ChakotayOption);
+            Torres = result.GetValueForOption(command.TorresOption);
+            Tuvok = result.GetValueForOption(command.TuvokOption);
+            SevenOfNine = result.GetValueForOption(command.SevenOfNineOption);
          }
          
-          string Greeting {get; set;}
-          bool Janeway {get; set;}
-          bool Chakotay {get; set;}
-          bool Torres {get; set;}
-          bool Tuvok {get; set;}
-          bool SevenOfNine {get; set;}
+         public string Greeting {get; set;}
+         public bool Janeway {get; set;}
+         public bool Chakotay {get; set;}
+         public bool Torres {get; set;}
+         public bool Tuvok {get; set;}
+         public bool SevenOfNine {get; set;}
       }
       
       public override Result GetResult(CommandResult result)
@@ -65,13 +65,15 @@ namespace DemoHandlers
       
       public int Invoke(InvocationContext context)
       {
-         Handlers.Voyager(result.GreetingArgument, result.JanewayOption, result.ChakotayOption, result.TorresOption, result.TuvokOption, result.SevenOfNineOption);
+         var result = GetResult(context);
+         Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
          return context.ExitCode;
       }
       
       public Task<int> InvokeAsync(InvocationContext context)
       {
-         Handlers.Voyager(result.GreetingArgument, result.JanewayOption, result.ChakotayOption, result.TorresOption, result.TuvokOption, result.SevenOfNineOption);
+         var result = GetResult(context);
+         Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
          return Task.FromResult(context.ExitCode);
       }
       

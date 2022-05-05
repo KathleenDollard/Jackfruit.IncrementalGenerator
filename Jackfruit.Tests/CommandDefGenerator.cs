@@ -2,6 +2,7 @@
 using Jackfruit.Models;
 using Jackfruit.IncrementalGenerator;
 using Jackfruit.IncrementalGenerator.Output;
+using System;
 
 namespace Jackfruit.Tests
 {

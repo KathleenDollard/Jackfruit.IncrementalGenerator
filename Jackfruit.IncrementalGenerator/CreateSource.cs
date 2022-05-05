@@ -19,7 +19,8 @@ namespace Jackfruit.IncrementalGenerator
         private const string resultName = "Result";
         private const string getResultName = "GetResult";
         private const string commandResult = "CommandResult";
-        private const string methodToRun = "MethodToRun";
+        private const string methodToRun = "methodToRun";
+        private const string rootMethodToRun = "rootMethodToRun";
         private const string invalidOpException = "InvalidOperationException";
 
         private static string CommandClassName(CommandDef commandDef) => commandDef.Name;
@@ -32,7 +33,9 @@ namespace Jackfruit.IncrementalGenerator
                     parent is null
                     ? ancestors
                     : new List<CommandDef> { parent }.Union(ancestors);
-            ancestorList = ancestorList.Where(a => a.Name != Helpers.CliRootName);
+            ancestorList = ancestorList
+                    .Reverse()
+                    .Where(a => a.Name != Helpers.CliRootName);
             var parentNames =
                 ancestorList.Any()
                     ? string.Join(".", ancestorList.Select(a => CommandClassName(a))) + "."
@@ -67,7 +70,7 @@ namespace Jackfruit.IncrementalGenerator
         internal static CodeFileModel DefaultRootCommand()
             => new CodeFileModel(Helpers.CliRootName)
             {
-                Usings = { new("System.CommandLine.Parsing") },
+                Usings = { new("System.CommandLine.Parsing"), "Jackfruit.Internal" },
                 Namespace = new("Jackfruit")  // not sure what nspace to put this in
                 {
                     Classes = new()
@@ -81,7 +84,7 @@ namespace Jackfruit.IncrementalGenerator
                                         Method(create ,emptyCommand)
                                             .Public()
                                             .Static()
-                                            .Parameters(new ParameterModel(methodToRun,"Delegate"))
+                                            .Parameters(Parameter(rootMethodToRun,"Delegate"))
                                             .Statements(
                                                 Return(New(emptyCommand))),
                                         Class(resultName)
@@ -89,7 +92,7 @@ namespace Jackfruit.IncrementalGenerator
                                         Method(getResultName, resultName)
                                             .Public()
                                             .Override()
-                                            .Parameters(new ParameterModel(commandResult, commandResult))
+                                            .Parameters(Parameter(commandResult, commandResult))
                                             .Statements(
                                                 Throw(invalidOpException, "Result not available"))
                                     )
@@ -109,6 +112,7 @@ namespace Jackfruit.IncrementalGenerator
                     "System.CommandLine",
                     "System.CommandLine.Invocation",
                     "System.CommandLine.Parsing",
+                    "Jcakfruit.Internal",
                     libName
                 },
                 Namespace = new(commandDef.Namespace)  // not sure what nspace to put this in
@@ -243,11 +247,14 @@ namespace Jackfruit.IncrementalGenerator
         {
             // This should be commandDef.Members, not myMembers because it should include parent members as requested
             var arguments = commandDef.Members
-                    .Select(m => Symbol($"{result}.{MemberPropertyName(m)}"));
+                    .Select(m => Symbol($"{result}.{m.Name}"));
             var method =
                 Method("InvokeAsync", Generic("Task", "int"))
                     .Public()
-                    .Parameters(Parameter("context", "InvocationContext"));
+                    .Parameters(Parameter("context", "InvocationContext"))
+                    .Statements(
+                        AssignWithDeclare(result, Invoke("", getResultName, Symbol("context"))));
+
             if (commandDef.ReturnType == "int")
             {
                 method.Statements.Add(Assign("ret", Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
@@ -265,11 +272,13 @@ namespace Jackfruit.IncrementalGenerator
         {
             // This should be commandDef.Members, not myMembers because it should include parent members as requested
             var arguments = commandDef.Members
-                    .Select(m => Symbol($"{result}.{MemberPropertyName(m)}"));
+                    .Select(m => Symbol($"{result}.{m.Name}"));
             var method =
                 Method("Invoke", "int")
                     .Public()
-                    .Parameters(Parameter("context", "InvocationContext"));
+                    .Parameters(Parameter("context", "InvocationContext"))
+                    .Statements(
+                        AssignWithDeclare(result, Invoke("", getResultName, Symbol("context"))));
             if (commandDef.ReturnType == "int")
             {
                 method.Statements.Add(Return(Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
@@ -289,7 +298,15 @@ namespace Jackfruit.IncrementalGenerator
                     .Public()
                     .Static()
                     .Statements(
-                        AssignWithDeclare(commandVar, New(CommandFullClassName(ancestors, null, commandDef))));
+                        );
+            if (ancestors.Any())
+            {
+                method.Parameters.Add(Parameter("parent", CommandFullClassName(ancestors.Skip(1), null, ancestors.First())));
+                method.Statements.Add(AssignWithDeclare(commandVar, New(CommandFullClassName(ancestors, null, commandDef), Symbol("parent"))));
+            }else
+            { 
+                method.Statements.Add(AssignWithDeclare(commandVar, New(CommandFullClassName(ancestors, null, commandDef))));
+            }
             foreach (var member in myMembers)
             {
                 switch (member)
@@ -323,8 +340,8 @@ namespace Jackfruit.IncrementalGenerator
                 if (subCommandDef is CommandDef subCommand)
                 {
                     var toAdd = $"{commandVar}.{CommandPropertyName(subCommand)}";
-                    method.Statements.Add(Assign(toAdd, Invoke(CommandFullClassName(ancestors, commandDef, subCommand), "Create")));
-                    method.Statements.Add(SimpleCall(Invoke(commandVar, "Add", Symbol(toAdd))));
+                    method.Statements.Add(Assign(toAdd, Invoke(CommandFullClassName(ancestors, commandDef, subCommand), "Create", Symbol(commandVar))));
+                    method.Statements.Add(SimpleCall(Invoke(commandVar, "AddCommandToScl", Symbol(toAdd))));
                 }
             }
             method.Statements.Add(SimpleCall(Invoke("command.SystemCommandLineCommand", "AddValidator", Symbol("command.Validate"))));
@@ -349,9 +366,9 @@ namespace Jackfruit.IncrementalGenerator
                                     Parameter(name: "result", commandResult))
                             .Statements(ResultConstructorStatements(ancestorMembers, myMembers, commandDef)));
             resultClass.Members.AddRange(ancestorMembers
-                    .Select(x => Property(x.Name, x.TypeName)));
+                    .Select(x => Property(x.Name, x.TypeName).Public()));
             resultClass.Members.AddRange(myMembers
-                    .Select(x => Property(x.Name, x.TypeName)));
+                    .Select(x => Property(x.Name, x.TypeName).Public()));
             return resultClass;
 
             static IStatement[] ResultConstructorStatements(
@@ -374,7 +391,7 @@ namespace Jackfruit.IncrementalGenerator
                     var methodName = member is OptionDef
                             ? "GetValueForOption"
                             : "GetValueForArgument";
-                    statements.Add(Assign(member.Name, Invoke(commandResult, methodName, Symbol($"command.{MemberPropertyName(member)}"))));
+                    statements.Add(Assign(member.Name, Invoke(result, methodName, Symbol($"command.{MemberPropertyName(member)}"))));
                 }
                 return statements.ToArray();
             }

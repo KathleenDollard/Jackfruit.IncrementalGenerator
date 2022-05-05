@@ -35,12 +35,12 @@ namespace DemoHandlers
       {
          internal Result(CliRoot command, CommandResult result)
          {
-            Greeting = CommandResult.GetValueForArgument(command.GreetingArgument);
-            Picard = CommandResult.GetValueForOption(command.PicardOption);
+            Greeting = result.GetValueForArgument(command.GreetingArgument);
+            Picard = result.GetValueForOption(command.PicardOption);
          }
          
-          string Greeting {get; set;}
-          bool Picard {get; set;}
+         public string Greeting {get; set;}
+         public bool Picard {get; set;}
       }
       
       public override Result GetResult(CommandResult result)
@@ -50,13 +50,15 @@ namespace DemoHandlers
       
       public int Invoke(InvocationContext context)
       {
-         Handlers.NextGeneration(result.GreetingArgument, result.PicardOption);
+         var result = GetResult(context);
+         Handlers.NextGeneration(result.Greeting, result.Picard);
          return context.ExitCode;
       }
       
       public Task<int> InvokeAsync(InvocationContext context)
       {
-         Handlers.NextGeneration(result.GreetingArgument, result.PicardOption);
+         var result = GetResult(context);
+         Handlers.NextGeneration(result.Greeting, result.Picard);
          return Task.FromResult(context.ExitCode);
       }
       

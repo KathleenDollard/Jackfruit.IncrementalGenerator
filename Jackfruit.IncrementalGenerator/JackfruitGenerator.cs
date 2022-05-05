@@ -34,6 +34,12 @@ namespace Jackfruit.IncrementalGenerator
                     transform: static (ctx, _) => Helpers.GetCommandDef(ctx))
                 .Where(static m => m is not null)
                 .Select(static (m, _) => m!);
+            var rootCommandDef2 = initContext.SyntaxProvider
+                .CreateSyntaxProvider(
+                    predicate: static (s, _) => Helpers.IsSyntaxInteresting(s),
+                    transform: static (ctx, _) => Helpers.GetCommandDef(ctx))
+                .Where(static m => m is not null)
+                .Select(static (m, _) => m!);
 
             // Create a tree in the shape of the CLI. We will use both the listand the and tree to generate
             var rootCommandDef = commandDefs

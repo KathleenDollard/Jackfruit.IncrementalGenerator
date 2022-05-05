@@ -4,7 +4,7 @@ using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 
 #nullable enable
-namespace Jackfruit
+namespace Jackfruit.Internal
 {
 
     // *** Assume everything below in this file will be in a library after we settle ****
@@ -41,9 +41,9 @@ namespace Jackfruit
     {
         // no op: for generation
         public void AddCommand(Delegate method) { }
-        public void AddCommands(params Delegate[] method) { }
+        //public void AddCommands(params Delegate[] method) { }
         public void AddCommand<TAttachTo>(Delegate method) { }
-        public void AddCommands<TAttachTo>(params Delegate[] method) { }
+        //public void AddCommands<TAttachTo>(params Delegate[] method) { }
         public virtual void Validate(CommandResult commandResult) { }
         public void AddValidator(Delegate action, params object[] values) { }
 

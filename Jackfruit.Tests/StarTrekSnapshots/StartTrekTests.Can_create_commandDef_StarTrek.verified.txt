@@ -1,8 +1,8 @@
 ﻿/*
 //Key:         
-//Id:          DemoHandlers.Handlers.StarTrek(string, bool, bool, bool)
+//Id:          DemoHandlers.Handlers.Franchise(string)
 //Path:        
-//Description: This is the description for StarTrek
+//Description: 
 //Aliases:     
 //Namespace:   DemoHandlers
 //Members:     
@@ -11,6 +11,24 @@
       //Name:           Greeting
       //TypeName:       string
       //Description:    
+      //Required:       False
+*/
+
+// *******************************
+
+/*
+//Key:         CliRoot
+//Id:          DemoHandlers.Handlers.StarTrek(string, bool, bool, bool)
+//Path:        CliRoot
+//Description: This is the description for StarTrek
+//Aliases:     
+//Namespace:   DemoHandlers
+//Members:     
+   //Argument:
+      //Argumet Id:     greetingArg
+      //Name:           Greeting
+      //TypeName:       string
+      //Description:    What greeting to use
       //Required:       False
    //Option:
       //Option Id:      kirk
@@ -41,9 +59,9 @@
 // *******************************
 
 /*
-//Key:         CliRoot
+//Key:         CliRootStarTrek
 //Id:          DemoHandlers.Handlers.NextGeneration(string, bool)
-//Path:        CliRoot
+//Path:        CliRoot.StarTrek
 //Description: This is the description for Next Generation
 //Aliases:     
 //Namespace:   DemoHandlers
@@ -67,9 +85,9 @@
 // *******************************
 
 /*
-//Key:         CliRootNextGeneration
+//Key:         CliRootStarTrekNextGeneration
 //Id:          DemoHandlers.Handlers.DeepSpaceNine(string, bool, bool, bool, bool, bool)
-//Path:        CliRoot.NextGeneration
+//Path:        CliRoot.StarTrek.NextGeneration
 //Description: 
 //Aliases:     
 //Namespace:   DemoHandlers
@@ -125,9 +143,9 @@
 // *******************************
 
 /*
-//Key:         CliRootNextGeneration
+//Key:         CliRootStarTrekNextGeneration
 //Id:          DemoHandlers.Handlers.Voyager(string, bool, bool, bool, bool, bool)
-//Path:        CliRoot.NextGeneration
+//Path:        CliRoot.StarTrek.NextGeneration
 //Description: 
 //Aliases:     
 //Namespace:   DemoHandlers

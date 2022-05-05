@@ -44,16 +44,18 @@ public class MyClass
 {
     public void F() 
     {
-        var cliRoot = CliRoot.Create(Handlers.StarTrek);
-        cliRoot.AddCommand(Handlers.NextGeneration);
-        cliRoot.AddCommand<Commands.NextGeneration>(Handlers.DeepSpaceNine);
-        cliRoot.AddCommand<Commands.NextGeneration>(Handlers.Voyager);
+        var cliRoot = CliRoot.Create(Handlers.Franchise);
+        cliRoot.AddCommand(Handlers.StarTrek);
+        cliRoot.AddCommand<Commands.StarTrek>(Handlers.NextGeneration);
+        cliRoot.AddCommand<Commands.StarTrek.NextGeneration>(Handlers.DeepSpaceNine);
+        cliRoot.AddCommand<Commands.StarTrek.NextGeneration>(Handlers.Voyager);
 
-        var cliRoot = ConsoleApplication.RootCommand;
         var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();
         nextGen.PicardOption.AddAlias("" - p"");
 
-    }
+        cliRoot.AddValidator(Validators.ValidatePoliteness, cliRoot.GreetingArgument);
+        nextGen.AddValidator(NextGenerationResultValidator);
+   }
 
 }";
         private const string NextGenerationRoot = @"
