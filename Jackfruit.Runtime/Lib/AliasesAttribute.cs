@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jackfruit
+﻿namespace Jackfruit
 {
-    [System.AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, 
+    [System.AttributeUsage(AttributeTargets.All, 
                     Inherited = false, AllowMultiple = true)]
-    sealed public class AliasesAttribute : Attribute
+    public sealed class AliasesAttribute : Attribute
     {
         public AliasesAttribute(params string[] aliases)
         {

@@ -1,139 +1,92 @@
-﻿//
-namespace Jackfruit
-{
-    public partial class ConsoleApplication
-    {
-        public static void AddRootCommand(Delegate rootCommandHandler) { }
-    }
-}
-
-// *******************************
-
-// This file is created by a generator.
+﻿// This file is created by a generator.
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.Threading.Tasks;
-using DemoHandlers;
-
-namespace Jackfruit
-{
-   public partial class ConsoleApplication
-   {
-      private VoyagerCommand _CliRoot;
-      private ConsoleApplication()
-      {
-      }
-      
-      public static ConsoleApplication Create()
-      {
-         var app = new ConsoleApplication();
-         app._CliRoot = VoyagerCommand.Create();
-         return app;
-      }
-      
-      public static int Run(string[] args)
-      {
-         var app = ConsoleApplication.Create();
-         return app.CliRoot.Invoke(args);
-      }
-      
-      public VoyagerCommand CliRoot
-      {
-         get
-         {
-            return _CliRoot;
-         }
-      }
-      public static class Voyager
-      {
-         public static void AddSubCommand(Delegate handler)
-         {
-         }
-         
-      }
-      
-   }
-   
-}
-
-// *******************************
-
-// This file is created by a generator.
-using System;
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.Threading.Tasks;
+using System.CommandLine.Parsing;
+using Jackfruit;
 
 namespace DemoHandlers
 {
-   public partial class VoyagerCommand : RootCommand, ICommandHandler
+   public partial class CliRoot : GeneratedCommandBase<CliRoot, CliRoot.Result>, ICommandHandler
    {
-      private VoyagerCommand()
+      public static CliRoot Create(Delegate MethodToRun)
+      {
+         return Create();
+      }
+      
+      private CliRoot() : base("CliRoot")
       {
       }
       
-      public static VoyagerCommand Create()
+      public static CliRoot Create()
       {
-         var command = new VoyagerCommand();
-         command.greetingOption = new Option<string>("--greeting");
-         command.Add(command.greetingOption);
-         command.janewayOption = new Option<bool>("--janeway");
-         command.Add(command.janewayOption);
-         command.chakotayOption = new Option<bool>("--chakotay");
-         command.Add(command.chakotayOption);
-         command.torresOption = new Option<bool>("--torres");
-         command.Add(command.torresOption);
-         command.tuvokOption = new Option<bool>("--tuvok");
-         command.Add(command.tuvokOption);
-         command.sevenOfNineOption = new Option<bool>("--sevenOfNine");
-         command.Add(command.sevenOfNineOption);
+         var command = new CliRoot();
+         command.GreetingArgument = new Argument<string>("greetingArg");
+         command.Add(command.GreetingArgument);
+         command.JanewayOption = new Option<bool>("--Janeway");
+         command.Add(command.JanewayOption);
+         command.ChakotayOption = new Option<bool>("--Chakotay");
+         command.Add(command.ChakotayOption);
+         command.TorresOption = new Option<bool>("--Torres");
+         command.Add(command.TorresOption);
+         command.TuvokOption = new Option<bool>("--Tuvok");
+         command.Add(command.TuvokOption);
+         command.SevenOfNineOption = new Option<bool>("--SevenOfNine");
+         command.Add(command.SevenOfNineOption);
+         command.SystemCommandLineCommand.AddValidator(command.Validate);
          command.Handler = command;
          return command;
       }
       
+      public class Result
+      {
+         internal Result(CliRoot command, CommandResult result)
+         {
+            Greeting = result.GetValueForArgument(command.GreetingArgument);
+            Janeway = result.GetValueForOption(command.JanewayOption);
+            Chakotay = result.GetValueForOption(command.ChakotayOption);
+            Torres = result.GetValueForOption(command.TorresOption);
+            Tuvok = result.GetValueForOption(command.TuvokOption);
+            SevenOfNine = result.GetValueForOption(command.SevenOfNineOption);
+         }
+         
+         public string Greeting {get; set;}
+         public bool Janeway {get; set;}
+         public bool Chakotay {get; set;}
+         public bool Torres {get; set;}
+         public bool Tuvok {get; set;}
+         public bool SevenOfNine {get; set;}
+      }
+      
+      public override Result GetResult(CommandResult result)
+      {
+         return new Result(this, result);
+      }
+      
+      public int Invoke(InvocationContext context)
+      {
+         var result = GetResult(context);
+         Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         return context.ExitCode;
+      }
+      
       public Task<int> InvokeAsync(InvocationContext context)
       {
-         Handlers.Voyager(greetingOptionResult(context), janewayOptionResult(context), chakotayOptionResult(context), torresOptionResult(context), tuvokOptionResult(context), sevenOfNineOptionResult(context));
+         var result = GetResult(context);
+         Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
          return Task.FromResult(context.ExitCode);
       }
       
-      public Option<string> greetingOption {get; set;}
-      public string greetingOptionResult(InvocationContext context)
-      {
-         return context.ParseResult.GetValueForOption<string>(greetingOption);
-      }
-      
-      public Option<bool> janewayOption {get; set;}
-      public bool janewayOptionResult(InvocationContext context)
-      {
-         return context.ParseResult.GetValueForOption<bool>(janewayOption);
-      }
-      
-      public Option<bool> chakotayOption {get; set;}
-      public bool chakotayOptionResult(InvocationContext context)
-      {
-         return context.ParseResult.GetValueForOption<bool>(chakotayOption);
-      }
-      
-      public Option<bool> torresOption {get; set;}
-      public bool torresOptionResult(InvocationContext context)
-      {
-         return context.ParseResult.GetValueForOption<bool>(torresOption);
-      }
-      
-      public Option<bool> tuvokOption {get; set;}
-      public bool tuvokOptionResult(InvocationContext context)
-      {
-         return context.ParseResult.GetValueForOption<bool>(tuvokOption);
-      }
-      
-      public Option<bool> sevenOfNineOption {get; set;}
-      public bool sevenOfNineOptionResult(InvocationContext context)
-      {
-         return context.ParseResult.GetValueForOption<bool>(sevenOfNineOption);
-      }
-      
+      public Argument<string> GreetingArgument {get; set;}
+      public Option<bool> JanewayOption {get; set;}
+      public Option<bool> ChakotayOption {get; set;}
+      public Option<bool> TorresOption {get; set;}
+      public Option<bool> TuvokOption {get; set;}
+      public Option<bool> SevenOfNineOption {get; set;}
+   }
+   
+   public class Commands
+   {
    }
    
 }

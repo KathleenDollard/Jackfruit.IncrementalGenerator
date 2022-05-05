@@ -23,7 +23,7 @@ namespace Jackfruit.IncrementalGenerator
             public Detail(string id, string name, string? typeName = null)
             {
                 Id = id;
-                Name = name;
+                Name = char.ToUpperInvariant(name[0]) + name.Substring(1);
                 TypeName = typeName;
             }
 
@@ -112,7 +112,7 @@ namespace Jackfruit.IncrementalGenerator
                 if (param.Name.EndsWith("Arg"))
                 {
                     details[param.Name].MemberKind = MemberKind.Argument;
-                    details[param.Name].Name = param.Name.Substring(0, param.Name.Length - 3);
+                    details[param.Name].Name = details[param.Name].Name.Substring(0, param.Name.Length - 3);
                 }
                 else if (param.Type.IsAbstract)  // Test that this is true for interfaces
                 {
@@ -177,7 +177,12 @@ namespace Jackfruit.IncrementalGenerator
                     case "AliasesAttribute":
                     case "Aliases":
                         var arg1 = attrib.ConstructorArguments.FirstOrDefault();
-                        detail.Aliases = arg1.Values.Select(x => x.ToString()).ToArray();
+                        detail.Aliases = 
+                            arg1.Kind == TypedConstantKind.Array
+                                ? arg1.Values.Select(x => x.Value is null ? "" : x.Value.ToString()).ToArray()
+                                : arg1.Value is null
+                                    ? new string[] { }
+                                    : new string[] { arg1.Value.ToString() }; 
                         break;
 
                     case "ArgumentAttribute":

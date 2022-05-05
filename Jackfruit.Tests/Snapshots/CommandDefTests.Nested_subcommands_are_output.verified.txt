@@ -3,11 +3,12 @@
 //Id:          Fred.MyClass.A(int)
 //Path:        
 //Description: 
+//Aliases:     
 //Namespace:   Fred
 //Members:     
    //Option:
       //Option Id:      i
-      //Name:           i
+      //Name:           I
       //TypeName:       int
       //Description:    
       //Aliases:        
@@ -18,15 +19,16 @@
 // *******************************
 
 /*
-//Key:         AB
-//Id:          Fred.MyClass.A(int)
-//Path:        A.B
+//Key:         CliRoot
+//Id:          Fred.MyClass.B(int)
+//Path:        CliRoot
 //Description: 
+//Aliases:     
 //Namespace:   Fred
 //Members:     
    //Option:
       //Option Id:      i
-      //Name:           i
+      //Name:           I
       //TypeName:       int
       //Description:    
       //Aliases:        
@@ -37,15 +39,16 @@
 // *******************************
 
 /*
-//Key:         AC
-//Id:          Fred.MyClass.A(int)
-//Path:        A.C
+//Key:         CliRoot
+//Id:          Fred.MyClass.C(int)
+//Path:        CliRoot
 //Description: 
+//Aliases:     
 //Namespace:   Fred
 //Members:     
    //Option:
       //Option Id:      i
-      //Name:           i
+      //Name:           I
       //TypeName:       int
       //Description:    
       //Aliases:        
@@ -56,15 +59,56 @@
 // *******************************
 
 /*
-//Key:         ABD
-//Id:          Fred.MyClass.A(int)
-//Path:        A.B.D
+//Key:         CliRootBC
+//Id:          Fred.MyClass.D(int)
+//Path:        CliRoot.B.C
 //Description: 
+//Aliases:     
 //Namespace:   Fred
 //Members:     
    //Option:
       //Option Id:      i
-      //Name:           i
+      //Name:           I
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
+*/
+
+// *******************************
+
+/*
+//Key:         CliRootBC
+//Id:          Fred.MyClass.C(int)
+//Path:        CliRoot.B.C
+//Description: 
+//Aliases:     
+//Namespace:   Fred
+//Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           I
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
+*/
+
+// *******************************
+
+/*
+//Key:         CliRootBD
+//Id:          Fred.MyClass.C(int)
+//Path:        CliRoot.B.D
+//Description: 
+//Aliases:     
+//Namespace:   Fred
+//Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           I
       //TypeName:       int
       //Description:    
       //Aliases:        

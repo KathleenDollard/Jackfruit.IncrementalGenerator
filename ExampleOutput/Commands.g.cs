@@ -2,6 +2,7 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using System.ComponentModel;
 using Jackfruit;
 
 namespace DemoHandlersUpdated
@@ -46,6 +47,7 @@ namespace DemoHandlersUpdated
         public override void Validate(CommandResult commandResult)
         {
             var result = GetResult(commandResult);
+            // If there is a parent, call it
             var messages = new List<string>();
             AddMessageOnFail(messages, Validators.ValidatePoliteness(result.Greeting));
             commandResult.ErrorMessage += String.Join(Environment.NewLine, messages);
@@ -270,7 +272,7 @@ namespace DemoHandlersUpdated
                         command.Handler = command;
                         return command;
                     }
-
+                        
                     public struct Result
                     {
                         public Result(Voyager command, CommandResult commandResult)

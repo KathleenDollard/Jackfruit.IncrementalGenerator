@@ -3,11 +3,12 @@
 //Id:          MyClass.A(int)
 //Path:        
 //Description: Command description in Attribute
+//Aliases:     
 //Namespace:   <global namespace>
 //Members:     
    //Option:
       //Option Id:      i
-      //Name:           i
+      //Name:           I
       //TypeName:       int
       //Description:    Member description in Attribute
       //Aliases:        

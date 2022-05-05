@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jackfruit.IncrementalGenerator.Lib
+﻿namespace Jackfruit
 {
     [System.AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
-    sealed class RequiredAttribute : Attribute
+    public sealed class RequiredAttribute : Attribute
     {
         public RequiredAttribute(bool isRequired = false)
         {

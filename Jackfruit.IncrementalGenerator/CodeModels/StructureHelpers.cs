@@ -92,6 +92,12 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public static MethodModel Method(string name, NamedItemModel type)
              => new(name, type);
 
+        public static MethodModel Override(this MethodModel model)
+        {
+            model.IsOverride = true;
+            return model;
+        }
+
         public static MethodModel Static(this MethodModel model)
         {
             model.IsStatic = true;

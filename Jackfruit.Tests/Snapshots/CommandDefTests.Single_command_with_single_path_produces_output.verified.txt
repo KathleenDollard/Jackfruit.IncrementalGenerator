@@ -3,11 +3,32 @@
 //Id:          MyClass.A(int)
 //Path:        
 //Description: 
+//Aliases:     
 //Namespace:   <global namespace>
 //Members:     
    //Option:
       //Option Id:      i
-      //Name:           i
+      //Name:           I
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
+*/
+
+// *******************************
+
+/*
+//Key:         CliRoot
+//Id:          MyClass.B(int)
+//Path:        CliRoot
+//Description: 
+//Aliases:     
+//Namespace:   <global namespace>
+//Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           I
       //TypeName:       int
       //Description:    
       //Aliases:        

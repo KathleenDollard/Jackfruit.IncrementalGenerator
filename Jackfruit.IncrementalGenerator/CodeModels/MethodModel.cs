@@ -12,6 +12,7 @@
         public NamedItemModel ReturnType { get; }
         public Scope Scope { get; set; }
         public bool IsAsync { get; set; }
+        public bool IsOverride { get; set; }
         public bool IsStatic { get; set; }
         public bool IsPartial { get; set; }
         public List<ParameterModel> Parameters { get; set; } = new List<ParameterModel>();

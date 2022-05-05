@@ -2,6 +2,7 @@
 using Jackfruit.Models;
 using Jackfruit.IncrementalGenerator;
 using Jackfruit.IncrementalGenerator.Output;
+using System;
 
 namespace Jackfruit.Tests
 {
@@ -10,10 +11,6 @@ namespace Jackfruit.Tests
     {
         public void Initialize(IncrementalGeneratorInitializationContext initContext)
         {
-            //initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource(
-            //    "ConsoleApplication.g.cs",
-            //    SourceText.From(Helpers.ConsoleClass, Encoding.UTF8)));
-
             IncrementalValuesProvider<CommandDef> commandDefs = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => Helpers.IsSyntaxInteresting(s),
@@ -43,6 +40,7 @@ namespace Jackfruit.Tests
                 writer.AddLine($"//Id:          {commandDef.Id}");
                 writer.AddLine($"//Path:        {path}");
                 writer.AddLine($"//Description: {commandDef.Description}");
+                writer.AddLine($"//Aliases:     {string.Join(", ", commandDef.Aliases)}");
                 writer.AddLine($"//Namespace:   {commandDef.Namespace}");
                 writer.AddLine($"//Members:     ");
                 writer.IncreaseIndent();

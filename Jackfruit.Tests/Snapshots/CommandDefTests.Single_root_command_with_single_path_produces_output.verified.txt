@@ -1,15 +1,16 @@
 ﻿/*
-//Key:         app
+//Key:         
 //Id:          MyClass.A(int)
-//Path:        app
-//Description: Command description in Attribute
+//Path:        
+//Description: 
+//Aliases:     
 //Namespace:   <global namespace>
 //Members:     
    //Option:
       //Option Id:      i
-      //Name:           i
+      //Name:           I
       //TypeName:       int
-      //Description:    Member description in Attribute
+      //Description:    
       //Aliases:        
       //ArgDisplayName: 
       //Required:       False

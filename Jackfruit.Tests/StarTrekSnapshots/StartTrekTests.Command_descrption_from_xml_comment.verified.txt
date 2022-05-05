@@ -1,19 +1,38 @@
 ﻿/*
 //Key:         
-//Id:          DemoHandlers.Handlers.StarTrek(string, bool, bool, bool)
+//Id:          DemoHandlers.Handlers.Franchise(string)
 //Path:        
-//Description: This is the description for StarTrek
+//Description: 
+//Aliases:     
 //Namespace:   DemoHandlers
 //Members:     
    //Argument:
       //Argumet Id:     greetingArg
-      //Name:           greeting
+      //Name:           Greeting
       //TypeName:       string
       //Description:    
       //Required:       False
+*/
+
+// *******************************
+
+/*
+//Key:         CliRoot
+//Id:          DemoHandlers.Handlers.StarTrek(string, bool, bool, bool)
+//Path:        CliRoot
+//Description: This is the description for StarTrek
+//Aliases:     
+//Namespace:   DemoHandlers
+//Members:     
+   //Argument:
+      //Argumet Id:     greetingArg
+      //Name:           Greeting
+      //TypeName:       string
+      //Description:    What greeting to use
+      //Required:       False
    //Option:
       //Option Id:      kirk
-      //Name:           kirk
+      //Name:           Kirk
       //TypeName:       bool
       //Description:    Whether to greet Captain Kirk
       //Aliases:        
@@ -21,7 +40,7 @@
       //Required:       False
    //Option:
       //Option Id:      spock
-      //Name:           spock
+      //Name:           Spock
       //TypeName:       bool
       //Description:    Whether to greet Spock
       //Aliases:        
@@ -29,7 +48,7 @@
       //Required:       False
    //Option:
       //Option Id:      uhura
-      //Name:           uhura
+      //Name:           Uhura
       //TypeName:       bool
       //Description:    Whether to greet Lieutenant Uhura
       //Aliases:        
@@ -40,21 +59,22 @@
 // *******************************
 
 /*
-//Key:         StarTrek
+//Key:         CliRootStarTrek
 //Id:          DemoHandlers.Handlers.NextGeneration(string, bool)
-//Path:        StarTrek
+//Path:        CliRoot.StarTrek
 //Description: This is the description for Next Generation
+//Aliases:     
 //Namespace:   DemoHandlers
 //Members:     
    //Argument:
       //Argumet Id:     greetingArg
-      //Name:           greeting
+      //Name:           Greeting
       //TypeName:       string
       //Description:    
       //Required:       False
    //Option:
       //Option Id:      picard
-      //Name:           picard
+      //Name:           Picard
       //TypeName:       bool
       //Description:    This is the description for Picard
       //Aliases:        
@@ -65,23 +85,22 @@
 // *******************************
 
 /*
-//Key:         StarTrekNextGeneration
+//Key:         CliRootStarTrekNextGeneration
 //Id:          DemoHandlers.Handlers.DeepSpaceNine(string, bool, bool, bool, bool, bool)
-//Path:        StarTrek.NextGeneration
+//Path:        CliRoot.StarTrek.NextGeneration
 //Description: 
+//Aliases:     
 //Namespace:   DemoHandlers
 //Members:     
-   //Option:
-      //Option Id:      greeting
-      //Name:           greeting
+   //Argument:
+      //Argumet Id:     greetingArg
+      //Name:           Greeting
       //TypeName:       string
       //Description:    
-      //Aliases:        
-      //ArgDisplayName: 
       //Required:       False
    //Option:
       //Option Id:      sisko
-      //Name:           sisko
+      //Name:           Sisko
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -89,7 +108,7 @@
       //Required:       False
    //Option:
       //Option Id:      odo
-      //Name:           odo
+      //Name:           Odo
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -97,7 +116,7 @@
       //Required:       False
    //Option:
       //Option Id:      dax
-      //Name:           dax
+      //Name:           Dax
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -105,7 +124,7 @@
       //Required:       False
    //Option:
       //Option Id:      worf
-      //Name:           worf
+      //Name:           Worf
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -113,7 +132,7 @@
       //Required:       False
    //Option:
       //Option Id:      oBrien
-      //Name:           oBrien
+      //Name:           OBrien
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -124,23 +143,22 @@
 // *******************************
 
 /*
-//Key:         StarTrekNextGeneration
+//Key:         CliRootStarTrekNextGeneration
 //Id:          DemoHandlers.Handlers.Voyager(string, bool, bool, bool, bool, bool)
-//Path:        StarTrek.NextGeneration
+//Path:        CliRoot.StarTrek.NextGeneration
 //Description: 
+//Aliases:     
 //Namespace:   DemoHandlers
 //Members:     
-   //Option:
-      //Option Id:      greeting
-      //Name:           greeting
+   //Argument:
+      //Argumet Id:     greetingArg
+      //Name:           Greeting
       //TypeName:       string
       //Description:    
-      //Aliases:        
-      //ArgDisplayName: 
       //Required:       False
    //Option:
       //Option Id:      janeway
-      //Name:           janeway
+      //Name:           Janeway
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -148,7 +166,7 @@
       //Required:       False
    //Option:
       //Option Id:      chakotay
-      //Name:           chakotay
+      //Name:           Chakotay
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -156,7 +174,7 @@
       //Required:       False
    //Option:
       //Option Id:      torres
-      //Name:           torres
+      //Name:           Torres
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -164,7 +182,7 @@
       //Required:       False
    //Option:
       //Option Id:      tuvok
-      //Name:           tuvok
+      //Name:           Tuvok
       //TypeName:       bool
       //Description:    
       //Aliases:        
@@ -172,7 +190,7 @@
       //Required:       False
    //Option:
       //Option Id:      sevenOfNine
-      //Name:           sevenOfNine
+      //Name:           SevenOfNine
       //TypeName:       bool
       //Description:    
       //Aliases:        

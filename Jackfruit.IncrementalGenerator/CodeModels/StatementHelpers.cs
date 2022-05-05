@@ -76,6 +76,17 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public ExpressionBase Expression { get; set; }
     }
 
+    public class ThrowModel : IStatement
+    {
+        public ThrowModel(NamedItemModel exception, params ExpressionBase[] args)
+        {
+            Exception = exception;
+            Args = args;
+        }
+        public NamedItemModel Exception { get; set; }
+        public ExpressionBase[] Args { get; set; }
+    }
+
     public class SimpleCallModel : IStatement
     {
         public SimpleCallModel(ExpressionBase expression)
@@ -121,12 +132,12 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public static IfModel If(
                 ExpressionBase ifCondition,
                 IEnumerable<IStatement> ifStatements,
-                params (ExpressionBase condition, IEnumerable<IStatement> statements)[] elseifs) 
+                params (ExpressionBase condition, IEnumerable<IStatement> statements)[] elseifs)
             => new(ifCondition)
-                {
-                    IfStatements = ifStatements,
-                    ElseIfBlocks = elseifs.Select(x => new IfPair(x.condition, x.statements))
-                };
+            {
+                IfStatements = ifStatements,
+                ElseIfBlocks = elseifs.Select(x => new IfPair(x.condition, x.statements))
+            };
 
         public static IfModel If(
                 ExpressionBase ifCondition,
@@ -141,7 +152,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             };
 
         public static ForEachModel ForEach(
-                string loopVar, 
+                string loopVar,
                 ExpressionBase loopOver,
                 IEnumerable<IStatement> statements)
              => new(loopVar, loopOver)
@@ -151,18 +162,21 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             => new(variableName, value);
 
         public static AssignWithDeclareModel AssignWithDeclare(
-                NamedItemModel typeName, 
-                string variableName, 
+                NamedItemModel typeName,
+                string variableName,
                 ExpressionBase value)
             => new(typeName, variableName, value);
 
         public static AssignWithDeclareModel AssignWithDeclare(
                 string variableName,
                 ExpressionBase value)
-            => new( null, variableName, value);
+            => new(null, variableName, value);
 
         public static ReturnModel Return(ExpressionBase expression)
             => new(expression);
+
+        public static ThrowModel Throw(NamedItemModel exception, params ExpressionBase[] args)
+             => new(exception, args);
 
         public static SimpleCallModel SimpleCall(ExpressionBase expression)
             => new(expression);

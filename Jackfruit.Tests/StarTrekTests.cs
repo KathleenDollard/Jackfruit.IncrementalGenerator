@@ -32,7 +32,7 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(Handlers.Voyager);
+        var cliRoot = CliRoot.Create(Handlers.Voyager);
     }
 
 }";
@@ -44,16 +44,18 @@ public class MyClass
 {
     public void F() 
     {
-        ConsoleApplication.AddRootCommand(Handlers.StarTrek);
-        ConsoleApplication.StarTrek.AddSubCommand(Handlers.NextGeneration);
-        ConsoleApplication.StarTrek.NextGeneration.AddSubCommand(Handlers.DeepSpaceNine);
-        ConsoleApplication.StarTrek.NextGeneration.AddSubCommand(Handlers.Voyager);
+        var cliRoot = CliRoot.Create(Handlers.Franchise);
+        cliRoot.AddCommand(Handlers.StarTrek);
+        cliRoot.AddCommand<Commands.StarTrek>(Handlers.NextGeneration);
+        cliRoot.AddCommand<Commands.StarTrek.NextGeneration>(Handlers.DeepSpaceNine);
+        cliRoot.AddCommand<Commands.StarTrek.NextGeneration>(Handlers.Voyager);
 
-        var cliRoot = ConsoleApplication.RootCommand;
         var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();
         nextGen.PicardOption.AddAlias("" - p"");
 
-    }
+        cliRoot.AddValidator(Validators.ValidatePoliteness, cliRoot.GreetingArgument);
+        nextGen.AddValidator(NextGenerationResultValidator);
+   }
 
 }";
         private const string NextGenerationRoot = @"
@@ -64,7 +66,7 @@ public class MyClass
 {
     public void F() 
     {
-        var app = ConsoleApplication.AddRootCommand(Handlers.NextGeneration);
+        var cliRoot = CliRoot.Create(Handlers.NextGeneration);
     }
 
 }";
