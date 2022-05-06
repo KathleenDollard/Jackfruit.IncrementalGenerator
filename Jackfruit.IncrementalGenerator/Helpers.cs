@@ -15,11 +15,12 @@ namespace Jackfruit.IncrementalGenerator
         //private const string AddCommandsName = "AddCommands";
         private const string CreateName = "Create";
         private const string CliRoot = "CliRoot";
-        private const string Cli = "Cli";
+        internal const string Cli = "Cli";
         private static string[] CreateSources = new string[] { CliRoot, Cli };
         private const string NestedCommandsClassName = "Commands";
         //internal const string AddRootCommand = "SetRootCommand";
         private static readonly string[] names = { AddCommandName };
+        internal const string TriggerStyle = "TriggerStyle";
 
         public static bool IsSyntaxInteresting(SyntaxNode node)
         {
@@ -126,7 +127,8 @@ namespace Jackfruit.IncrementalGenerator
             if (commandDetails is null)
             { return null; }
 
-            return BuildCommandDef(path, delegateArg.ToString(), commandDetails);
+            var commandDef = BuildCommandDef(path, delegateArg.ToString(), commandDetails);
+            commandDef.GenerationStyleTags.Add("TriggerStyle", Cli);
         }
 
         private static CommandDef BuildCommandDef(string[] path, string delegateSignature, CommandDetails? commandDetails)

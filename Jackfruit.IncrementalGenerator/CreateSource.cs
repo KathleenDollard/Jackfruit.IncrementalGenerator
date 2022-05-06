@@ -62,6 +62,35 @@ namespace Jackfruit.IncrementalGenerator
         private static NamedItemModel GeneratedRootCommandBase()
             => new GenericNamedItemModel("GeneratedCommandBase", cliRoot, $"{cliRoot}.{resultName}");
 
+        public static CodeFileModel? GetCliPartialCodeFile(CommandDefBase rootCommandDef)
+            => rootCommandDef is CommandDef commandDef
+                ? CliPartialCodeFile(commandDef)
+                : null;
+
+        private static CodeFileModel? CliPartialCodeFile(CommandDef commandDef)
+        {
+            if (!commandDef.GenerationStyleTags.TryGetValue(Helpers.TriggerStyle, out var style) ||
+                style.ToString() != Helpers.Cli)
+            { return null;  }
+
+            return new CodeFileModel(Helpers.Cli)
+            {
+                Namespace = new("Jackfruit")  // not sure what nspace to put this in
+                {
+                    Classes = new()
+                        {
+                            Class(Helpers.Cli)
+                                .Public()
+                                .Partial()
+                                .Members(
+                                    Property(commandDef.Name, commandDef.Name)
+                                        .Public())
+                        }
+                }
+            };
+        }
+
+
         public static CodeFileModel GetCommandCodeFile(CommandDefBase rootCommandDef)
             => rootCommandDef is CommandDef commandDef
                 ? RootCommandCodeFile(commandDef)

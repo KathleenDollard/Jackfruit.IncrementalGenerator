@@ -65,6 +65,7 @@
         public IEnumerable<CommandDefBase> SubCommands { get; set; }
         public IEnumerable<string> Path { get; }
         public string ReturnType { get; }
+        public Dictionary<string, object> GenerationStyleTags { get; } = new Dictionary<string, object>();
 
     }
 }

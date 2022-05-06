@@ -46,10 +46,15 @@ namespace Jackfruit.IncrementalGenerator
             var commandsCodeFileModel = rootCommandDef
                 .Select((x, _) => CreateSource.GetCommandCodeFile(x));
 
+            var cliPartialCodeFileModel = rootCommandDef
+                .Select((x, _) => CreateSource.GetCliPartialCodeFile(x));
+
             // And finally, we output files/sources
+            initContext.RegisterSourceOutput(cliPartialCodeFileModel,
+                static (context, codeFileModel) => OutputCliPartial(codeFileModel, context));
+
             initContext.RegisterSourceOutput(commandsCodeFileModel,
                 static (context, codeFileModel) => OutputGenerated(codeFileModel, context));
-
         }
 
 
@@ -58,7 +63,17 @@ namespace Jackfruit.IncrementalGenerator
             var writer = new StringBuilderWriter(3);
             var language = new LanguageCSharp(writer);
             language.AddCodeFile(codeFileModel);
-            context.AddSource(codeFileModel.Name, writer.Output());
+            context.AddSource($"{codeFileModel.Name}.g.cs", writer.Output());
+        }
+
+        private static void OutputCliPartial(CodeFileModel? codeFileModel, SourceProductionContext context)
+        {
+            if (codeFileModel == null)
+            { return; }
+            var writer = new StringBuilderWriter(3);
+            var language = new LanguageCSharp(writer);
+            language.AddCodeFile(codeFileModel);
+            context.AddSource($"{Helpers.Cli}.g.cs", writer.Output());
         }
 
     }
