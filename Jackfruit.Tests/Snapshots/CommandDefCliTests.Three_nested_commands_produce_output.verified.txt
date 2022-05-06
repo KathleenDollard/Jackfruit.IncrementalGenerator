@@ -1,0 +1,74 @@
+﻿/*
+//Key:         
+//Id:          MyClass.A(int)
+//Path:        
+//Description: 
+//Aliases:     
+//Namespace:   <global namespace>
+//Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           I
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
+//SubCommands:     
+   //Key:         A
+   //Id:          MyClass.B(int)
+   //Path:        A
+   //Description: 
+   //Aliases:     
+   //Namespace:   <global namespace>
+   //Members:     
+      //Option:
+         //Option Id:      i
+         //Name:           I
+         //TypeName:       int
+         //Description:    
+         //Aliases:        
+         //ArgDisplayName: 
+         //Required:       False
+   //SubCommands:     
+   //**************************************    
+   
+   //Key:         A
+   //Id:          MyClass.C(int)
+   //Path:        A
+   //Description: 
+   //Aliases:     
+   //Namespace:   <global namespace>
+   //Members:     
+      //Option:
+         //Option Id:      i
+         //Name:           I
+         //TypeName:       int
+         //Description:    
+         //Aliases:        
+         //ArgDisplayName: 
+         //Required:       False
+   //SubCommands:     
+   //**************************************    
+   
+   //Key:         A
+   //Id:          MyClass.D(int)
+   //Path:        A
+   //Description: 
+   //Aliases:     
+   //Namespace:   <global namespace>
+   //Members:     
+      //Option:
+         //Option Id:      i
+         //Name:           I
+         //TypeName:       int
+         //Description:    
+         //Aliases:        
+         //ArgDisplayName: 
+         //Required:       False
+   //SubCommands:     
+   //**************************************    
+   
+//**************************************    
+
+*/

@@ -2,7 +2,6 @@
 using Jackfruit.Models;
 using Jackfruit.IncrementalGenerator;
 using Jackfruit.IncrementalGenerator.Output;
-using System;
 
 namespace Jackfruit.Tests
 {
@@ -34,7 +33,7 @@ namespace Jackfruit.Tests
 
             static void OutputCommand(IWriter writer, CommandDef commandDef)
             {
-            var joinedPath = string.Join("", commandDef.Path);
+                var joinedPath = string.Join("", commandDef.Path);
                 var path = string.Join(".", commandDef.Path);
                 writer.AddLine($"//Key:         {joinedPath}");
                 writer.AddLine($"//Id:          {commandDef.Id}");
@@ -53,16 +52,20 @@ namespace Jackfruit.Tests
                         case ServiceDef service: OutputService(writer, service); break;
                     }
                 }
+                writer.DecreaseIndent();
+                writer.AddLine($"//SubCommands:     ");
+                writer.IncreaseIndent();
                 foreach (var subCommandDef in commandDef.SubCommands)
                 {
                     if (subCommandDef is CommandDef subCommand)
                     {
-                        writer.IncreaseIndent();
                         OutputCommand(writer, subCommand);
-                        writer.DecreaseIndent();
                     }
                 }
                 writer.DecreaseIndent();
+                writer.AddLine($"//**************************************    ");
+                writer.AddLine("");
+
             }
 
             static void OutputOption(IWriter writer, OptionDef option)

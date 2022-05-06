@@ -1,6 +1,6 @@
 ﻿/*
 //Key:         
-//Id:          MyClass.A(int)
+//Id:          MyClass.AA(int)
 //Path:        
 //Description: 
 //Aliases:     
@@ -10,8 +10,8 @@
       //Argumet Id:     i
       //Name:           I
       //TypeName:       int
-      //Description:    
-      //Required:       True
+      //Description:    Member description in Attribute
+      //Required:       False
 //SubCommands:     
 //**************************************    
 

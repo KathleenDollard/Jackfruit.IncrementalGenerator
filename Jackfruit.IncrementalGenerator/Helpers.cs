@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Runtime.CompilerServices;
+using Microsoft.CodeAnalysis.Operations;
 using System.Xml.Linq;
 using static Jackfruit.IncrementalGenerator.RoslynHelpers;
 
@@ -15,6 +15,8 @@ namespace Jackfruit.IncrementalGenerator
         //private const string AddCommandsName = "AddCommands";
         private const string CreateName = "Create";
         private const string CliRoot = "CliRoot";
+        private const string Cli = "Cli";
+        private static string[] CreateSources = new string[] { CliRoot, Cli };
         private const string NestedCommandsClassName = "Commands";
         //internal const string AddRootCommand = "SetRootCommand";
         private static readonly string[] names = { AddCommandName };
@@ -36,8 +38,8 @@ namespace Jackfruit.IncrementalGenerator
                     ? false
                     : name == AddCommandName && argCount == 1
                         ? true
-                        : name == CreateName && argCount == 1 && GetCaller(invocation.Expression) == CliRoot
-                            ? true
+                        : name == CreateName
+                            ? argCount == 1 && new string[] { Cli, CliRoot }.Contains( GetCaller(invocation.Expression) )
                             : false;
             }
             return false;
@@ -97,6 +99,14 @@ namespace Jackfruit.IncrementalGenerator
         }
 
         public static CommandDef? GetCommandDef(GeneratorSyntaxContext context)
+            => context.Node is not InvocationExpressionSyntax invocation
+                // Weird, but we do not want to throw
+                ? null
+                : GetCaller(invocation.Expression) == Cli
+                    ? GetCommandDefTreeApproach(invocation, context.SemanticModel)
+                    : GetCommandDefGenericApproach(invocation, context.SemanticModel);
+
+        private static CommandDef? GetCommandDefGenericApproach(InvocationExpressionSyntax invocation, SemanticModel semanticModel)
         {
             // Transform1: (using the mode)
             //      * Check the path and namespace if available
@@ -104,32 +114,25 @@ namespace Jackfruit.IncrementalGenerator
             //      * Extract XML comments (as an XML blob)
             //      * Extract known attributes from method declaration and parameters
             //      * Create command and member defs
-            if (context.Node is not InvocationExpressionSyntax invocation)
-            {
-                // Weird, but we do not want to throw
-                return null;
-            }
             var path = GetPath(invocation.Expression).Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
 
             //We create details first because at this point we don't know what is an argument or option
             var delegateArg = invocation.ArgumentList.Arguments[0].Expression;
-            var methodSymbol = MethodOrCandidateSymbol(context.SemanticModel, delegateArg);
+
+            var methodSymbol = MethodOrCandidateSymbol(semanticModel, delegateArg);
             if (methodSymbol is null) { return null; }
-            var nspace = methodSymbol.ContainingNamespace.ToString();
 
-            var (commandDetail, memberDetails) = methodSymbol.BasicDetails();
-            var xmlComment = (methodSymbol.GetDocumentationCommentXml());
-            if (!string.IsNullOrWhiteSpace(xmlComment))
-            {
-                var xDoc = XDocument.Parse(xmlComment);
-                AddDescFromXmlDocComment(xDoc, commandDetail);
-                AddDescFromXmlDocComment(xDoc, memberDetails);
-            }
-            AddDetailsFromAttributes(methodSymbol, commandDetail, memberDetails);
+            var commandDetails = GetDetails(methodSymbol);
+            if (commandDetails is null)
+            { return null; }
 
+            return BuildCommandDef(path, delegateArg.ToString(), commandDetails);
+        }
 
+        private static CommandDef BuildCommandDef(string[] path, string delegateSignature, CommandDetails? commandDetails)
+        {
             var members = new List<MemberDef>();
-            foreach (var memberPair in memberDetails)
+            foreach (var memberPair in commandDetails.MemberDetails)
             {
                 if (memberPair.Key == CommandKey) { continue; }
                 var memberDetail = memberPair.Value;
@@ -160,17 +163,116 @@ namespace Jackfruit.IncrementalGenerator
 
             }
             return new CommandDef(
-                commandDetail.Id,
-                commandDetail.Name,
+                commandDetails.Detail.Id,
+                commandDetails.Detail.Name,
                 string.Join("_", path),
-                nspace,
+                commandDetails.Namespace,
                 path,
-                commandDetail.Description,
-                commandDetail.Aliases,
+                commandDetails.Detail.Description,
+                commandDetails.Detail.Aliases,
                 members,
-                delegateArg.ToString(),
+                delegateSignature,
                 new CommandDef[] { },
-                commandDetail.TypeName ?? "Unknown");
+                commandDetails.Detail.TypeName ?? "Unknown");
+        }
+
+        private static CommandDetails? GetDetails(IMethodSymbol methodSymbol)
+        {
+
+            var commandDetails = methodSymbol.BasicDetails();
+            var xmlComment = (methodSymbol.GetDocumentationCommentXml());
+            if (!string.IsNullOrWhiteSpace(xmlComment))
+            {
+                var xDoc = XDocument.Parse(xmlComment);
+                AddDescFromXmlDocComment(xDoc, commandDetails.Detail);
+                AddDescFromXmlDocComment(xDoc, commandDetails.MemberDetails);
+            }
+            AddDetailsFromAttributes(methodSymbol, commandDetails.Detail, commandDetails.MemberDetails);
+            return commandDetails;
+        }
+
+
+        private static CommandDef? GetCommandDefTreeApproach(InvocationExpressionSyntax invocation, SemanticModel semanticModel)
+        {
+            // Transform1: (using the mode)
+            //      * Get the single parameter, which is the root of an explicit tree
+            //      * Traverse the tree, depth first and for each node - build the path on traversal:
+            //          * Extract the delegate and details from it
+            //          * Extract XML comments (as an XML blob)
+            //          * Extract known attributes from method declaration and parameters
+            //          * Create command and member defs
+
+            string[] path = { };
+            var cliNodeArg = invocation.ArgumentList.Arguments[0].Expression;
+            if (cliNodeArg is not ImplicitObjectCreationExpressionSyntax cliNodeCreate)
+            { return null; }
+
+            var operation = semanticModel.GetOperation(invocation);
+            var operation1 = semanticModel.GetOperation(invocation.ArgumentList.Arguments[0]);
+            var operation2 = semanticModel.GetOperation(cliNodeCreate);
+            if (operation2 is IObjectCreationOperation objectCreationOp)
+            { return GetCommandDefTree(path, objectCreationOp); }
+            return null;
+        }
+
+        private static CommandDef? GetCommandDefTree(string[] path, IObjectCreationOperation objectCreationOp)
+        {
+            var methodSymbol = GetMethodFromObjectCreationOp(objectCreationOp);
+            if (methodSymbol is null) { return null; }
+
+            var commandDetails = GetDetails(methodSymbol);
+            if (commandDetails is null)
+            { return null; }
+
+            var commandDef =  BuildCommandDef(path, methodSymbol.ToString(), commandDetails);
+            if (commandDef is null )
+            { return null; }
+
+            var subCommandOperations = GetSubCommandOperations(objectCreationOp);
+            var newPath = path.Union(new string[] {methodSymbol.Name}).ToArray();
+            var subCommands = subCommandOperations
+                    .Select(x => GetCommandDefTree(newPath, x))
+                    .Where(x=>x is not null)
+                    .ToList();
+            commandDef.SubCommands = subCommands!;
+            return commandDef;
+        }
+
+        private static IMethodSymbol? GetMethodFromObjectCreationOp(IObjectCreationOperation objectCreationOp)
+            => !objectCreationOp.Arguments.Any()
+                ? null
+                : objectCreationOp.Arguments[0]
+                     .Descendants()
+                     .OfType<IDelegateCreationOperation>()
+                     .FirstOrDefault()
+                     ?.Target switch
+                {
+                    IMethodReferenceOperation methodRefOp => methodRefOp.Method,
+                    _ => null
+                };
+
+        private static IEnumerable<IObjectCreationOperation> GetSubCommandOperations(IObjectCreationOperation objectCreationOp)
+        {
+            if (objectCreationOp.Arguments.Count() != 2)
+            { return Enumerable.Empty<IObjectCreationOperation>(); }
+
+            var subCommandArg = objectCreationOp.Arguments[1];
+            var initializerOp = subCommandArg
+                    .Descendants()
+                    .OfType<IObjectOrCollectionInitializerOperation>()
+                    .Where(x => x.Type?.ToString() == "System.Collections.Generic.List<Jackfruit.CliNode>")
+                    .FirstOrDefault();
+            if (initializerOp is null)
+            {  return Enumerable.Empty<IObjectCreationOperation>(); }
+            var list = new List<IObjectCreationOperation>();
+            foreach (var initializer in initializerOp.Initializers)
+            {
+                var subCommandCreationOp = initializer.Descendants()
+                        .OfType<IObjectCreationOperation>()
+                        .FirstOrDefault();
+                list.Add(subCommandCreationOp);
+            }
+            return list;
         }
 
         public static CommandDefBase TreeFromList(this IEnumerable<CommandDef> commandDefs, int pos = 0)

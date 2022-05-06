@@ -23,18 +23,13 @@ namespace Jackfruit.IncrementalGenerator
     [Generator]
     public class Generator : IIncrementalGenerator
     {
+
         public void Initialize(IncrementalGeneratorInitializationContext initContext)
         {
             // Gather invocations from the dummy static methods for creating the console app
             // and adding subcommands. Then find the specified delegate and turn into a CommandDef
             // TODO: Pipe locations through so any later diagnostics work
             var commandDefs = initContext.SyntaxProvider
-                .CreateSyntaxProvider(
-                    predicate: static (s, _) => Helpers.IsSyntaxInteresting(s),
-                    transform: static (ctx, _) => Helpers.GetCommandDef(ctx))
-                .Where(static m => m is not null)
-                .Select(static (m, _) => m!);
-            var rootCommandDef2 = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => Helpers.IsSyntaxInteresting(s),
                     transform: static (ctx, _) => Helpers.GetCommandDef(ctx))

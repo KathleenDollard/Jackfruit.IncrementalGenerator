@@ -3,13 +3,14 @@ using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using Jackfruit.Internal;
 using Jackfruit;
 
 namespace DemoHandlers
 {
    public partial class CliRoot : GeneratedCommandBase<CliRoot, CliRoot.Result>, ICommandHandler
    {
-      public static CliRoot Create(Delegate MethodToRun)
+      public static CliRoot Create(Delegate methodToRun)
       {
          return Create();
       }

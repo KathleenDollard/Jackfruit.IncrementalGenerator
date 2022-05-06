@@ -1,16 +1,18 @@
 ﻿/*
 //Key:         
-//Id:          MyClass.A(int)
+//Id:          MyClass.AA(int)
 //Path:        
-//Description: 
+//Description: Command description in XmlComment
 //Aliases:     
 //Namespace:   <global namespace>
 //Members:     
-   //Argument:
-      //Argumet Id:     i
+   //Option:
+      //Option Id:      i
       //Name:           I
       //TypeName:       int
-      //Description:    
+      //Description:    Option description in XmlComment
+      //Aliases:        
+      //ArgDisplayName: 
       //Required:       False
 //SubCommands:     
 //**************************************    

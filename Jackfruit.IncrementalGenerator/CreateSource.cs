@@ -112,7 +112,7 @@ namespace Jackfruit.IncrementalGenerator
                     "System.CommandLine",
                     "System.CommandLine.Invocation",
                     "System.CommandLine.Parsing",
-                    "Jcakfruit.Internal",
+                    "Jackfruit.Internal",
                     libName
                 },
                 Namespace = new(commandDef.Namespace)  // not sure what nspace to put this in

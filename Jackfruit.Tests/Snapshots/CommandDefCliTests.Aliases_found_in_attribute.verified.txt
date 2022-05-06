@@ -1,17 +1,19 @@
 ﻿/*
 //Key:         
-//Id:          MyClass.A(int)
+//Id:          MyClass.AA(int)
 //Path:        
 //Description: 
-//Aliases:     
+//Aliases:     C1
 //Namespace:   <global namespace>
 //Members:     
-   //Argument:
-      //Argumet Id:     i
+   //Option:
+      //Option Id:      i
       //Name:           I
       //TypeName:       int
       //Description:    
-      //Required:       True
+      //Aliases:        1, 2
+      //ArgDisplayName: 
+      //Required:       False
 //SubCommands:     
 //**************************************    
 
