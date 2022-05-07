@@ -12,6 +12,19 @@ namespace Jackfruit.IncrementalGenerator
             Service
         }
 
+        public class CommandDetails
+        {
+            public CommandDetails(string nspace, Detail detail, Dictionary<string, Detail> memberDetails)
+            {
+                Namespace = nspace;
+                Detail = detail;
+                MemberDetails = memberDetails;
+            }
+            public string Namespace { get; }
+            public Detail Detail { get; }
+            public Dictionary<string, Detail> MemberDetails { get; }
+        }
+
         public class Detail
         {
             private string description = "";
@@ -100,8 +113,10 @@ namespace Jackfruit.IncrementalGenerator
                     : null;
         }
 
-        public static (Detail commandDetail, Dictionary<string, Detail> memberDetail) BasicDetails(this IMethodSymbol methodSymbol)
+        public static CommandDetails BasicDetails(this IMethodSymbol methodSymbol)
         {
+            var nspace = methodSymbol.ContainingNamespace.ToString();
+
             var commandDetail = new Detail(methodSymbol.ToDisplayString(), methodSymbol.Name, methodSymbol.ReturnType.ToString());
 
             var details = new Dictionary<string, Detail>();
@@ -119,7 +134,7 @@ namespace Jackfruit.IncrementalGenerator
                     details[param.Name].MemberKind = MemberKind.Service;
                 }
             }
-            return (commandDetail, details);
+            return new CommandDetails(nspace, commandDetail, details);
         }
 
         public static void AddDescFromXmlDocComment(XDocument xDoc, Dictionary<string, Detail> details)
@@ -177,12 +192,12 @@ namespace Jackfruit.IncrementalGenerator
                     case "AliasesAttribute":
                     case "Aliases":
                         var arg1 = attrib.ConstructorArguments.FirstOrDefault();
-                        detail.Aliases = 
+                        detail.Aliases =
                             arg1.Kind == TypedConstantKind.Array
                                 ? arg1.Values.Select(x => x.Value is null ? "" : x.Value.ToString()).ToArray()
                                 : arg1.Value is null
                                     ? new string[] { }
-                                    : new string[] { arg1.Value.ToString() }; 
+                                    : new string[] { arg1.Value.ToString() };
                         break;
 
                     case "ArgumentAttribute":

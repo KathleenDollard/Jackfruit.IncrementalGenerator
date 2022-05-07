@@ -1,4 +1,14 @@
-﻿/*
+﻿
+using Jackfruit;
+
+public partial class Cli
+{
+    public static void Create(CliNode cliRoot)
+    { }
+}
+// *******************************
+
+/*
 //Key:         
 //Id:          DemoHandlers.Handlers.NextGeneration(string, bool)
 //Path:        
@@ -20,4 +30,7 @@
       //Aliases:        
       //ArgDisplayName: 
       //Required:       False
+//SubCommands:     
+//**************************************    
+
 */

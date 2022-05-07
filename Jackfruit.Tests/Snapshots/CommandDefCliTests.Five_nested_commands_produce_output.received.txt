@@ -1,0 +1,38 @@
+﻿/*
+//Key:         
+//Id:          MyClass.C(int)
+//Path:        
+//Description: 
+//Aliases:     
+//Namespace:   <global namespace>
+//Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           I
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
+//SubCommands:     
+   //Key:         C
+   //Id:          MyClass.E(int)
+   //Path:        C.
+   //Description: 
+   //Aliases:     
+   //Namespace:   <global namespace>
+   //Members:     
+      //Option:
+         //Option Id:      i
+         //Name:           I
+         //TypeName:       int
+         //Description:    
+         //Aliases:        
+         //ArgDisplayName: 
+         //Required:       False
+   //SubCommands:     
+   //**************************************    
+   
+//**************************************    
+
+*/

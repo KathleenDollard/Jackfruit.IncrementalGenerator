@@ -1,0 +1,156 @@
+﻿
+using Jackfruit;
+
+public partial class Cli
+{
+    public static void Create(CliNode cliRoot)
+    { }
+}
+// *******************************
+
+/*
+//Key:         
+//Id:          MyClass.A(int)
+//Path:        
+//Description: 
+//Aliases:     
+//Namespace:   <global namespace>
+//Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           I
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
+//SubCommands:     
+   //Key:         A
+   //Id:          MyClass.B(int)
+   //Path:        A
+   //Description: 
+   //Aliases:     
+   //Namespace:   <global namespace>
+   //Members:     
+      //Option:
+         //Option Id:      i
+         //Name:           I
+         //TypeName:       int
+         //Description:    
+         //Aliases:        
+         //ArgDisplayName: 
+         //Required:       False
+   //SubCommands:     
+   //**************************************    
+   
+   //Key:         A
+   //Id:          MyClass.C(int)
+   //Path:        A
+   //Description: 
+   //Aliases:     
+   //Namespace:   <global namespace>
+   //Members:     
+      //Option:
+         //Option Id:      i
+         //Name:           I
+         //TypeName:       int
+         //Description:    
+         //Aliases:        
+         //ArgDisplayName: 
+         //Required:       False
+   //SubCommands:     
+      //Key:         AC
+      //Id:          MyClass.E(int)
+      //Path:        A.C
+      //Description: 
+      //Aliases:     
+      //Namespace:   <global namespace>
+      //Members:     
+         //Option:
+            //Option Id:      i
+            //Name:           I
+            //TypeName:       int
+            //Description:    
+            //Aliases:        
+            //ArgDisplayName: 
+            //Required:       False
+      //SubCommands:     
+      //**************************************    
+      
+      //Key:         AC
+      //Id:          MyClass.F(int)
+      //Path:        A.C
+      //Description: 
+      //Aliases:     
+      //Namespace:   <global namespace>
+      //Members:     
+         //Option:
+            //Option Id:      i
+            //Name:           I
+            //TypeName:       int
+            //Description:    
+            //Aliases:        
+            //ArgDisplayName: 
+            //Required:       False
+      //SubCommands:     
+         //Key:         ACF
+         //Id:          MyClass.G(int)
+         //Path:        A.C.F
+         //Description: 
+         //Aliases:     
+         //Namespace:   <global namespace>
+         //Members:     
+            //Option:
+               //Option Id:      i
+               //Name:           I
+               //TypeName:       int
+               //Description:    
+               //Aliases:        
+               //ArgDisplayName: 
+               //Required:       False
+         //SubCommands:     
+         //**************************************    
+         
+         //Key:         ACF
+         //Id:          MyClass.H(int)
+         //Path:        A.C.F
+         //Description: 
+         //Aliases:     
+         //Namespace:   <global namespace>
+         //Members:     
+            //Option:
+               //Option Id:      i
+               //Name:           I
+               //TypeName:       int
+               //Description:    
+               //Aliases:        
+               //ArgDisplayName: 
+               //Required:       False
+         //SubCommands:     
+         //**************************************    
+         
+      //**************************************    
+      
+   //**************************************    
+   
+   //Key:         A
+   //Id:          MyClass.D(int)
+   //Path:        A
+   //Description: 
+   //Aliases:     
+   //Namespace:   <global namespace>
+   //Members:     
+      //Option:
+         //Option Id:      i
+         //Name:           I
+         //TypeName:       int
+         //Description:    
+         //Aliases:        
+         //ArgDisplayName: 
+         //Required:       False
+   //SubCommands:     
+   //**************************************    
+   
+//**************************************    
+
+*/

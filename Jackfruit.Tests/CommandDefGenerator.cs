@@ -2,15 +2,25 @@
 using Jackfruit.Models;
 using Jackfruit.IncrementalGenerator;
 using Jackfruit.IncrementalGenerator.Output;
-using System;
 
 namespace Jackfruit.Tests
 {
     [Generator]
     public class CommandDefGenerator : IIncrementalGenerator
     {
+        private const string cliClassCode = @"
+using Jackfruit;
+
+public partial class Cli
+{
+    public static void Create(CliNode cliRoot)
+    { }
+}";
         public void Initialize(IncrementalGeneratorInitializationContext initContext)
         {
+            // To be a partial, this must be in the same namespace and assembly as the generated part
+            initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource("Cli.partial.g.cs", cliClassCode));
+
             IncrementalValuesProvider<CommandDef> commandDefs = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => Helpers.IsSyntaxInteresting(s),
@@ -34,7 +44,7 @@ namespace Jackfruit.Tests
 
             static void OutputCommand(IWriter writer, CommandDef commandDef)
             {
-            var joinedPath = string.Join("", commandDef.Path);
+                var joinedPath = string.Join("", commandDef.Path);
                 var path = string.Join(".", commandDef.Path);
                 writer.AddLine($"//Key:         {joinedPath}");
                 writer.AddLine($"//Id:          {commandDef.Id}");
@@ -53,16 +63,20 @@ namespace Jackfruit.Tests
                         case ServiceDef service: OutputService(writer, service); break;
                     }
                 }
+                writer.DecreaseIndent();
+                writer.AddLine($"//SubCommands:     ");
+                writer.IncreaseIndent();
                 foreach (var subCommandDef in commandDef.SubCommands)
                 {
                     if (subCommandDef is CommandDef subCommand)
                     {
-                        writer.IncreaseIndent();
                         OutputCommand(writer, subCommand);
-                        writer.DecreaseIndent();
                     }
                 }
                 writer.DecreaseIndent();
+                writer.AddLine($"//**************************************    ");
+                writer.AddLine("");
+
             }
 
             static void OutputOption(IWriter writer, OptionDef option)

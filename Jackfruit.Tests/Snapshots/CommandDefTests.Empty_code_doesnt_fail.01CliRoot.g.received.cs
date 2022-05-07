@@ -1,6 +1,7 @@
-﻿//HintName: CliRoot.cs
+﻿//HintName: CliRoot.g.cs
 // This file is created by a generator.
 using System.CommandLine.Parsing;
+using Jackfruit.Internal;
 
 namespace Jackfruit
 {
@@ -10,7 +11,7 @@ namespace Jackfruit
       {
       }
       
-      public static EmptyCommand Create(Delegate MethodToRun)
+      public static EmptyCommand Create(Delegate rootMethodToRun)
       {
          return new EmptyCommand();
       }

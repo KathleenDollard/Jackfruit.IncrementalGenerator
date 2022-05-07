@@ -3,6 +3,7 @@ using Jackfruit.Models;
 using static Jackfruit.IncrementalGenerator.CodeModels.StatementHelpers;
 using static Jackfruit.IncrementalGenerator.CodeModels.ExpressionHelpers;
 using static Jackfruit.IncrementalGenerator.CodeModels.StructureHelpers;
+using System.Net;
 
 namespace Jackfruit.IncrementalGenerator
 {
@@ -40,7 +41,9 @@ namespace Jackfruit.IncrementalGenerator
                 ancestorList.Any()
                     ? string.Join(".", ancestorList.Select(a => CommandClassName(a))) + "."
                     : "";
-            return $"Commands.{parentNames}{CommandClassName(commandDef)}";
+            return Helpers.GetStyle(commandDef) == Helpers.Cli 
+                ? $"{parentNames}{CommandClassName(commandDef)}"
+                : $"Commands.{parentNames}{CommandClassName(commandDef)}";
         }
         private static string MemberPropertyName(MemberDef memberDef)
             => memberDef switch
@@ -59,8 +62,43 @@ namespace Jackfruit.IncrementalGenerator
         private static string SimpleName(MemberDef memberDef) => memberDef.Name;
         private static NamedItemModel GeneratedCommandBase(string self, string parent)
             => new GenericNamedItemModel("GeneratedCommandBase", self, $"{self}.{resultName}", parent);
+        private static NamedItemModel GeneratedCommandBase(string self)
+           => new GenericNamedItemModel("GeneratedCommandBase", self, $"{self}.{resultName}");
         private static NamedItemModel GeneratedRootCommandBase()
             => new GenericNamedItemModel("GeneratedCommandBase", cliRoot, $"{cliRoot}.{resultName}");
+ 
+        public static CodeFileModel? GetCliPartialCodeFile(CommandDefBase rootCommandDef)
+            => rootCommandDef is CommandDef commandDef
+                ? CliPartialCodeFile(commandDef)
+                : null;
+
+        private static CodeFileModel? CliPartialCodeFile(CommandDef commandDef)
+        {
+            if (Helpers.GetStyle(commandDef) != Helpers.Cli)
+            { return null; }
+
+            return new CodeFileModel(Helpers.Cli)
+            {
+                Usings = { commandDef.Namespace },
+                Namespace = new("Jackfruit")  // not sure what nspace to put this in
+                {
+                    Classes = new()
+                        {
+                            Class(Helpers.Cli)
+                                .Public()
+                                .Partial()
+                                .Members(
+                                    Constructor(Helpers.Cli)
+                                        .Static()
+                                        .Statements(
+                                            Assign(commandDef.Name, Invoke(commandDef.Name, create))),
+                                    Property(commandDef.Name, commandDef.Name)
+                                        .Public()
+                                        .Static())
+                        }
+                }
+            };
+        }
 
         public static CodeFileModel GetCommandCodeFile(CommandDefBase rootCommandDef)
             => rootCommandDef is CommandDef commandDef
@@ -103,7 +141,9 @@ namespace Jackfruit.IncrementalGenerator
 
         internal static CodeFileModel RootCommandCodeFile(CommandDef commandDef)
         {
-            commandDef.Name = "CliRoot";
+            var style = Helpers.GetStyle(commandDef);
+            if (style != Helpers.Cli)
+            { commandDef.Name = "CliRoot"; }
             return new CodeFileModel("Commands")
             {
                 Usings =
@@ -112,16 +152,24 @@ namespace Jackfruit.IncrementalGenerator
                     "System.CommandLine",
                     "System.CommandLine.Invocation",
                     "System.CommandLine.Parsing",
-                    "Jcakfruit.Internal",
+                    "Jackfruit.Internal",
                     libName
                 },
                 Namespace = new(commandDef.Namespace)  // not sure what nspace to put this in
                 {
-                    Classes = new List<ClassModel>
-                    {
-                        CliRoot(commandDef),
-                        SubCommands(commandDef)
-                    }
+                    Classes = style == Helpers.Cli
+                        ? new List<ClassModel>
+                        {
+                            CommandClass(Enumerable.Empty<CommandDef>(),
+                                         Enumerable.Empty<MemberDef>(),
+                                         null,
+                                         commandDef)
+                        }
+                        : new List<ClassModel>
+                        {
+                            CliRoot(commandDef),
+                            SubCommands(commandDef)
+                        }
                 }
             };
         }
@@ -157,22 +205,32 @@ namespace Jackfruit.IncrementalGenerator
         private static IMember[] SubCommandClasses(IEnumerable<CommandDef> ancestors,
                                                    IEnumerable<MemberDef> ancestorMembers,
                                                    CommandDef commandDef)
+            => commandDef.SubCommands
+                    .OfType<CommandDef>()
+                    .Select(cmd => CommandClass(ancestors, ancestorMembers, commandDef, cmd))
+                    .ToArray();
+
+        private static ClassModel CommandClass(IEnumerable<CommandDef> ancestors,
+                                               IEnumerable<MemberDef> ancestorMembers,
+                                               CommandDef? parent,
+                                               CommandDef commandDef)
         {
             // TODO: Consider moving Ancestors and ancestor members to CommandDef. These would be null until the tree is built.
             var myAncestors = ancestors.ToList();
-            myAncestors.Insert(0, commandDef);
+            if (parent is not null)
+            { myAncestors.Insert(0, parent); }
             // TODO: have a force option
             var myMembers = NonAncestorMembers(ancestorMembers, commandDef);
             var newAncestorMembers = ancestorMembers.Union(myMembers).ToList();
 
-            return commandDef.SubCommands
-                    .OfType<CommandDef>()
-                    .Select(cmd =>
-                         CommandClassDeclaration(cmd)
-                            .InheritedFrom(GeneratedCommandBase(CommandClassName(cmd), CommandClassName(commandDef)))
-                            .Members(CommonClassMembers(myAncestors, newAncestorMembers, NonAncestorMembers(ancestorMembers,cmd), cmd)
-                                .Union(SubCommandClasses(myAncestors, newAncestorMembers, cmd)).ToArray()))
-                    .ToArray();
+            var commandClass = CommandClassDeclaration(commandDef)
+                                    .InheritedFrom(parent is null
+                                        ? GeneratedCommandBase(CommandClassName(commandDef))
+                                        : GeneratedCommandBase(CommandClassName(commandDef), CommandClassName(parent)))
+                                    .Members(CommonClassMembers(myAncestors, ancestorMembers, NonAncestorMembers(ancestorMembers, commandDef), commandDef)
+                                        .Union(SubCommandClasses(myAncestors, newAncestorMembers, commandDef)).ToArray());
+            return commandClass;
+
             static IEnumerable<MemberDef> NonAncestorMembers(IEnumerable<MemberDef> ancestorMembers, CommandDef commandDef)
                 => commandDef.Members
                     .Where(m => !ancestorMembers.Any(a => a.Name.Equals(m.Name)))
@@ -257,7 +315,7 @@ namespace Jackfruit.IncrementalGenerator
 
             if (commandDef.ReturnType == "int")
             {
-                method.Statements.Add(Assign("ret", Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
+                method.Statements.Add(AssignWithDeclare("ret", Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
                 method.Statements.Add(Return(Invoke("Task", "FromResult", Symbol("ret"))));
             }
             else
@@ -303,8 +361,9 @@ namespace Jackfruit.IncrementalGenerator
             {
                 method.Parameters.Add(Parameter("parent", CommandFullClassName(ancestors.Skip(1), null, ancestors.First())));
                 method.Statements.Add(AssignWithDeclare(commandVar, New(CommandFullClassName(ancestors, null, commandDef), Symbol("parent"))));
-            }else
-            { 
+            }
+            else
+            {
                 method.Statements.Add(AssignWithDeclare(commandVar, New(CommandFullClassName(ancestors, null, commandDef))));
             }
             foreach (var member in myMembers)

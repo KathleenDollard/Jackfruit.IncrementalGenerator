@@ -15,6 +15,11 @@ namespace Jackfruit.IncrementalGenerator
     {
         private readonly IWriter writer;
 
+        public string SpaceIfNotEmpty(string value)
+            => string.IsNullOrWhiteSpace(value)
+                ? ""
+                : $"{value} ";
+
         public LanguageOutput(IWriter writer)
         {
             this.writer = writer;

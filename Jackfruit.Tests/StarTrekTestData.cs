@@ -4,6 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//namespace Jackfruit
+//{
+//    public partial class Cli
+//    {
+//        public static void Create(CliNode cliRoot)
+//        { }
+//    }
+//}
 namespace Jackfruit.Tests
 {
     internal class StarTrekTestData

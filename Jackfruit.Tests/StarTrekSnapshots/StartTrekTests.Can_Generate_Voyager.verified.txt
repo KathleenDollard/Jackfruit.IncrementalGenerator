@@ -1,15 +1,27 @@
-﻿// This file is created by a generator.
+﻿
+namespace Jackfruit
+{
+    public partial class Cli
+    {
+        public static void Create(CliNode cliRoot)
+        { }
+    }
+}
+// *******************************
+
+// This file is created by a generator.
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using Jackfruit.Internal;
 using Jackfruit;
 
 namespace DemoHandlers
 {
    public partial class CliRoot : GeneratedCommandBase<CliRoot, CliRoot.Result>, ICommandHandler
    {
-      public static CliRoot Create(Delegate MethodToRun)
+      public static CliRoot Create(Delegate methodToRun)
       {
          return Create();
       }
@@ -66,14 +78,14 @@ namespace DemoHandlers
       public int Invoke(InvocationContext context)
       {
          var result = GetResult(context);
-         Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         DemoHandlers.Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
          return context.ExitCode;
       }
       
       public Task<int> InvokeAsync(InvocationContext context)
       {
          var result = GetResult(context);
-         Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         DemoHandlers.Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
          return Task.FromResult(context.ExitCode);
       }
       

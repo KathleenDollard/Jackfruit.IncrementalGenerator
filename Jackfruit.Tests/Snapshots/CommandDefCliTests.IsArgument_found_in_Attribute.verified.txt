@@ -1,0 +1,28 @@
+﻿
+using Jackfruit;
+
+public partial class Cli
+{
+    public static void Create(CliNode cliRoot)
+    { }
+}
+// *******************************
+
+/*
+//Key:         
+//Id:          MyClass.AA(int)
+//Path:        
+//Description: 
+//Aliases:     
+//Namespace:   <global namespace>
+//Members:     
+   //Argument:
+      //Argumet Id:     i
+      //Name:           I
+      //TypeName:       int
+      //Description:    
+      //Required:       False
+//SubCommands:     
+//**************************************    
+
+*/
