@@ -62,7 +62,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public static T Statements<T>(this T model, params IStatement[] statements)
             where T : IHasStatements
         {
-            model.Statements = statements.ToList();
+            model.Statements.AddRange(statements);
             return model;
         }
 
@@ -189,7 +189,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
         public static ClassModel Members(this ClassModel model, params IMember[] members)
         {
-            model.Members = members.ToList();
+            model.Members.AddRange(members);
             return model;
         }
 
@@ -207,6 +207,20 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             field.IsReadonly = true;
             return field;
         }
+
+        public static CodeFileModel Usings(this CodeFileModel model, params UsingModel[] usings)
+        {
+            model.Usings.AddRange(usings);
+            return model;
+        }
+
+        public static CodeFileModel Namespace(this CodeFileModel model, string nspace, params ClassModel[] classes)
+        {
+            model.Namespace = new NamespaceModel(nspace);
+            model.Namespace.Classes.AddRange(classes);
+            return model;
+        }
+
 
 
     }

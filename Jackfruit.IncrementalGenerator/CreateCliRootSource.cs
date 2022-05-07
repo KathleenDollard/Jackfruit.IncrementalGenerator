@@ -7,7 +7,7 @@ using System.Net;
 
 namespace Jackfruit.IncrementalGenerator
 {
-    public static class CreateSource
+    public static class CreateCliRootSource
     {
         private const string libName = "Jackfruit";
         private const string create = "Create";
@@ -72,42 +72,133 @@ namespace Jackfruit.IncrementalGenerator
             var roots = rootCommandDefs
                     .OfType<CommandDef>().ToList()
                     .Where(x => Helpers.GetStyle(x) == Helpers.Cli);
-            return !roots.Any()
-                ? null
-                : new CodeFileModel(Helpers.Cli)
-                    .Usings(roots.Select(x => new UsingModel(x.Namespace)).ToArray())
-                    .Namespace("Jackfruit",
-                        Class(Helpers.Cli)
-                            .Public()
-                            .Partial()
-                            .Members(
-                                Constructor(Helpers.Cli)
-                                    .Static()
-                                    .Statements(
-                                        roots.Select(x => Assign(x.Name, Invoke(x.Name, create)))
-                                             .ToArray()))
-                            .Members(roots.Select(x => Property(x.Name, x.Name).Public().Static())
-                                          .ToArray()));
+            if (!roots.Any()) { return null; }
+
+            var nspaces = roots.Select(x => new UsingModel(x.Namespace)).ToList();
+            var ctorStatements = roots.Select(x => Assign(x.Name, Invoke(x.Name, create))).ToArray();
+            var properties = roots.Select(x => Property(x.Name, x.Name)
+                                                .Public()
+                                                .Static());
+            var classModel = Class(Helpers.Cli)
+                                .Public()
+                                .Partial()
+                                .Members(
+                                    Constructor(Helpers.Cli)
+                                        .Static()
+                                        .Statements(ctorStatements));
+            classModel.Members.AddRange(properties);
+            return new CodeFileModel(Helpers.Cli)
+            {
+                Usings = nspaces,
+                Namespace = new("Jackfruit")
+                {
+                    Classes = new() { classModel }
+                }
+            };
         }
 
-        public static CodeFileModel? GetCommandCodeFile(CommandDefBase rootCommandDef)
+        public static CodeFileModel GetCommandCodeFile(CommandDefBase rootCommandDef)
+            => rootCommandDef is CommandDef commandDef
+                ? RootCommandCodeFile(commandDef)
+                : DefaultRootCommand();
+
+        internal static CodeFileModel DefaultRootCommand()
+            => new CodeFileModel(Helpers.CliRootName)
+            {
+                Usings = { new("System.CommandLine.Parsing"), "Jackfruit.Internal" },
+                Namespace = new("Jackfruit")  // not sure what nspace to put this in
+                {
+                    Classes = new()
+                            {
+                                Class(Helpers.CliRootName)
+                                    .InheritedFrom (GeneratedRootCommandBase())
+                                    .Partial ()
+                                    .Members (
+                                        Constructor(Helpers.CliRootName).Private()
+                                            .Base("<EmptyCommand>", Null),
+                                        Method(create ,emptyCommand)
+                                            .Public()
+                                            .Static()
+                                            .Parameters(Parameter(rootMethodToRun,"Delegate"))
+                                            .Statements(
+                                                Return(New(emptyCommand))),
+                                        Class(resultName)
+                                            .Public(),
+                                        Method(getResultName, resultName)
+                                            .Public()
+                                            .Override()
+                                            .Parameters(Parameter(commandResult, commandResult))
+                                            .Statements(
+                                                Throw(invalidOpException, "Result not available"))
+                                    )
+
+                             }
+                }
+            };
+
+        internal static CodeFileModel RootCommandCodeFile(CommandDef commandDef)
         {
-            if (rootCommandDef is not CommandDef commandDef)
-            { return null; }
+            var style = Helpers.GetStyle(commandDef);
+            if (style != Helpers.Cli)
+            { commandDef.Name = "CliRoot"; }
             return new CodeFileModel("Commands")
-                .Usings(
+            {
+                Usings =
+                {
                     "System",
                     "System.CommandLine",
                     "System.CommandLine.Invocation",
                     "System.CommandLine.Parsing",
                     "Jackfruit.Internal",
-                    libName)
-                .Namespace(commandDef.Namespace,
-                    CommandClass(Enumerable.Empty<CommandDef>(),
+                    libName
+                },
+                Namespace = new(commandDef.Namespace)  // not sure what nspace to put this in
+                {
+                    Classes = style == Helpers.Cli
+                        ? new List<ClassModel>
+                        {
+                            CommandClass(Enumerable.Empty<CommandDef>(),
                                          Enumerable.Empty<MemberDef>(),
                                          null,
-                                         commandDef));
+                                         commandDef)
+                        }
+                        : new List<ClassModel>
+                        {
+                            CliRoot(commandDef),
+                            SubCommands(commandDef)
+                        }
+                }
+            };
         }
+
+        private static ClassModel CliRoot(CommandDef commandDef)
+        {
+            var classModel =
+                CommandClassDeclaration(commandDef)
+                    .InheritedFrom(GeneratedRootCommandBase())
+                    .Members(RootCommandMembers(commandDef));
+            return classModel;
+        }
+
+        private static ClassModel SubCommands(CommandDef commandDef)
+             => Class("Commands")
+                .Public()
+                .Members(SubCommandClasses(Array.Empty<CommandDef>(), commandDef.Members, commandDef));
+
+        private static IMember[] RootCommandMembers(CommandDef commandDef)
+        {
+            var members = new List<IMember>();
+            members.Add(
+                Method(create, Helpers.CliRootName)
+                    .Public()
+                    .Static()
+                    .Parameters(Parameter(methodToRun, "Delegate"))
+                    .Statements(
+                        Return(Invoke("", create))));
+            members.AddRange(CommonClassMembers(Enumerable.Empty<CommandDef>(), Enumerable.Empty<MemberDef>(), commandDef.Members, commandDef));
+            return members.ToArray();
+        }
+
         private static IMember[] SubCommandClasses(IEnumerable<CommandDef> ancestors,
                                                    IEnumerable<MemberDef> ancestorMembers,
                                                    CommandDef commandDef)
@@ -129,18 +220,13 @@ namespace Jackfruit.IncrementalGenerator
             var myMembers = NonAncestorMembers(ancestorMembers, commandDef);
             var newAncestorMembers = ancestorMembers.Union(myMembers).ToList();
 
-            return Class(CommandClassName(commandDef))
-                        .Public()
-                        .Partial()
-                        .ImplementedInterfaces(
-                            string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
-                                ? Array.Empty<NamedItemModel>()
-                                : new NamedItemModel[] { "ICommandHandler" })
-                        .InheritedFrom(parent is null
-                            ? GeneratedCommandBase(CommandClassName(commandDef))
-                            : GeneratedCommandBase(CommandClassName(commandDef), CommandClassName(parent)))
-                        .Members(CommonClassMembers(myAncestors, ancestorMembers, NonAncestorMembers(ancestorMembers, commandDef), commandDef)
-                            .Union(SubCommandClasses(myAncestors, newAncestorMembers, commandDef)).ToArray());
+            var commandClass = CommandClassDeclaration(commandDef)
+                                    .InheritedFrom(parent is null
+                                        ? GeneratedCommandBase(CommandClassName(commandDef))
+                                        : GeneratedCommandBase(CommandClassName(commandDef), CommandClassName(parent)))
+                                    .Members(CommonClassMembers(myAncestors, ancestorMembers, NonAncestorMembers(ancestorMembers, commandDef), commandDef)
+                                        .Union(SubCommandClasses(myAncestors, newAncestorMembers, commandDef)).ToArray());
+            return commandClass;
 
             static IEnumerable<MemberDef> NonAncestorMembers(IEnumerable<MemberDef> ancestorMembers, CommandDef commandDef)
                 => commandDef.Members
@@ -148,12 +234,22 @@ namespace Jackfruit.IncrementalGenerator
                     .ToList();
         }
 
+        private static ClassModel CommandClassDeclaration(CommandDef commandDef)
+           => Class(CommandClassName(commandDef))
+                .Public()
+                .Partial()
+                .ImplementedInterfaces(
+                    string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
+                        ? Array.Empty<NamedItemModel>()
+                        : new NamedItemModel[] { "ICommandHandler" });
+
         private static IMember[] CommonClassMembers(IEnumerable<CommandDef> ancestors,
                                                     IEnumerable<MemberDef> ancestorMembers,
                                                     IEnumerable<MemberDef> myMembers,
                                                     CommandDef commandDef)
         {
-           List<IMember> members = new()
+
+            List<IMember> members = new()
             {
                 ancestors.Any()
                     ? Constructor(CommandClassName(commandDef))
@@ -179,6 +275,27 @@ namespace Jackfruit.IncrementalGenerator
                 .Select(c => Property(CommandPropertyName(c), CommandFullClassName(ancestors, commandDef, c)).Public()));
 
             return members.ToArray();
+        }
+
+        private static ClassModel GetNestedCommands(int i, CommandDef commandDef)
+        {
+            if (i == 10) throw new IOException("Runaway recursion suspected");
+            var classCode =
+                Class(commandDef.Name)
+                    .Public()
+                    .Static()
+                    .Members(
+                        Method(Helpers.AddCommandName, Void())
+                            .Public()
+                            .Static()
+                            .Parameters(Parameter("handler", "Delegate")));
+
+            foreach (var subCommandDef in commandDef.SubCommands)
+            {
+                if (subCommandDef is CommandDef subCommand)
+                { classCode.Members.Add(GetNestedCommands(i + 1, subCommand)); }
+            }
+            return classCode;
         }
 
         private static MethodModel InvokeAsyncHandlerMethod(CommandDef commandDef)

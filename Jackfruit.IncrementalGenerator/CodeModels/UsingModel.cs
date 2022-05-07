@@ -1,6 +1,6 @@
 ﻿namespace Jackfruit.IncrementalGenerator.CodeModels
 {
-    public class UsingModel
+    public class UsingModel : ICodeFileMember
     {
         public static List<UsingModel> Create(params string[] usings)
             => usings.Select(x => new UsingModel(x)).ToList();

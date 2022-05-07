@@ -9,8 +9,8 @@
 
         public string Name { get; }
         public NamespaceModel? Namespace { get; set; }
-        public List<UsingModel> Usings { get; set; } = new List<UsingModel>();
-        public List<string> HeaderComments { get; set; } = new List<string>() { "This file is created by a generator." };
+        public List<UsingModel> Usings { get; set; } = new ();
+        public List<string> HeaderComments { get; set; } = new () { "This file is created by a generator." };
 
     }
 }

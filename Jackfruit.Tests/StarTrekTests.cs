@@ -78,7 +78,7 @@ public class MyClass
 
         public Task Can_create_commandDef(string fileName, string input)
         {
-            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("StarTrekSnapshots").UseTextForParameters(fileName);
@@ -101,7 +101,7 @@ public class MyClass
         public Task Command_descrption_from_xml_comment()
         {
             const string input = StarTrekRoot;
-            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("StarTrekSnapshots");
@@ -111,7 +111,7 @@ public class MyClass
         public Task Command_descrption_from_attribute()
         {
             const string input = NextGenerationRoot;
-            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("StarTrekSnapshots");

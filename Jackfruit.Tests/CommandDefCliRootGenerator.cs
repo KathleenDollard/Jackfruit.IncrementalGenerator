@@ -6,7 +6,7 @@ using Jackfruit.IncrementalGenerator.Output;
 namespace Jackfruit.Tests
 {
     [Generator]
-    public class CommandDefGenerator : IIncrementalGenerator
+    public class CommandDefCliRootGenerator : IIncrementalGenerator
     {
         private const string cliClassCode = @"
 using Jackfruit;
@@ -23,8 +23,8 @@ public partial class Cli
 
             IncrementalValuesProvider<CommandDef> commandDefs = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
-                    predicate: static (s, _) => CliExtractAndBuild.IsSyntaxInteresting(s),
-                    transform: static (ctx, _) => CliExtractAndBuild.GetCommandDef(ctx))
+                    predicate: static (s, _) => CliRootExtractAndBuild.IsSyntaxInteresting(s),
+                    transform: static (ctx, _) => CliRootExtractAndBuild.GetCommandDef(ctx))
                 .Where(static m => m is not null)!;
 
             initContext.RegisterSourceOutput(commandDefs,
