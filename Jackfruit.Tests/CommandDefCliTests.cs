@@ -98,7 +98,55 @@ public class MyClass
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
+    
+        [Fact]
+        public Task CliNode_and_implicit_creation_allowed()
+        {
+            var input = methodWrapper(@"
+    public void Test() 
+    {
+        Cli.Create(new(A, new() { 
+                new(B),
+                new CliNode(C,  new() {
+                    new(E),
+                    new(F, new() {
+                        new(G), 
+                        new CliNode(H)
+                    })
+                }),
+                new CliNode(D)
+            }));
+    }");
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(diagnostics);
+            return Verifier.Verify(output).UseDirectory("Snapshots");
+        }
+
+
+        [Fact]
+        public Task List_ctor_and_implicit_creation_allowed()
+        {
+            var input = methodWrapper(@"
+    public void Test() 
+    {
+        Cli.Create(new(A, new() { 
+                new(B),
+                new(C,  new List<CliNode>() {
+                    new(E),
+                    new(F, new() {
+                        new(G), 
+                        new(H)
+                    })
+                }),
+                new(D)
+            }));
+    }");
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+
+            Assert.Empty(diagnostics);
+            return Verifier.Verify(output).UseDirectory("Snapshots");
+        }
         [Fact]
         public Task Single_command_with_null_delegate_has_no_output()
         {

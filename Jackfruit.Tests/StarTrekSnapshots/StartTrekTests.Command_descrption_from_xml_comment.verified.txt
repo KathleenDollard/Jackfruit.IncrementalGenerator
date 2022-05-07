@@ -1,4 +1,14 @@
-﻿/*
+﻿
+using Jackfruit;
+
+public partial class Cli
+{
+    public static void Create(CliNode cliRoot)
+    { }
+}
+// *******************************
+
+/*
 //Key:         
 //Id:          DemoHandlers.Handlers.Franchise(string)
 //Path:        

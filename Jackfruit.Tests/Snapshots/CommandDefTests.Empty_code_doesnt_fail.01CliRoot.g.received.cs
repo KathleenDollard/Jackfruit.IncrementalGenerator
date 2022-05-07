@@ -1,4 +1,4 @@
-﻿//HintName: CliRoot.cs
+﻿//HintName: CliRoot.g.cs
 // This file is created by a generator.
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;

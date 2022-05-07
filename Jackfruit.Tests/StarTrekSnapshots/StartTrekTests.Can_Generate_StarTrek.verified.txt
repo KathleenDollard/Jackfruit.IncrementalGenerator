@@ -1,4 +1,15 @@
-﻿// This file is created by a generator.
+﻿
+namespace Jackfruit
+{
+    public partial class Cli
+    {
+        public static void Create(CliNode cliRoot)
+        { }
+    }
+}
+// *******************************
+
+// This file is created by a generator.
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
@@ -49,14 +60,14 @@ namespace DemoHandlers
       public int Invoke(InvocationContext context)
       {
          var result = GetResult(context);
-         Handlers.Franchise(result.Greeting);
+         DemoHandlers.Handlers.Franchise(result.Greeting);
          return context.ExitCode;
       }
       
       public Task<int> InvokeAsync(InvocationContext context)
       {
          var result = GetResult(context);
-         Handlers.Franchise(result.Greeting);
+         DemoHandlers.Handlers.Franchise(result.Greeting);
          return Task.FromResult(context.ExitCode);
       }
       
@@ -116,14 +127,14 @@ namespace DemoHandlers
          public int Invoke(InvocationContext context)
          {
             var result = GetResult(context);
-            Handlers.StarTrek(result.Greeting, result.Kirk, result.Spock, result.Uhura);
+            DemoHandlers.Handlers.StarTrek(result.Greeting, result.Kirk, result.Spock, result.Uhura);
             return context.ExitCode;
          }
          
          public Task<int> InvokeAsync(InvocationContext context)
          {
             var result = GetResult(context);
-            Handlers.StarTrek(result.Greeting, result.Kirk, result.Spock, result.Uhura);
+            DemoHandlers.Handlers.StarTrek(result.Greeting, result.Kirk, result.Spock, result.Uhura);
             return Task.FromResult(context.ExitCode);
          }
          
@@ -179,14 +190,14 @@ namespace DemoHandlers
             public int Invoke(InvocationContext context)
             {
                var result = GetResult(context);
-               Handlers.NextGeneration(result.Greeting, result.Picard);
+               DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
                return context.ExitCode;
             }
             
             public Task<int> InvokeAsync(InvocationContext context)
             {
                var result = GetResult(context);
-               Handlers.NextGeneration(result.Greeting, result.Picard);
+               DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
                return Task.FromResult(context.ExitCode);
             }
             
@@ -254,14 +265,14 @@ namespace DemoHandlers
                public int Invoke(InvocationContext context)
                {
                   var result = GetResult(context);
-                  Handlers.DeepSpaceNine(result.Greeting, result.Sisko, result.Odo, result.Dax, result.Worf, result.OBrien);
+                  DemoHandlers.Handlers.DeepSpaceNine(result.Greeting, result.Sisko, result.Odo, result.Dax, result.Worf, result.OBrien);
                   return context.ExitCode;
                }
                
                public Task<int> InvokeAsync(InvocationContext context)
                {
                   var result = GetResult(context);
-                  Handlers.DeepSpaceNine(result.Greeting, result.Sisko, result.Odo, result.Dax, result.Worf, result.OBrien);
+                  DemoHandlers.Handlers.DeepSpaceNine(result.Greeting, result.Sisko, result.Odo, result.Dax, result.Worf, result.OBrien);
                   return Task.FromResult(context.ExitCode);
                }
                
@@ -333,14 +344,14 @@ namespace DemoHandlers
                public int Invoke(InvocationContext context)
                {
                   var result = GetResult(context);
-                  Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+                  DemoHandlers.Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
                   return context.ExitCode;
                }
                
                public Task<int> InvokeAsync(InvocationContext context)
                {
                   var result = GetResult(context);
-                  Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+                  DemoHandlers.Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
                   return Task.FromResult(context.ExitCode);
                }
                

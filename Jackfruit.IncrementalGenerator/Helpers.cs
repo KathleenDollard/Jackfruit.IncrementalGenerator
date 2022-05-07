@@ -21,6 +21,12 @@ namespace Jackfruit.IncrementalGenerator
         //internal const string AddRootCommand = "SetRootCommand";
         private static readonly string[] names = { AddCommandName };
         internal const string TriggerStyle = "TriggerStyle";
+        internal static string GetStyle(CommandDef commandDef)
+            => commandDef.GenerationStyleTags.TryGetValue(Helpers.TriggerStyle, out var style)
+                 ? style.ToString()
+                 : string.Empty;
+        private static string MethodFullName(IMethodSymbol method) 
+            => $"{method.ContainingType.ToDisplayString()}.{method.Name}";
 
         public static bool IsSyntaxInteresting(SyntaxNode node)
         {
@@ -127,11 +133,14 @@ namespace Jackfruit.IncrementalGenerator
             if (commandDetails is null)
             { return null; }
 
-            var commandDef = BuildCommandDef(path, delegateArg.ToString(), commandDetails);
-            commandDef.GenerationStyleTags.Add("TriggerStyle", Cli);
+            var commandDef = BuildCommandDef(path, MethodFullName(methodSymbol), commandDetails, CliRoot);
+            return commandDef;
         }
 
-        private static CommandDef BuildCommandDef(string[] path, string delegateSignature, CommandDetails? commandDetails)
+        private static CommandDef BuildCommandDef(string[] path,
+                                                  string methodName,
+                                                  CommandDetails? commandDetails,
+                                                  string triggerStyle)
         {
             var members = new List<MemberDef>();
             foreach (var memberPair in commandDetails.MemberDetails)
@@ -164,18 +173,20 @@ namespace Jackfruit.IncrementalGenerator
                         });
 
             }
-            return new CommandDef(
-                commandDetails.Detail.Id,
-                commandDetails.Detail.Name,
-                string.Join("_", path),
-                commandDetails.Namespace,
-                path,
-                commandDetails.Detail.Description,
-                commandDetails.Detail.Aliases,
-                members,
-                delegateSignature,
-                new CommandDef[] { },
-                commandDetails.Detail.TypeName ?? "Unknown");
+            var commandDef = new CommandDef(commandDetails.Detail.Id,
+                                            commandDetails.Detail.Name,
+                                            string.Join("_", path),
+                                            commandDetails.Namespace,
+                                            path,
+                                            commandDetails.Detail.Description,
+                                            commandDetails.Detail.Aliases,
+                                            members,
+                                            methodName,
+                                            new CommandDef[] { },
+                                            commandDetails.Detail.TypeName ?? "Unknown");
+            commandDef.GenerationStyleTags.Add("TriggerStyle", triggerStyle);
+            return commandDef;
+
         }
 
         private static CommandDetails? GetDetails(IMethodSymbol methodSymbol)
@@ -209,8 +220,6 @@ namespace Jackfruit.IncrementalGenerator
             if (cliNodeArg is not ImplicitObjectCreationExpressionSyntax cliNodeCreate)
             { return null; }
 
-            var operation = semanticModel.GetOperation(invocation);
-            var operation1 = semanticModel.GetOperation(invocation.ArgumentList.Arguments[0]);
             var operation2 = semanticModel.GetOperation(cliNodeCreate);
             if (operation2 is IObjectCreationOperation objectCreationOp)
             { return GetCommandDefTree(path, objectCreationOp); }
@@ -226,7 +235,7 @@ namespace Jackfruit.IncrementalGenerator
             if (commandDetails is null)
             { return null; }
 
-            var commandDef =  BuildCommandDef(path, methodSymbol.ToString(), commandDetails);
+            var commandDef =  BuildCommandDef(path, MethodFullName(methodSymbol), commandDetails, Cli);
             if (commandDef is null )
             { return null; }
 
@@ -289,8 +298,11 @@ namespace Jackfruit.IncrementalGenerator
 
             foreach (var root in roots)
             {
-                var subCommands = ProcessRoot(pos, commandDefs, roots, root);
-                root.SubCommands = subCommands;
+                if (Helpers.GetStyle(root) != Helpers.Cli)
+                {
+                    var subCommands = ProcessRoot(pos, commandDefs, roots, root);
+                    root.SubCommands = subCommands;
+                }
             }
 
 

@@ -9,6 +9,6 @@
       {
       }
    }
-    int B {get; set;}
+   int B {get; set;}
 }
 

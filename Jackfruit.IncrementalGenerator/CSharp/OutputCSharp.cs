@@ -194,13 +194,13 @@ namespace Jackfruit.IncrementalGenerator
         }
 
         private string PropertyKeywords(PropertyModel model)
-            => $"{OptionalKeyword(model.IsStatic, StaticKeyword)}" +
-                $"{OptionalKeyword(model.IsPartial, PartialKeyword)}";
+            => $"{SpaceIfNotEmpty(OptionalKeyword(model.IsStatic, StaticKeyword))}" +
+                $"{SpaceIfNotEmpty(OptionalKeyword(model.IsPartial, PartialKeyword))}";
 
         public override IEnumerable<string> AutoProperty(PropertyModel model)
             => new List<string>
             {
-                $"{Scope( model.Scope)}{PropertyKeywords(model)} {NamedItem( model.Type)} {model.Name} {{get; set;}}"
+                $"{SpaceIfNotEmpty(Scope(model.Scope))}{PropertyKeywords(model)}{NamedItem(model.Type)} {model.Name} {{get; set;}}"
             };
 
         public override IEnumerable<string> PropertyOpen(PropertyModel model)

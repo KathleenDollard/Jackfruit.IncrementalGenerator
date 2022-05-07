@@ -1,0 +1,114 @@
+﻿
+namespace Jackfruit
+{
+    public partial class Cli
+    {
+        public static void Create(CliNode cliRoot)
+        { }
+    }
+}
+// *******************************
+
+// This file is created by a generator.
+using DemoHandlers;
+
+namespace Jackfruit
+{
+   public partial class Cli
+   {
+       static Cli()
+      {
+         Voyager = Voyager.Create();
+      }
+      
+      public static  Voyager Voyager {get; set;}
+   }
+   
+}
+
+// *******************************
+
+// This file is created by a generator.
+using System;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
+using Jackfruit.Internal;
+using Jackfruit;
+
+namespace DemoHandlers
+{
+   public partial class Voyager : GeneratedCommandBase<Voyager, Voyager.Result>, ICommandHandler
+   {
+      private Voyager() : base("Voyager")
+      {
+      }
+      
+      public static Voyager Create()
+      {
+         var command = new Voyager();
+         command.GreetingArgument = new Argument<string>("greetingArg");
+         command.Add(command.GreetingArgument);
+         command.JanewayOption = new Option<bool>("--Janeway");
+         command.Add(command.JanewayOption);
+         command.ChakotayOption = new Option<bool>("--Chakotay");
+         command.Add(command.ChakotayOption);
+         command.TorresOption = new Option<bool>("--Torres");
+         command.Add(command.TorresOption);
+         command.TuvokOption = new Option<bool>("--Tuvok");
+         command.Add(command.TuvokOption);
+         command.SevenOfNineOption = new Option<bool>("--SevenOfNine");
+         command.Add(command.SevenOfNineOption);
+         command.SystemCommandLineCommand.AddValidator(command.Validate);
+         command.Handler = command;
+         return command;
+      }
+      
+      public class Result
+      {
+         internal Result(Voyager command, CommandResult result)
+         {
+            Greeting = result.GetValueForArgument(command.GreetingArgument);
+            Janeway = result.GetValueForOption(command.JanewayOption);
+            Chakotay = result.GetValueForOption(command.ChakotayOption);
+            Torres = result.GetValueForOption(command.TorresOption);
+            Tuvok = result.GetValueForOption(command.TuvokOption);
+            SevenOfNine = result.GetValueForOption(command.SevenOfNineOption);
+         }
+         
+         public string Greeting {get; set;}
+         public bool Janeway {get; set;}
+         public bool Chakotay {get; set;}
+         public bool Torres {get; set;}
+         public bool Tuvok {get; set;}
+         public bool SevenOfNine {get; set;}
+      }
+      
+      public override Result GetResult(CommandResult result)
+      {
+         return new Result(this, result);
+      }
+      
+      public int Invoke(InvocationContext context)
+      {
+         var result = GetResult(context);
+         DemoHandlers.Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         return context.ExitCode;
+      }
+      
+      public Task<int> InvokeAsync(InvocationContext context)
+      {
+         var result = GetResult(context);
+         DemoHandlers.Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         return Task.FromResult(context.ExitCode);
+      }
+      
+      public Argument<string> GreetingArgument {get; set;}
+      public Option<bool> JanewayOption {get; set;}
+      public Option<bool> ChakotayOption {get; set;}
+      public Option<bool> TorresOption {get; set;}
+      public Option<bool> TuvokOption {get; set;}
+      public Option<bool> SevenOfNineOption {get; set;}
+   }
+   
+}

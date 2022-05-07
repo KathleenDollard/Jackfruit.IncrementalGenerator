@@ -17,17 +17,17 @@
         public bool IsPartial { get; internal set; }
     }
 
-    public static class PropertyModelExtensions
-    {
-        public static PropertyModel Property(string name, NamedItemModel type)
-            => new(name, type);
+    //public static class PropertyModelExtensions
+    //{
+    //    public static PropertyModel Property(string name, NamedItemModel type)
+    //        => new(name, type);
 
-        public static PropertyModel Static(this PropertyModel model)
-        {
-            model.IsStatic = true;
-            return model;
-        }
-    }
+    //    public static PropertyModel Static(this PropertyModel model)
+    //    {
+    //        model.IsStatic = true;
+    //        return model;
+    //    }
+    //}
 }
 
 

@@ -23,9 +23,20 @@ namespace Jackfruit.IncrementalGenerator
     [Generator]
     public class Generator : IIncrementalGenerator
     {
-
+        private const string cliClassCode = @"
+namespace Jackfruit
+{
+    public partial class Cli
+    {
+        public static void Create(CliNode cliRoot)
+        { }
+    }
+}";
         public void Initialize(IncrementalGeneratorInitializationContext initContext)
         {
+            // To be a partial, this must be in the same namespace and assembly as the generated part
+            initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource($"{Helpers.Cli}.partial.g.cs", cliClassCode));
+
             // Gather invocations from the dummy static methods for creating the console app
             // and adding subcommands. Then find the specified delegate and turn into a CommandDef
             // TODO: Pipe locations through so any later diagnostics work
@@ -33,8 +44,7 @@ namespace Jackfruit.IncrementalGenerator
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => Helpers.IsSyntaxInteresting(s),
                     transform: static (ctx, _) => Helpers.GetCommandDef(ctx))
-                .Where(static m => m is not null)
-                .Select(static (m, _) => m!);
+                .Where(static m => m is not null)!;
 
             // Create a tree in the shape of the CLI. We will use both the listand the and tree to generate
             var rootCommandDef = commandDefs
