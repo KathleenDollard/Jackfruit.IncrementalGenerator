@@ -41,7 +41,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -68,7 +68,7 @@ public class MyClass
     {
     }
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -96,7 +96,7 @@ public class MyClass
     {
     }
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -118,7 +118,7 @@ public class MyClass
     }
 }
 ";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -141,7 +141,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -160,7 +160,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -187,7 +187,7 @@ public class MyClass
     {
     }
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -220,7 +220,7 @@ public class MyClass
     {
     }
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -236,7 +236,7 @@ static void A(int i)
 }
 
 ";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -276,7 +276,7 @@ namespace Fred
         } 
 }
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -303,7 +303,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -328,7 +328,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -352,7 +352,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -376,7 +376,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -400,7 +400,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -425,7 +425,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -451,7 +451,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
@@ -477,7 +477,7 @@ public class MyClass
     }
 
 }";
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefCliRootGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");

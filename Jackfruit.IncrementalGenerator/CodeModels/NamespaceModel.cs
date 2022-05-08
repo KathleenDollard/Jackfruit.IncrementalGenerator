@@ -1,6 +1,6 @@
 ﻿namespace Jackfruit.IncrementalGenerator.CodeModels
 {
-    public class NamespaceModel
+    public class NamespaceModel : ICodeFileMember
     {
         public NamespaceModel(string name)
         {

@@ -34,57 +34,70 @@ namespace Jackfruit
 }";
         public void Initialize(IncrementalGeneratorInitializationContext initContext)
         {
+            // *** CliRoot approach
+            // Gather invocations from the dummy static methods for creating the console app
+            // and adding subcommands. Then find the specified delegate and turn into a CommandDef
+            // TODO: Pipe locations through so any later diagnostics work
+            var cliRootCommandDefs = initContext.SyntaxProvider
+                .CreateSyntaxProvider(
+                    predicate: static (s, _) => CliRootExtractAndBuild.IsSyntaxInteresting(s),
+                    transform: static (ctx, _) => CliRootExtractAndBuild.GetCommandDef(ctx))
+                .Where(static m => m is not null)!;
+            
+            // Create a tree in the shape of the CLI. We will use both the listand the and tree to generate
+            var rootCommandDef = cliRootCommandDefs
+                .Collect()
+                .Select(static (x, _) => x.TreeFromList());
+
+            var commandsCliRootCodeFileModel = rootCommandDef
+                .Select((x, _) => CreateCliRootSource.GetCommandCodeFile(x));
+
+            initContext.RegisterSourceOutput(commandsCliRootCodeFileModel,
+                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, Helpers.CliRoot));
+
+
+
+            // *** Cli approach
             // To be a partial, this must be in the same namespace and assembly as the generated part
             initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource($"{Helpers.Cli}.partial.g.cs", cliClassCode));
 
             // Gather invocations from the dummy static methods for creating the console app
             // and adding subcommands. Then find the specified delegate and turn into a CommandDef
             // TODO: Pipe locations through so any later diagnostics work
-            var commandDefs = initContext.SyntaxProvider
+            var cliCommandDefs = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
-                    predicate: static (s, _) => Helpers.IsSyntaxInteresting(s),
-                    transform: static (ctx, _) => Helpers.GetCommandDef(ctx))
+                    predicate: static (s, _) => CliExtractAndBuild.IsSyntaxInteresting(s),
+                    transform: static (ctx, _) => CliExtractAndBuild.GetCommandDef(ctx))
                 .Where(static m => m is not null)!;
-
-            // Create a tree in the shape of the CLI. We will use both the listand the and tree to generate
-            var rootCommandDef = commandDefs
-                .Collect()
-                .Select(static (x, _) => x.TreeFromList());
 
             // Generate classes for each command. This code creates the System.CommandLine tree and includes the handler
             // It also collects the classes together, then adds the root so we know the namespace and can name the file we output
-            var commandsCodeFileModel = rootCommandDef
+            var commandscliCodeFileModel = cliCommandDefs
                 .Select((x, _) => CreateSource.GetCommandCodeFile(x));
 
-            var cliPartialCodeFileModel = rootCommandDef
+            var cliPartialCodeFileModel = cliCommandDefs
+                .Collect()
                 .Select((x, _) => CreateSource.GetCliPartialCodeFile(x));
 
-            // And finally, we output files/sources
             initContext.RegisterSourceOutput(cliPartialCodeFileModel,
-                static (context, codeFileModel) => OutputCliPartial(codeFileModel, context));
+                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, Helpers.Cli));
 
-            initContext.RegisterSourceOutput(commandsCodeFileModel,
-                static (context, codeFileModel) => OutputGenerated(codeFileModel, context));
+            // And finally, we output files/sources
+            initContext.RegisterSourceOutput(commandscliCodeFileModel,
+                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel.Name));
         }
 
 
-        private static void OutputGenerated(CodeFileModel codeFileModel, SourceProductionContext context)
+        private static void OutputGenerated(CodeFileModel? codeFileModel, SourceProductionContext context, string hintName)
         {
-            var writer = new StringBuilderWriter(3);
-            var language = new LanguageCSharp(writer);
-            language.AddCodeFile(codeFileModel);
-            context.AddSource($"{codeFileModel.Name}.g.cs", writer.Output());
-        }
-
-        private static void OutputCliPartial(CodeFileModel? codeFileModel, SourceProductionContext context)
-        {
-            if (codeFileModel == null)
+            if(codeFileModel == null)
             { return; }
             var writer = new StringBuilderWriter(3);
             var language = new LanguageCSharp(writer);
             language.AddCodeFile(codeFileModel);
-            context.AddSource($"{Helpers.Cli}.g.cs", writer.Output());
+            context.AddSource($"{hintName}.g.cs", writer.Output());
         }
+
 
     }
 }
