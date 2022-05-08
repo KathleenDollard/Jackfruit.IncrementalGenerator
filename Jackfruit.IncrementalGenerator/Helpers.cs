@@ -1,7 +1,5 @@
 ﻿using Jackfruit.Models;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 using System.Xml.Linq;
 using static Jackfruit.IncrementalGenerator.RoslynHelpers;
@@ -26,27 +24,7 @@ namespace Jackfruit.IncrementalGenerator
         internal static string MethodFullName(IMethodSymbol method) 
             => $"{method.ContainingType.ToDisplayString()}.{method.Name}";
 
-        internal static string? GetName(SyntaxNode expression)
-            => expression switch
-            {
-                MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
-                    => memberAccess.Name is GenericNameSyntax genericName
-                        ? genericName.Identifier.ValueText
-                        : memberAccess.Name.ToString(),
-                IdentifierNameSyntax identifier
-                     => identifier.ToString(),
-                _ => null
-            };
 
-        internal static string? GetCaller(SyntaxNode expression)
-            => expression switch
-            {
-                MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
-                    => memberAccess.Expression.ToString(),
-                IdentifierNameSyntax identifier
-                     => "",
-                _ => null
-            };
 
         internal static CommandDef? BuildCommandDef(string[] path,
                                                   string methodName,

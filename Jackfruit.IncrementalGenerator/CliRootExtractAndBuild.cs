@@ -22,13 +22,13 @@ namespace Jackfruit.IncrementalGenerator
                 int argCount = invocation.ArgumentList.Arguments.Count;
                 if (argCount == 0)
                 { return false; }
-                var name = Helpers.GetName(invocation.Expression);
+                var name = GetName(invocation.Expression);
                 return name == null
                     ? false
                     : name == Helpers.AddCommandName && argCount == 1
                         ? true
                         : name == Helpers.CreateName
-                            ? argCount == 1 && Helpers.GetCaller(invocation.Expression) ==  Helpers.CliRoot
+                            ? argCount == 1 && GetCaller(invocation.Expression) == Helpers.CliRoot
                             : false;
             }
             return false;
@@ -37,7 +37,7 @@ namespace Jackfruit.IncrementalGenerator
 
         private static string GetPath(SyntaxNode expression)
         {
-            var name = Helpers.GetName(expression);
+            var name = GetName(expression);
             var path = expression switch
             {
                 MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
@@ -135,5 +135,27 @@ namespace Jackfruit.IncrementalGenerator
                 return subCommands;
             }
         }
+
+        internal static string? GetName(SyntaxNode expression)
+        => expression switch
+        {
+            MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                => memberAccess.Name is GenericNameSyntax genericName
+                    ? genericName.Identifier.ValueText
+                    : memberAccess.Name.ToString(),
+            IdentifierNameSyntax identifier
+                 => identifier.ToString(),
+            _ => null
+        };
+
+        internal static string? GetCaller(SyntaxNode expression)
+            => expression switch
+            {
+                MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                    => memberAccess.Expression.ToString(),
+                IdentifierNameSyntax identifier
+                     => "",
+                _ => null
+            };
     }
 }

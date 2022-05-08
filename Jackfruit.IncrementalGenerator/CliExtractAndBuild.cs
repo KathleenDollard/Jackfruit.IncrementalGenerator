@@ -1,7 +1,5 @@
 ﻿using Jackfruit.Models;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 using System.Xml.Linq;
 using static Jackfruit.IncrementalGenerator.RoslynHelpers;
@@ -10,39 +8,14 @@ namespace Jackfruit.IncrementalGenerator
 {
     public static class CliExtractAndBuild
     {
-        public static bool IsSyntaxInteresting(SyntaxNode node)
-        {
-            // Select1:
-            //      * Extract all method invocations and filter by:
-            //      * Name: comparing with expected list
-            //      * Parameter count of 1 and caller is Cli
-            if (node is InvocationExpressionSyntax invocation)
-            {
-
-                int argCount = invocation.ArgumentList.Arguments.Count;
-                if (argCount == 0)
-                { return false; }
-                var name = Helpers.GetName(invocation.Expression);
-                return name == null
-                    ? false
-                    : name == Helpers.AddCommandName && argCount == 1
-                        ? true
-                        : name == Helpers.CreateName
-                            ? argCount == 1 && Helpers.GetCaller(invocation.Expression) == Helpers.Cli
-                            : false;
-            }
-            return false;
-
-        }
-
 
         public static CommandDef? GetCommandDef(GeneratorSyntaxContext context)
-            => context.Node is not InvocationExpressionSyntax invocation
+            =>            context.SemanticModel.GetOperation(context.Node) is not IInvocationOperation cliCreateInvocation
                 // Weird, but we do not want to throw
                 ? null
-                : GetCommandDefTreeApproach(invocation, context.SemanticModel);
+                : GetCommandDefTreeApproach(cliCreateInvocation, context.SemanticModel);
 
-        private static CommandDef? GetCommandDefTreeApproach(InvocationExpressionSyntax invocation, SemanticModel semanticModel)
+        private static CommandDef? GetCommandDefTreeApproach(IInvocationOperation cliCreateInvocation, SemanticModel semanticModel)
         {
             // Transform1: (using the mode)
             //      * Get the single parameter, which is the root of an explicit tree
@@ -53,13 +26,13 @@ namespace Jackfruit.IncrementalGenerator
             //          * Create command and member defs
 
             string[] path = { };
-            var cliNodeArg = invocation.ArgumentList.Arguments[0].Expression;
-            if (cliNodeArg is not ImplicitObjectCreationExpressionSyntax cliNodeCreate)
-            { return null; }
+            var cliNodeCreate = cliCreateInvocation.Arguments[0];
+            if (cliNodeCreate.Value is IConversionOperation conversionOp)
+            {
 
-            var operation2 = semanticModel.GetOperation(cliNodeCreate);
-            if (operation2 is IObjectCreationOperation objectCreationOp)
-            { return GetCommandDefTree(path, objectCreationOp); }
+                if (conversionOp.Operand is IObjectCreationOperation objectCreationOp)
+                { return GetCommandDefTree(path, objectCreationOp); }
+            }
             return null;
         }
 
@@ -73,14 +46,14 @@ namespace Jackfruit.IncrementalGenerator
             { return null; }
 
             var commandDef = Helpers.BuildCommandDef(path, Helpers.MethodFullName(methodSymbol), commandDetails, Helpers.Cli);
-            if (commandDef is null )
+            if (commandDef is null)
             { return null; }
 
             var subCommandOperations = GetSubCommandOperations(objectCreationOp);
-            var newPath = path.Union(new string[] {methodSymbol.Name}).ToArray();
+            var newPath = path.Union(new string[] { methodSymbol.Name }).ToArray();
             var subCommands = subCommandOperations
                     .Select(x => GetCommandDefTree(newPath, x))
-                    .Where(x=>x is not null)
+                    .Where(x => x is not null)
                     .ToList();
             commandDef.SubCommands = subCommands!;
             return commandDef;
@@ -111,7 +84,7 @@ namespace Jackfruit.IncrementalGenerator
                     .Where(x => x.Type?.ToString() == "System.Collections.Generic.List<Jackfruit.CliNode>")
                     .FirstOrDefault();
             if (initializerOp is null)
-            {  return Enumerable.Empty<IObjectCreationOperation>(); }
+            { return Enumerable.Empty<IObjectCreationOperation>(); }
             var list = new List<IObjectCreationOperation>();
             foreach (var initializer in initializerOp.Initializers)
             {
