@@ -66,6 +66,14 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             return model;
         }
 
+        public static T Statements<T>(this T model, IEnumerable< IStatement> statements)
+            where T : IHasStatements
+        {
+            model.Statements.AddRange(statements);
+            return model;
+        }
+
+
         public static ConstructorModel Constructor(string className)
             => new(className);
 
@@ -193,6 +201,11 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             return model;
         }
 
+        public static ClassModel Members(this ClassModel model, IEnumerable<IMember> members)
+        {
+            model.Members.AddRange(members);
+            return model;
+        }
 
         public static FieldModel Field(string name, NamedItemModel type)
             => new(name, type);
