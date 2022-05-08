@@ -6,6 +6,8 @@ using System.Collections.Immutable;
 using Jackfruit.IncrementalGenerator;
 using Jackfruit.IncrementalGenerator.Output;
 using Jackfruit.IncrementalGenerator.CodeModels;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp;
 
 // Next Steps:
 // * Create a CommandDef test generator that just looks at CommandDef
@@ -66,7 +68,7 @@ namespace Jackfruit
             // TODO: Pipe locations through so any later diagnostics work
             var cliCommandDefs = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
-                    predicate: static (s, _) => CliExtractAndBuild.IsSyntaxInteresting(s),
+                    predicate: static (s, _) => IsCliCreateInvocation(s),
                     transform: static (ctx, _) => CliExtractAndBuild.GetCommandDef(ctx))
                 .Where(static m => m is not null)!;
 
@@ -87,6 +89,33 @@ namespace Jackfruit
                 static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel.Name));
         }
 
+        // currently public because used by CommandDef generator that is used by testing
+        // We may merge generators or put that generator in this assembly
+        public static bool IsCliCreateInvocation(SyntaxNode node)
+        {
+            // Select1:
+            //      * Extract all method invocations and filter by:
+            //      * Name: comparing with expected list
+            //      * Parameter count of 1 and caller is Cli
+            if (node is InvocationExpressionSyntax invocation)
+            {
+
+                int argCount = invocation.ArgumentList.Arguments.Count;
+                if (argCount == 0)
+                { return false; }
+                var name = GetName(invocation.Expression);
+                return name == null
+                    ? false
+                    : name == Helpers.AddCommandName && argCount == 1
+                        ? true
+                        : name == Helpers.CreateName
+                            ? argCount == 1 && GetCaller(invocation.Expression) == Helpers.Cli
+                            : false;
+            }
+            return false;
+
+        }
+
 
         private static void OutputGenerated(CodeFileModel? codeFileModel, SourceProductionContext context, string hintName)
         {
@@ -98,6 +127,26 @@ namespace Jackfruit
             context.AddSource($"{hintName}.g.cs", writer.Output());
         }
 
+        internal static string? GetName(SyntaxNode expression)
+            => expression switch
+            {
+                MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                    => memberAccess.Name is GenericNameSyntax genericName
+                        ? genericName.Identifier.ValueText
+                        : memberAccess.Name.ToString(),
+                IdentifierNameSyntax identifier
+                     => identifier.ToString(),
+                _ => null
+            };
 
+        internal static string? GetCaller(SyntaxNode expression)
+            => expression switch
+            {
+                MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                    => memberAccess.Expression.ToString(),
+                IdentifierNameSyntax identifier
+                     => "",
+                _ => null
+            };
     }
 }
