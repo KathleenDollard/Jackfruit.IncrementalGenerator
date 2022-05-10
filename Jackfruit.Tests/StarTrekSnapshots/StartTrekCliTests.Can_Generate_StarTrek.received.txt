@@ -1,0 +1,121 @@
+﻿
+namespace Jackfruit
+{
+    public partial class Cli
+    {
+        public static void Create(CliNode cliRoot)
+        { }
+    }
+}
+// *******************************
+
+// This file is created by a generator.
+using System.CommandLine.Parsing;
+using Jackfruit.Internal;
+
+namespace Jackfruit
+{
+    partial class CliRoot : GeneratedCommandBase<CliRoot, CliRoot.Result>
+   {
+      private CliRoot() : base("<EmptyCommand>", null)
+      {
+      }
+      
+      public static EmptyCommand Create(Delegate rootMethodToRun)
+      {
+         return new EmptyCommand();
+      }
+      
+      public class Result
+      {
+      }
+      
+      public override Result GetResult(CommandResult CommandResult)
+      {
+         throw Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel("Result not available");
+      }
+      
+   }
+   
+}
+
+// *******************************
+
+// This file is created by a generator.
+using DemoHandlers;
+
+namespace Jackfruit
+{
+   public partial class Cli
+   {
+       static Cli()
+      {
+         Franchise = Franchise.Create();
+      }
+      
+      public static  Franchise Franchise {get; set;}
+   }
+   
+}
+
+// *******************************
+
+// This file is created by a generator.
+using System;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
+using Jackfruit.Internal;
+using Jackfruit;
+
+namespace DemoHandlers
+{
+   public partial class Franchise : GeneratedCommandBase<Franchise, Franchise.Result>, ICommandHandler
+   {
+      private Franchise() : base("Franchise")
+      {
+      }
+      
+      public static Franchise Create()
+      {
+         var command = new Franchise();
+         command.GreetingArgument = new Argument<string>("greetingArg");
+         command.Add(command.GreetingArgument);
+         command.SystemCommandLineCommand.AddValidator(command.Validate);
+         command.Handler = command;
+         return command;
+      }
+      
+      public class Result
+      {
+         internal Result(Franchise command, CommandResult result)
+         {
+            Greeting = result.GetValueForArgument(command.GreetingArgument);
+         }
+         
+         public string Greeting {get; set;}
+      }
+      
+      public override Result GetResult(CommandResult result)
+      {
+         return new Result(this, result);
+      }
+      
+      public int Invoke(InvocationContext context)
+      {
+         var result = GetResult(context);
+         DemoHandlers.Handlers.Franchise(result.Greeting);
+         return context.ExitCode;
+      }
+      
+      public Task<int> InvokeAsync(InvocationContext context)
+      {
+         var result = GetResult(context);
+         DemoHandlers.Handlers.Franchise(result.Greeting);
+         return Task.FromResult(context.ExitCode);
+      }
+      
+      public Argument<string> GreetingArgument {get; set;}
+   }
+   
+}

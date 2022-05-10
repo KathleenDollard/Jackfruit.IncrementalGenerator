@@ -45,39 +45,14 @@ public class MyClass
 {
     public void F() 
     {
-        Cli.Create(new (Handlers.Franchise, new() {
-            new(Handlers.StarTrek, new() {
-                new(Handlers.NextGeneration, new() {
+        Cli.Create(new CliNode(Handlers.Franchise, 
+            new CliNode(Handlers.StarTrek, 
+                new CliNode(Handlers.NextGeneration, 
                     new(Handlers.DeepSpaceNine),
                     new(Handlers.Voyager) 
                 })
             })
         });
-
-        var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();
-        nextGen.PicardOption.AddAlias("" - p"");
-
-        cliRoot.AddValidator(Validators.ValidatePoliteness, cliRoot.GreetingArgument);
-        nextGen.AddValidator(NextGenerationResultValidator);
-   }
-
-}";
-        private const string StarTrekRootWithParams = @"
-using DemoHandlers;
-using Jackfruit;
-
-public class MyClass
-{
-    public void F() 
-    {
-        Cli.Create(new(Handlers.Franchise, 
-            new(Handlers.StarTrek, 
-                new(Handlers.NextGeneration, 
-                    new(Handlers.DeepSpaceNine),
-                    new(Handlers.Voyager) 
-                )
-            )
-        );
 
         var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();
         nextGen.PicardOption.AddAlias("" - p"");
