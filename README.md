@@ -2,7 +2,7 @@
 
 Please try this demo (temporary directions):
 
-* Clone the repo
+* Clone the repo (at this time "Obtain" means clone, build, pack, push local)
 * Obtain the `IncrementalGenerator.Runtime` NuGet package. Build and place it package in a local source. 
 * Obtain the `IncrementalGenerator Nuget` package. Build and place it package in a local source. 
 * Create a new Console project
