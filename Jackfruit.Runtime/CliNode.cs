@@ -5,15 +5,10 @@
         public Delegate Action;
         public IEnumerable<CliNode> SubCommands;
 
-        public CliNode(Delegate action, List<CliNode> subCommands)
+        public CliNode(Delegate action, params CliNode[] subCommands)
         {
             Action = action;
             SubCommands = subCommands;
-        }
-        public CliNode(Delegate action)
-        {
-            Action = action;
-            SubCommands = new List<CliNode>();
         }
     }
 }

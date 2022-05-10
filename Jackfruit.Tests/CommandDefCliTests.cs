@@ -1,10 +1,8 @@
 ﻿using Xunit;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using VerifyXunit;
 using System.Threading.Tasks;
-using Jackfruit.IncrementalGenerator;
 using Jackfruit;
+using System;
 
 namespace Jackfruit.Tests
 {
@@ -18,14 +16,14 @@ public class MyClass
 {{
     {method}
 
-    public void A(int i) {{ }}
-    public void B(int i) {{ }}
-    public void C(int i) {{ }}
-    public void D(int i) {{ }}
-    public void E(int i) {{ }}
-    public void F(int i) {{ }}
-    public void G(int i) {{ }}
-    public void H(int i) {{ }}
+    public static void A(int i) {{ }}
+    public static void B(int i) {{ }}
+    public static void C(int i) {{ }}
+    public static void D(int i) {{ }}
+    public static void E(int i) {{ }}
+    public static void F(int i) {{ }}
+    public static void G(int i) {{ }}
+    public static void H(int i) {{ }}
 }}
 ";
         [Fact]
@@ -48,8 +46,8 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test()
     {
-        Cli.Create(new(A, new() { 
-              new(B)}));
+         Cli.Create(new (A,
+              new CliNode(B)));
     }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -63,11 +61,11 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test() 
     {
-        Cli.Create(new(A, new() { 
-                new(B),
-                new(C),
-                new(D)
-            })) ;
+        Cli.Create(new CliNode(A, 
+                new CliNode(B),
+                new CliNode(C),
+                new CliNode(D)
+            )) ;
     }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -81,41 +79,41 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test() 
     {
-        Cli.Create(new(A, new() { 
-                new(B),
-                new(C, new() {
-                    new(E),
-                    new(F, new() {
-                        new(G), 
-                        new(H)
-                    })
-                }),
-                new(D)
-            })) ;
+        Cli.Create(new(A, 
+                new CliNode(B),
+                new CliNode(C, 
+                    new CliNode(E),
+                    new CliNode(F, 
+                        new CliNode(G), 
+                        new CliNode(H)
+                    )
+                ),
+                new CliNode(D)
+            )) ;
     }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
-    
-        [Fact]
+
+        [Fact(Skip = "Waiting for target type new /param array fix")]
         public Task CliNode_and_implicit_creation_allowed()
         {
             var input = methodWrapper(@"
     public void Test() 
     {
-        Cli.Create(new(A, new() { 
+        Cli.Create(new(A, 
                 new(B),
-                new CliNode(C,  new() {
+                new CliNode(C,  
                     new(E),
-                    new(F, new() {
+                    new(F, 
                         new(G), 
                         new CliNode(H)
-                    })
-                }),
+                    )
+                ),
                 new CliNode(D)
-            }));
+            ));
     }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -124,23 +122,23 @@ public class MyClass
         }
 
 
-        [Fact]
+        [Fact(Skip = "Waiting for target type new /param array fix")]
         public Task List_ctor_and_implicit_creation_allowed()
         {
             var input = methodWrapper(@"
     public void Test() 
     {
-        Cli.Create(new(A, new() { 
+        Cli.Create(new(A, 
                 new(B),
-                new(C,  new List<CliNode>() {
+                new(C,  
                     new(E),
-                    new(F, new() {
+                    new(F,
                         new(G), 
                         new(H)
-                    })
-                }),
+                    )
+                ),
                 new(D)
-            }));
+            ));
     }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
