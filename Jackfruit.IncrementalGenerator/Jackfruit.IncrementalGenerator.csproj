@@ -10,7 +10,7 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 
-		<PackageVersion>0.0.1-alphaJ</PackageVersion>
+		<PackageVersion>0.0.1-alphaK</PackageVersion>
 		
 	</PropertyGroup>
 
