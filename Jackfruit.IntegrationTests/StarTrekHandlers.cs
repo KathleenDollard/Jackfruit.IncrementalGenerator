@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DemoHandlersUpdated
+namespace DemoHandlers
 {
     public static class Handlers
     {
@@ -10,10 +10,15 @@ namespace DemoHandlersUpdated
             Console.WriteLine($"{greeting ?? defaultGreeting}, {name}");
             return;
         }
+
+        public static void Franchise(string greetingArg)
+        { }
+
+
         /// <summary>
         /// This is the description for StarTrek
         /// </summary>
-        /// <param name="greeting">What greeting to use</param>
+        /// <param name="greetingArg">What greeting to use</param>
         /// <param name="kirk">Whether to greet Captain Kirk</param>
         /// <param name="spock">Whether to greet Spock</param>
         /// <param name="uhura">Whether to greet Lieutenant Uhura</param>
@@ -24,30 +29,36 @@ namespace DemoHandlersUpdated
             if (uhura) { Greet(greetingArg, "Nyota Uhura"); }
 
         }
+
         [Description("This is the description for Next Generation")]
-        public static void NextGeneration(string greetingArg, [Description("This is the description for Picard")] bool picard)
+        public static void NextGeneration(
+            string greetingArg, [Description("This is the description for Picard")] bool picard)
         {
+
             if (picard) { Greet(greetingArg, "Jean - Luc Picard"); }
         }
-        public static void DeepSpaceNine(string greeting, bool sisko, bool odo, bool dax, bool worf, bool oBrien)
+
+        public static void DeepSpaceNine(string greetingArg, bool sisko, bool odo, bool dax, bool worf, bool oBrien)
         {
-            if (sisko) { Greet(greeting, "Benjamin Sisko"); }
-            if (odo) { Greet(greeting, "Constable Odo"); }
-            if (dax) { Greet(greeting, "Ezri Dax"); }
-            if (worf) { Greet(greeting, "Worf"); }
+            if (sisko) { Greet(greetingArg, "Benjamin Sisko"); }
+            if (odo) { Greet(greetingArg, "Constable Odo"); }
+            if (dax) { Greet(greetingArg, "Ezri Dax"); }
+            if (worf) { Greet(greetingArg, "Worf"); }
             if (oBrien)
             {
-                Greet(greeting, "Miles O'Brien"); }
-            }
-            public static void Voyager(string greeting, bool janeway, bool chakotay, bool torres, bool tuvok, bool sevenOfNine)
-            {
-                if (janeway) { Greet(greeting, "Kathryn Janeway"); }
-                if (chakotay) { Greet(greeting, "Chakotay"); }
-                if (torres)
-                {
-                    Greet(greeting, "B'Elanna Torres"); }
-                if (tuvok) { Greet(greeting, "Tuvok"); }
-                    if (sevenOfNine) { Greet(greeting, "Sevan of Nine"); }
-                }
+                Greet(greetingArg, "Miles O'Brien");
             }
         }
+        public static void Voyager(string greetingArg, bool janeway, bool chakotay, bool torres, bool tuvok, bool sevenOfNine)
+        {
+            if (janeway) { Greet(greetingArg, "Kathryn Janeway"); }
+            if (chakotay) { Greet(greetingArg, "Chakotay"); }
+            if (torres)
+            {
+                Greet(greetingArg, "B'Elanna Torres");
+            }
+            if (tuvok) { Greet(greetingArg, "Tuvok"); }
+            if (sevenOfNine) { Greet(greetingArg, "Sevan of Nine"); }
+        }
+    }
+}
