@@ -80,13 +80,16 @@ using Jackfruit;
 
 namespace DemoHandlers
 {
+   /// <summary>
+   /// The wrapper class for the Franchise command.
+   /// </summary>
    public partial class Franchise : GeneratedCommandBase<Franchise, Franchise.Result>, ICommandHandler
    {
       private Franchise() : base("Franchise")
       {
       }
       
-      public static Franchise Create()
+      internal static Franchise Create()
       {
          var command = new Franchise();
          command.GreetingArgument = new Argument<string>("greetingArg");
@@ -98,6 +101,9 @@ namespace DemoHandlers
          return command;
       }
       
+      /// <summary>
+      /// The result class for the Franchise command.
+      /// </summary>
       public class Result
       {
          internal Result(Franchise command, CommandResult result)
@@ -108,11 +114,19 @@ namespace DemoHandlers
          public string Greeting {get; set;}
       }
       
-      public override Result GetResult(CommandResult result)
+      /// <summary>
+      /// Get an instance of the Result class for the Franchise command.
+      /// </summary>
+      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
+      public override Result GetResult(CommandResult commadResult)
       {
-         return new Result(this, result);
+         return new Result(this, commadResult);
       }
       
+      /// <summary>
+      /// The handler invoked by System.CommandLine. This will not bee public when generated is more sophisticated.
+      /// </summary>
+      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
       public int Invoke(InvocationContext context)
       {
          var result = GetResult(context);
@@ -120,6 +134,10 @@ namespace DemoHandlers
          return context.ExitCode;
       }
       
+      /// <summary>
+      /// The handler invoked by System.CommandLine. This will not bee public when generated is more sophisticated.
+      /// </summary>
+      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
       public Task<int> InvokeAsync(InvocationContext context)
       {
          var result = GetResult(context);
@@ -129,13 +147,16 @@ namespace DemoHandlers
       
       public Argument<string> GreetingArgument {get; set;}
       public Franchise.StarTrek StarTrekCommand {get; set;}
+      /// <summary>
+      /// The wrapper class for the StarTrek command.
+      /// </summary>
       public partial class StarTrek : GeneratedCommandBase<StarTrek, StarTrek.Result, Franchise>, ICommandHandler
       {
          private StarTrek(Franchise parent) : base("StarTrek", parent)
          {
          }
          
-         public static StarTrek Create(Franchise parent)
+         internal static StarTrek Create(Franchise parent)
          {
             var command = new Franchise.StarTrek(parent);
             command.KirkOption = new Option<bool>("--Kirk");
@@ -154,6 +175,9 @@ namespace DemoHandlers
             return command;
          }
          
+         /// <summary>
+         /// The result class for the StarTrek command.
+         /// </summary>
          public class Result
          {
             internal Result(StarTrek command, CommandResult result)
@@ -171,11 +195,19 @@ namespace DemoHandlers
             public bool Uhura {get; set;}
          }
          
-         public override Result GetResult(CommandResult result)
+         /// <summary>
+         /// Get an instance of the Result class for the StarTrek command.
+         /// </summary>
+         /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
+         public override Result GetResult(CommandResult commadResult)
          {
-            return new Result(this, result);
+            return new Result(this, commadResult);
          }
          
+         /// <summary>
+         /// The handler invoked by System.CommandLine. This will not bee public when generated is more sophisticated.
+         /// </summary>
+         /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
          public int Invoke(InvocationContext context)
          {
             var result = GetResult(context);
@@ -183,6 +215,10 @@ namespace DemoHandlers
             return context.ExitCode;
          }
          
+         /// <summary>
+         /// The handler invoked by System.CommandLine. This will not bee public when generated is more sophisticated.
+         /// </summary>
+         /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
          public Task<int> InvokeAsync(InvocationContext context)
          {
             var result = GetResult(context);
@@ -194,13 +230,16 @@ namespace DemoHandlers
          public Option<bool> SpockOption {get; set;}
          public Option<bool> UhuraOption {get; set;}
          public Franchise.StarTrek.NextGeneration NextGenerationCommand {get; set;}
+         /// <summary>
+         /// The wrapper class for the NextGeneration command.
+         /// </summary>
          public partial class NextGeneration : GeneratedCommandBase<NextGeneration, NextGeneration.Result, StarTrek>, ICommandHandler
          {
             private NextGeneration(Franchise.StarTrek parent) : base("NextGeneration", parent)
             {
             }
             
-            public static NextGeneration Create(Franchise.StarTrek parent)
+            internal static NextGeneration Create(Franchise.StarTrek parent)
             {
                var command = new Franchise.StarTrek.NextGeneration(parent);
                command.PicardOption = new Option<bool>("--Picard");
@@ -215,6 +254,9 @@ namespace DemoHandlers
                return command;
             }
             
+            /// <summary>
+            /// The result class for the NextGeneration command.
+            /// </summary>
             public class Result
             {
                internal Result(NextGeneration command, CommandResult result)
@@ -234,11 +276,19 @@ namespace DemoHandlers
                public bool Picard {get; set;}
             }
             
-            public override Result GetResult(CommandResult result)
+            /// <summary>
+            /// Get an instance of the Result class for the NextGeneration command.
+            /// </summary>
+            /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
+            public override Result GetResult(CommandResult commadResult)
             {
-               return new Result(this, result);
+               return new Result(this, commadResult);
             }
             
+            /// <summary>
+            /// The handler invoked by System.CommandLine. This will not bee public when generated is more sophisticated.
+            /// </summary>
+            /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
             public int Invoke(InvocationContext context)
             {
                var result = GetResult(context);
@@ -246,6 +296,10 @@ namespace DemoHandlers
                return context.ExitCode;
             }
             
+            /// <summary>
+            /// The handler invoked by System.CommandLine. This will not bee public when generated is more sophisticated.
+            /// </summary>
+            /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
             public Task<int> InvokeAsync(InvocationContext context)
             {
                var result = GetResult(context);
@@ -256,13 +310,16 @@ namespace DemoHandlers
             public Option<bool> PicardOption {get; set;}
             public Franchise.StarTrek.NextGeneration.DeepSpaceNine DeepSpaceNineCommand {get; set;}
             public Franchise.StarTrek.NextGeneration.Voyager VoyagerCommand {get; set;}
+            /// <summary>
+            /// The wrapper class for the DeepSpaceNine command.
+            /// </summary>
             public partial class DeepSpaceNine : GeneratedCommandBase<DeepSpaceNine, DeepSpaceNine.Result, NextGeneration>, ICommandHandler
             {
                private DeepSpaceNine(Franchise.StarTrek.NextGeneration parent) : base("DeepSpaceNine", parent)
                {
                }
                
-               public static DeepSpaceNine Create(Franchise.StarTrek.NextGeneration parent)
+               internal static DeepSpaceNine Create(Franchise.StarTrek.NextGeneration parent)
                {
                   var command = new Franchise.StarTrek.NextGeneration.DeepSpaceNine(parent);
                   command.SiskoOption = new Option<bool>("--Sisko");
@@ -280,6 +337,9 @@ namespace DemoHandlers
                   return command;
                }
                
+               /// <summary>
+               /// The result class for the DeepSpaceNine command.
+               /// </summary>
                public class Result
                {
                   internal Result(DeepSpaceNine command, CommandResult result)
@@ -309,11 +369,19 @@ namespace DemoHandlers
                   public bool OBrien {get; set;}
                }
                
-               public override Result GetResult(CommandResult result)
+               /// <summary>
+               /// Get an instance of the Result class for the DeepSpaceNine command.
+               /// </summary>
+               /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
+               public override Result GetResult(CommandResult commadResult)
                {
-                  return new Result(this, result);
+                  return new Result(this, commadResult);
                }
                
+               /// <summary>
+               /// The handler invoked by System.CommandLine. This will not bee public when generated is more sophisticated.
+               /// </summary>
+               /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
                public int Invoke(InvocationContext context)
                {
                   var result = GetResult(context);
@@ -321,6 +389,10 @@ namespace DemoHandlers
                   return context.ExitCode;
                }
                
+               /// <summary>
+               /// The handler invoked by System.CommandLine. This will not bee public when generated is more sophisticated.
+               /// </summary>
+               /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
                public Task<int> InvokeAsync(InvocationContext context)
                {
                   var result = GetResult(context);
@@ -335,13 +407,16 @@ namespace DemoHandlers
                public Option<bool> OBrienOption {get; set;}
             }
             
+            /// <summary>
+            /// The wrapper class for the Voyager command.
+            /// </summary>
             public partial class Voyager : GeneratedCommandBase<Voyager, Voyager.Result, NextGeneration>, ICommandHandler
             {
                private Voyager(Franchise.StarTrek.NextGeneration parent) : base("Voyager", parent)
                {
                }
                
-               public static Voyager Create(Franchise.StarTrek.NextGeneration parent)
+               internal static Voyager Create(Franchise.StarTrek.NextGeneration parent)
                {
                   var command = new Franchise.StarTrek.NextGeneration.Voyager(parent);
                   command.JanewayOption = new Option<bool>("--Janeway");
@@ -359,6 +434,9 @@ namespace DemoHandlers
                   return command;
                }
                
+               /// <summary>
+               /// The result class for the Voyager command.
+               /// </summary>
                public class Result
                {
                   internal Result(Voyager command, CommandResult result)
@@ -388,11 +466,19 @@ namespace DemoHandlers
                   public bool SevenOfNine {get; set;}
                }
                
-               public override Result GetResult(CommandResult result)
+               /// <summary>
+               /// Get an instance of the Result class for the Voyager command.
+               /// </summary>
+               /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
+               public override Result GetResult(CommandResult commadResult)
                {
-                  return new Result(this, result);
+                  return new Result(this, commadResult);
                }
                
+               /// <summary>
+               /// The handler invoked by System.CommandLine. This will not bee public when generated is more sophisticated.
+               /// </summary>
+               /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
                public int Invoke(InvocationContext context)
                {
                   var result = GetResult(context);
@@ -400,6 +486,10 @@ namespace DemoHandlers
                   return context.ExitCode;
                }
                
+               /// <summary>
+               /// The handler invoked by System.CommandLine. This will not bee public when generated is more sophisticated.
+               /// </summary>
+               /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
                public Task<int> InvokeAsync(InvocationContext context)
                {
                   var result = GetResult(context);

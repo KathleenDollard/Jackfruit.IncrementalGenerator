@@ -6,7 +6,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 {
     public static class StructureHelpers
     {
-        public static NamedItemModel Void() 
+        public static NamedItemModel Void()
             => new VoidNamedItemModel();
 
         public static GenericNamedItemModel Generic(string name, params NamedItemModel[] genericTypes)
@@ -59,6 +59,12 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public static ParameterModel Parameter(string name, NamedItemModel type)
             => new(name, type);
 
+        public static ParameterModel XmlDescription(this ParameterModel model, string description)
+        {
+            model.XmlDescription = description;
+            return model;
+        }
+
         public static T Statements<T>(this T model, params IStatement[] statements)
             where T : IHasStatements
         {
@@ -66,7 +72,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             return model;
         }
 
-        public static T Statements<T>(this T model, IEnumerable< IStatement> statements)
+        public static T Statements<T>(this T model, IEnumerable<IStatement> statements)
             where T : IHasStatements
         {
             model.Statements.AddRange(statements);
@@ -154,12 +160,18 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public static ClassModel Class(NamedItemModel name)
             => new(name);
 
+        public static T XmlDescription<T>(this T model, string description)
+            where T : IMember
+        {
+            model.XmlDescription = description;
+            return model;
+        }
+
         public static ClassModel Static(this ClassModel model)
         {
             model.IsStatic = true;
             return model;
         }
-
         public static ClassModel Async(this ClassModel model)
         {
             model.IsAsync = true;
@@ -189,9 +201,10 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             model.InheritedFrom = baseClassName;
             return model;
         }
-        public static ClassModel ImplementedInterfaces(this ClassModel model,params NamedItemModel[] interfaces)
+
+        public static ClassModel ImplementedInterfaces(this ClassModel model, params NamedItemModel[] interfaces)
         {
-            model.ImplementedInterfaces.AddRange( interfaces.ToList());
+            model.ImplementedInterfaces.AddRange(interfaces.ToList());
             return model;
         }
 

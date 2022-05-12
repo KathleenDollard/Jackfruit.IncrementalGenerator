@@ -10,9 +10,10 @@
 
         public string Name { get; }
         public NamedItemModel Type { get; }
-        public ParameterStyle Style { get; }
-        public bool IsParamArray { get; }
-        public ExpressionBase? DefaultValue { get; }
+        public ParameterStyle Style { get; set; }
+        public bool IsParamArray { get; set; }
+        public ExpressionBase? DefaultValue { get; set; }
+        public string XmlDescription { get; set; }
     }
 }
 /* Hmmm. Will we need these?
