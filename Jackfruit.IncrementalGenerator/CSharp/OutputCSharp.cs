@@ -350,7 +350,7 @@ namespace Jackfruit.IncrementalGenerator
         public override IEnumerable<string> Throw(NamedItemModel exception, params ExpressionBase[] args)
             => new List<string>
                 {
-                    $"{ThrowKeyword} {exception}({string.Join(", ", args.Select(a=>Expression(a).ToString()))});"
+                    $"{ThrowKeyword} {Instantiate(exception, args)});"
                 };
 
 

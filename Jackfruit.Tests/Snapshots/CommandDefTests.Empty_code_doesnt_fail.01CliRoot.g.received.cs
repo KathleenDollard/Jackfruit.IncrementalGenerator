@@ -22,7 +22,7 @@ namespace Jackfruit
       
       public override Result GetResult(CommandResult CommandResult)
       {
-         throw Jackfruit.IncrementalGenerator.CodeModels.NamedItemModel("Result not available");
+         throw new InvalidOperationException("Result not available"));
       }
       
    }
