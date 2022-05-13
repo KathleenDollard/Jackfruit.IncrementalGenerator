@@ -83,7 +83,7 @@ namespace Jackfruit.IncrementalGenerator
         public static CodeFileModel? GetCommandCodeFile(CommandDefBase rootCommandDef) 
             => rootCommandDef is not CommandDef commandDef
                 ? null
-                : new CodeFileModel("Commands")
+                : CodeFile("Commands")
                     .Usings("System",
                             "System.CommandLine",
                             "System.CommandLine.Invocation",
@@ -110,21 +110,22 @@ namespace Jackfruit.IncrementalGenerator
             var newAncestorMembers = ancestorMembers.Union(myMembers).ToList();
 
             string className = CommandClassName(commandDef);
-            return Class(className)
-                        .XmlDescription($"The wrapper class for the {className} command.")
-                        .Public()
-                        .Partial()
-                        .ImplementedInterfaces(
-                            string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
-                                ? Array.Empty<NamedItemModel>()
-                                : new NamedItemModel[] { "ICommandHandler" })
-                        .InheritedFrom(parent is null
-                            ? GeneratedCommandBase(className)
-                            : GeneratedCommandBase(className, CommandClassName(parent)))
-                        .Members(CommonClassMembers(ancestorsAndSelf, ancestorMembers, NonAncestorMembers(ancestorMembers, commandDef), commandDef))
-                        .Members(commandDef.SubCommands
-                                    .OfType<CommandDef>()
-                                    .Select(cmd => CommandClass(ancestorsAndSelf, newAncestorMembers, commandDef, cmd)));
+            return
+                Class(className)
+                    .XmlDescription($"The wrapper class for the {className} command.")
+                    .Public()
+                    .Partial()
+                    .ImplementedInterfaces(
+                        string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
+                            ? Array.Empty<NamedItemModel>()
+                            : new NamedItemModel[] { "ICommandHandler" })
+                    .InheritedFrom(parent is null
+                        ? GeneratedCommandBase(className)
+                        : GeneratedCommandBase(className, CommandClassName(parent)))
+                    .Members(CommonClassMembers(ancestorsAndSelf, ancestorMembers, NonAncestorMembers(ancestorMembers, commandDef), commandDef))
+                    .Members(commandDef.SubCommands
+                                .OfType<CommandDef>()
+                                .Select(cmd => CommandClass(ancestorsAndSelf, newAncestorMembers, commandDef, cmd)));
 
             static IEnumerable<MemberDef> NonAncestorMembers(IEnumerable<MemberDef> ancestorMembers, CommandDef commandDef)
                 => commandDef.Members

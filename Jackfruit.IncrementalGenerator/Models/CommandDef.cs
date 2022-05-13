@@ -1,4 +1,6 @@
-﻿namespace Jackfruit.Models
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+namespace Jackfruit.Models
 {
     public abstract class CommandDefBase
     { }
@@ -32,6 +34,7 @@
             string uniqueId,
             string nspace,
             IEnumerable<string> path,
+            CommandDef? parent,
             string? description,
             string[] aliases,
             IEnumerable<MemberDef> members,
@@ -44,6 +47,7 @@
             Name = name;
             UniqueId = uniqueId;
             Namespace = nspace;
+            Parent = parent; 
             Description = description;
             Aliases = aliases;
             Members = members;
@@ -57,6 +61,7 @@
         public string Name { get; internal set; }
         public string UniqueId { get; }
         public string Namespace { get; }
+        public CommandDef? Parent { get; }
         public string? Description { get; }
         public string[] Aliases { get; }
         //Options, args, and services in order of handler parameters

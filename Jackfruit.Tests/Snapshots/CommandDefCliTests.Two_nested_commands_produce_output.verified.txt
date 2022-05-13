@@ -12,6 +12,7 @@ public partial class Cli
 //Key:         
 //Id:          MyClass.A(int)
 //Path:        
+//Parent:      
 //Description: 
 //Aliases:     
 //Namespace:   <global namespace>
@@ -28,6 +29,7 @@ public partial class Cli
    //Key:         A
    //Id:          MyClass.B(int)
    //Path:        A
+   //Parent:      A
    //Description: 
    //Aliases:     
    //Namespace:   <global namespace>

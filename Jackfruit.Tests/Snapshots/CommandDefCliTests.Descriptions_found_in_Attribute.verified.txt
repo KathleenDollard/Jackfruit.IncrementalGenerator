@@ -12,6 +12,7 @@ public partial class Cli
 //Key:         
 //Id:          MyClass.AA(int)
 //Path:        
+//Parent:      
 //Description: Command description in Attribute
 //Aliases:     
 //Namespace:   <global namespace>
