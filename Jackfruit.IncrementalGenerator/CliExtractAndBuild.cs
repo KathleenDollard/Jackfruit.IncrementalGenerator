@@ -72,7 +72,7 @@ namespace Jackfruit.IncrementalGenerator
                 };
         }
 
-        private static (IMethodSymbol? handlerMethodSymbol, IMethodSymbol? validatorMethodSymbol, 
+        private static (IMethodSymbol? handlerMethodSymbol, IMethodSymbol? validatorMethodSymbol,
                         IEnumerable<IObjectCreationOperation> subCommands) CliNodeNewParts(IObjectCreationOperation objectCreationOp)
         {
             // Change this to a collection switch when we get them. it will be beautiful!
@@ -88,11 +88,9 @@ namespace Jackfruit.IncrementalGenerator
                 var pos = 1;
                 var arg = objectCreationOp.Arguments[pos];
                 // second arg could be a validator or a CliNode
-                if (arg.Value is Delegate)  // this will never be true and is a placeholder while I am in this logic
-                {
-                    validator = MethodFromArg(objectCreationOp.Arguments[pos]);
-                    pos++;
-                }
+                validator= MethodFromArg(objectCreationOp.Arguments[pos]);
+                if (validator is not null)
+                { pos++; }
 
                 IEnumerable<IArgumentOperation> temp = objectCreationOp.Arguments
                                     .Skip(pos);
@@ -104,22 +102,21 @@ namespace Jackfruit.IncrementalGenerator
 
             }
             return (handler, validator, subCommands ?? Enumerable.Empty<IObjectCreationOperation>());
-
-            // TODO: Add Validation for handler and validator return types
-            static IMethodSymbol? MethodFromArg(IArgumentOperation argOp)
-                // TODO: Be explicit here
-                => argOp
-                         .Descendants()
-                         .OfType<IDelegateCreationOperation>()
-                         .FirstOrDefault()
-                         ?.Target switch
-                {
-                    IMethodReferenceOperation methodRefOp => methodRefOp.Method,
-                    _ => null
-                };
         }
 
-        private static CommandDef? GetCommandDef(string[] path,CommandDef? parent,  IObjectCreationOperation objectCreationOp)
+        // TODO: Add Validation for handler and validator return types
+        static IMethodSymbol? MethodFromArg(IArgumentOperation argOp)
+            => argOp.Value is not IConversionOperation conversion
+                ? null
+                : conversion.Operand is not IDelegateCreationOperation delegateOp
+                    ? null
+                    : delegateOp.Target switch
+                    {
+                        IMethodReferenceOperation methodRefOp => methodRefOp.Method,
+                        _ => null
+                    };
+
+        private static CommandDef? GetCommandDef(string[] path, CommandDef? parent, IObjectCreationOperation objectCreationOp)
         {
             var (handlerSymbol, validateSymbol, subCommandsOps) = CliNodeNewParts(objectCreationOp);
             if (handlerSymbol is null)

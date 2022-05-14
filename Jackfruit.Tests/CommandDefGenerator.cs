@@ -3,6 +3,7 @@ using Jackfruit.Models;
 using Jackfruit.IncrementalGenerator;
 using Jackfruit.IncrementalGenerator.Output;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Linq;
 
 namespace Jackfruit.Tests
 {
@@ -51,6 +52,11 @@ public partial class Cli
                 writer.AddLine($"//Id:          {commandDef.Id}");
                 writer.AddLine($"//Path:        {path}");
                 writer.AddLine($"//Parent:      {commandDef.Parent?.Name}");
+                if (commandDef.Validator is not null)
+                {
+                    writer.AddLine($"//Validator:   {commandDef.Validator.MethodName}" +
+                        $"({string.Join(", ",commandDef.Validator.MemberNames)})");
+                }
                 writer.AddLine($"//Description: {commandDef.Description}");
                 writer.AddLine($"//Aliases:     {string.Join(", ", commandDef.Aliases)}");
                 writer.AddLine($"//Namespace:   {commandDef.Namespace}");

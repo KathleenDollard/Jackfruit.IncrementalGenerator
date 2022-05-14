@@ -104,7 +104,7 @@ namespace Jackfruit.IncrementalGenerator
             if (validatorSymbol is null)
             { return null; }
             var details = validatorSymbol.BasicDetails();
-            var members = details.MemberDetails.Select(x => x.Value.Name);
+            var members = details.MemberDetails.Select(x => x.Value.Id);
             return new ValidatorDef(details.Detail.Name, members);
         }
     }
