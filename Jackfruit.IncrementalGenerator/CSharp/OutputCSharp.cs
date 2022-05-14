@@ -7,6 +7,7 @@ namespace Jackfruit.IncrementalGenerator
     {
         public LanguageCSharp(IWriter writer) : base(writer) { }
 
+        public override string XmlDocPrefix => "/// ";
         public override string PrivateKeyword { get; } = "private";
         public override string PublicKeyword { get; } = "public";
         public override string InternalKeyword { get; } = "internal";
@@ -350,7 +351,7 @@ namespace Jackfruit.IncrementalGenerator
         public override IEnumerable<string> Throw(NamedItemModel exception, params ExpressionBase[] args)
             => new List<string>
                 {
-                    $"{ThrowKeyword} {Instantiate(exception, args)});"
+                    $"{ThrowKeyword} {Instantiate(exception, args)};"
                 };
 
 

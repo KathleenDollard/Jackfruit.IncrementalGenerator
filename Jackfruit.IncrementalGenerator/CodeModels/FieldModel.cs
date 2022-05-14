@@ -14,6 +14,7 @@
         public bool IsReadonly { get; set; }
         public bool IsStatic { get; set; }
         public ExpressionBase? InitialValue { get; set; }
+        public string XmlDescription { get; set; }
 
     }
 

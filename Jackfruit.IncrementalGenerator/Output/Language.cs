@@ -27,6 +27,7 @@ namespace Jackfruit.IncrementalGenerator
 
         public string UnknownKeyword { get; } = "<UNKNOWN>";
 
+        public abstract string XmlDocPrefix { get; }
         public abstract string PrivateKeyword { get; }
         public abstract string PublicKeyword { get; }
         public abstract string InternalKeyword { get; }
@@ -148,6 +149,12 @@ namespace Jackfruit.IncrementalGenerator
 
         public IWriter AddClass(ClassModel classModel)
         {
+            if (! string.IsNullOrWhiteSpace(classModel.XmlDescription))
+            {
+                writer.AddLine($"{XmlDocPrefix}<summary>");
+                writer.AddLine($"{XmlDocPrefix}{classModel.XmlDescription}");
+                writer.AddLine($"{XmlDocPrefix}</summary>");
+            }
             writer.AddLines(ClassOpen(classModel))
                 .IncreaseIndent();
             foreach (var member in classModel.Members)
@@ -169,6 +176,16 @@ namespace Jackfruit.IncrementalGenerator
 
         public IWriter AddMethod(MethodModel model)
         {
+            if (!string.IsNullOrWhiteSpace(model.XmlDescription))
+            {
+                writer.AddLine($"{XmlDocPrefix}<summary>");
+                writer.AddLine($"{XmlDocPrefix}{model.XmlDescription}");
+                writer.AddLine($"{XmlDocPrefix}</summary>");
+                foreach (var param in model.Parameters)
+                {
+                    writer.AddLine($"{XmlDocPrefix}<param name=\"{param.Name}\">{param.XmlDescription ?? ""}</param>");
+                }
+            }
             writer.AddLines(MethodOpen(model))
                 .IncreaseIndent();
 
@@ -181,11 +198,24 @@ namespace Jackfruit.IncrementalGenerator
 
         public IWriter AddField(FieldModel model)
         {
+            if (!string.IsNullOrWhiteSpace(model.XmlDescription))
+            {
+                writer.AddLine($"{XmlDocPrefix}<summary>");
+                writer.AddLine($"{XmlDocPrefix}{model.XmlDescription}");
+                writer.AddLine($"{XmlDocPrefix}</summary>");
+            }
             writer.AddLines(Field(model));
             return writer;
         }
+
         public IWriter AddConstructor(ConstructorModel model)
         {
+            if (!string.IsNullOrWhiteSpace(model.XmlDescription))
+            {
+                writer.AddLine($"{XmlDocPrefix}<summary>");
+                writer.AddLine($"{XmlDocPrefix}{model.XmlDescription}");
+                writer.AddLine($"{XmlDocPrefix}</summary>");
+            }
             writer.AddLines(ConstructorOpen(model))
                 .IncreaseIndent();
 
@@ -198,6 +228,12 @@ namespace Jackfruit.IncrementalGenerator
 
         public IWriter AddProperty(PropertyModel model)
         {
+            if (!string.IsNullOrWhiteSpace(model.XmlDescription))
+            {
+                writer.AddLine($"{XmlDocPrefix}<summary>");
+                writer.AddLine($"{XmlDocPrefix}{model.XmlDescription}");
+                writer.AddLine($"{XmlDocPrefix}</summary>");
+            }
             if (model.Getter is null && model.Setter is null)
             {
                 writer.AddLines(AutoProperty(model));

@@ -15,6 +15,8 @@
         public PropertyAccessorModel? Getter { get; set; }
         public PropertyAccessorModel? Setter { get; set; }
         public bool IsPartial { get; internal set; }
+        public string XmlDescription { get; set; }
+
     }
 
     //public static class PropertyModelExtensions

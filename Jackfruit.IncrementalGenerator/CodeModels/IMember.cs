@@ -1,6 +1,9 @@
 ﻿namespace Jackfruit.IncrementalGenerator.CodeModels
 {
-    public interface IMember { }
+    public interface IMember
+    {
+        string XmlDescription { get; set; }
+    }
 }
 /* Hmmm. Will we need these?
 

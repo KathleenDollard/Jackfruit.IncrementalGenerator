@@ -50,9 +50,7 @@ public class MyClass
                 new CliNode(Handlers.NextGeneration, 
                     new(Handlers.DeepSpaceNine),
                     new(Handlers.Voyager) 
-                })
-            })
-        });
+                ))));
 
         var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();
         nextGen.PicardOption.AddAlias("" - p"");
