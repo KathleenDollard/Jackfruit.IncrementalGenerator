@@ -27,9 +27,10 @@ namespace Jackfruit.IncrementalGenerator
 
 
         internal static CommandDef? BuildCommandDef(string[] path,
-                                                  string methodName,
-                                                  CommandDetails? commandDetails,
-                                                  string triggerStyle)
+                                                    CommandDef? parent,
+                                                    string methodName,
+                                                    CommandDetails? commandDetails,
+                                                    string triggerStyle)
         {
             var members = new List<MemberDef>();
             if (commandDetails == null)
@@ -69,6 +70,7 @@ namespace Jackfruit.IncrementalGenerator
                                             string.Join("_", path),
                                             commandDetails.Namespace,
                                             path,
+                                            parent,
                                             commandDetails.Detail.Description,
                                             commandDetails.Detail.Aliases,
                                             members,

@@ -15,10 +15,10 @@ namespace Jackfruit.Tests
             var cliTree = new CliTree();
             var franchise = Cli.Franchise;
             Assert.NotNull(franchise);
-            Assert.NotNull(franchise.StarTrek);
-            //Assert.NotNull(franchise.StarTrek.NextGeneration);
-            //Assert.NotNull(franchise.StarTrek.NextGeneration.Voyager);
-            //Assert.NotNull(franchise.StarTrek.NextGeneration.DeepSpaceNine);
+            Assert.NotNull(franchise.StarTrekCommand);
+            Assert.NotNull(franchise.StarTrekCommand.NextGenerationCommand);
+            Assert.NotNull(franchise.StarTrekCommand.NextGenerationCommand.VoyagerCommand);
+            Assert.NotNull(franchise.StarTrekCommand.NextGenerationCommand.DeepSpaceNineCommand);
         }
     }
 }

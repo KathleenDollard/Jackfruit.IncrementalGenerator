@@ -247,7 +247,8 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             return model;
         }
 
-
+        public static CodeFileModel CodeFile(string name)
+            => new(name);
 
     }
 }

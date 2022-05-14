@@ -12,6 +12,7 @@ public partial class Cli
 //Key:         
 //Id:          MyClass.A(int)
 //Path:        
+//Parent:      
 //Description: 
 //Aliases:     
 //Namespace:   <global namespace>
@@ -28,6 +29,7 @@ public partial class Cli
    //Key:         A
    //Id:          MyClass.B(int)
    //Path:        A
+   //Parent:      A
    //Description: 
    //Aliases:     
    //Namespace:   <global namespace>
@@ -46,6 +48,7 @@ public partial class Cli
    //Key:         A
    //Id:          MyClass.C(int)
    //Path:        A
+   //Parent:      A
    //Description: 
    //Aliases:     
    //Namespace:   <global namespace>
@@ -62,6 +65,7 @@ public partial class Cli
       //Key:         AC
       //Id:          MyClass.E(int)
       //Path:        A.C
+      //Parent:      C
       //Description: 
       //Aliases:     
       //Namespace:   <global namespace>
@@ -80,6 +84,7 @@ public partial class Cli
       //Key:         AC
       //Id:          MyClass.F(int)
       //Path:        A.C
+      //Parent:      C
       //Description: 
       //Aliases:     
       //Namespace:   <global namespace>
@@ -96,6 +101,7 @@ public partial class Cli
          //Key:         ACF
          //Id:          MyClass.G(int)
          //Path:        A.C.F
+         //Parent:      F
          //Description: 
          //Aliases:     
          //Namespace:   <global namespace>
@@ -114,6 +120,7 @@ public partial class Cli
          //Key:         ACF
          //Id:          MyClass.H(int)
          //Path:        A.C.F
+         //Parent:      F
          //Description: 
          //Aliases:     
          //Namespace:   <global namespace>
@@ -136,6 +143,7 @@ public partial class Cli
    //Key:         A
    //Id:          MyClass.D(int)
    //Path:        A
+   //Parent:      A
    //Description: 
    //Aliases:     
    //Namespace:   <global namespace>

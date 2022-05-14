@@ -48,8 +48,8 @@ public class MyClass
         Cli.Create(new CliNode(Handlers.Franchise, 
             new CliNode(Handlers.StarTrek, 
                 new CliNode(Handlers.NextGeneration, 
-                    new(Handlers.DeepSpaceNine),
-                    new(Handlers.Voyager) 
+                    new CliNode(Handlers.DeepSpaceNine),
+                    new CliNode(Handlers.Voyager) 
                 ))));
 
         var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();

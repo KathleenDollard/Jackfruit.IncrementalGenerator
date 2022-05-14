@@ -2,6 +2,7 @@
 using Jackfruit.Models;
 using Jackfruit.IncrementalGenerator;
 using Jackfruit.IncrementalGenerator.Output;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Jackfruit.Tests
 {
@@ -55,6 +56,7 @@ public partial class Cli
                 writer.AddLine($"//Key:         {joinedPath}");
                 writer.AddLine($"//Id:          {commandDef.Id}");
                 writer.AddLine($"//Path:        {path}");
+                writer.AddLine($"//Parent:      {commandDef.Parent?.Name}");
                 writer.AddLine($"//Description: {commandDef.Description}");
                 writer.AddLine($"//Aliases:     {string.Join(", ", commandDef.Aliases)}");
                 writer.AddLine($"//Namespace:   {commandDef.Namespace}");

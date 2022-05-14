@@ -8,14 +8,11 @@ namespace Jackfruit.IncrementalGenerator
 {
     public static class CliExtractAndBuild
     {
-        // temporary 
-        private static SemanticModel semanticModel { get; set; }
         public static CommandDef? GetCommandDef(GeneratorSyntaxContext context)
         {
-            semanticModel = context.SemanticModel;
             if (context.SemanticModel.GetOperation(context.Node) is not IInvocationOperation cliCreateInvocation)
             {
-                // Weird, but we do not want to throw
+                // Should not occur
                 return null;
             }
             // Transform1: (using the mode)
@@ -31,7 +28,7 @@ namespace Jackfruit.IncrementalGenerator
             return objectCreationOps is null
                 ? null
                 : objectCreationOps.Any()
-                    ? GetCommandDef(path, objectCreationOps.First())
+                    ? GetCommandDef(path, null, objectCreationOps.First())
                     : null;
         }
 
@@ -75,7 +72,8 @@ namespace Jackfruit.IncrementalGenerator
                 };
         }
 
-        private static (IMethodSymbol? handlerMethodSymbol, IMethodSymbol? validatorMethodSymbol, IEnumerable<IObjectCreationOperation> subCommands) CliNodeNewParts(IObjectCreationOperation objectCreationOp)
+        private static (IMethodSymbol? handlerMethodSymbol, IMethodSymbol? validatorMethodSymbol, 
+                        IEnumerable<IObjectCreationOperation> subCommands) CliNodeNewParts(IObjectCreationOperation objectCreationOp)
         {
             // Change this to a collection switch when we get them. it will be beautiful!
             if (!objectCreationOp.Arguments.Any())
@@ -121,7 +119,7 @@ namespace Jackfruit.IncrementalGenerator
                 };
         }
 
-        private static CommandDef? GetCommandDef(string[] path, IObjectCreationOperation objectCreationOp)
+        private static CommandDef? GetCommandDef(string[] path,CommandDef? parent,  IObjectCreationOperation objectCreationOp)
         {
             var (handlerSymbol, validateSymbol, subCommandsOps) = CliNodeNewParts(objectCreationOp);
             if (handlerSymbol is null)
@@ -131,13 +129,13 @@ namespace Jackfruit.IncrementalGenerator
             if (commandDetails is null)
             { return null; }
 
-            var commandDef = Helpers.BuildCommandDef(path, Helpers.MethodFullName(handlerSymbol), commandDetails, Helpers.Cli);
+            var commandDef = Helpers.BuildCommandDef(path, parent, Helpers.MethodFullName(handlerSymbol), commandDetails, Helpers.Cli);
             if (commandDef is null)
             { return null; }
 
             var newPath = path.Union(new string[] { handlerSymbol.Name }).ToArray();
             var subCommands = subCommandsOps
-                    .Select(x => GetCommandDef(newPath, x))
+                    .Select(x => GetCommandDef(newPath, commandDef, x))
                     .Where(x => x is not null)
                     .ToList();
             commandDef.SubCommands = subCommands!;
