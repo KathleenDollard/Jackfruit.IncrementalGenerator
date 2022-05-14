@@ -129,7 +129,9 @@ namespace Jackfruit.IncrementalGenerator
             if (commandDetails is null)
             { return null; }
 
-            var commandDef = Helpers.BuildCommandDef(path, parent, Helpers.MethodFullName(handlerSymbol), commandDetails, Helpers.Cli);
+            var validatorDef = Helpers.GetValidatorDef(validateSymbol);
+
+            var commandDef = Helpers.BuildCommandDef(path, parent, validatorDef, Helpers.MethodFullName(handlerSymbol), commandDetails, Helpers.Cli);
             if (commandDef is null)
             { return null; }
 

@@ -28,6 +28,7 @@ namespace Jackfruit.IncrementalGenerator
 
         internal static CommandDef? BuildCommandDef(string[] path,
                                                     CommandDef? parent,
+                                                    ValidatorDef? validatorDef,
                                                     string methodName,
                                                     CommandDetails? commandDetails,
                                                     string triggerStyle)
@@ -71,6 +72,7 @@ namespace Jackfruit.IncrementalGenerator
                                             commandDetails.Namespace,
                                             path,
                                             parent,
+                                            validatorDef,
                                             commandDetails.Detail.Description,
                                             commandDetails.Detail.Aliases,
                                             members,
@@ -97,7 +99,13 @@ namespace Jackfruit.IncrementalGenerator
             return commandDetails;
         }
 
-
-
+        internal static ValidatorDef? GetValidatorDef(IMethodSymbol? validatorSymbol)
+        {
+            if (validatorSymbol is null)
+            { return null; }
+            var details = validatorSymbol.BasicDetails();
+            var members = details.MemberDetails.Select(x => x.Value.Name);
+            return new ValidatorDef(details.Detail.Name, members);
+        }
     }
 }
