@@ -20,7 +20,7 @@ namespace Jackfruit.IncrementalGenerator
         private const string commandResult = "CommandResult";
 
         private static string CommandClassName(CommandDef commandDef) => commandDef.Name;
-        private static string CommandPropertyName(CommandDef commandDef) => $"{commandDef.Name}Command";
+        private static string CommandPropertyName(CommandDef commandDef) => commandDef.Name;
         private static string CommandFullClassName(IEnumerable<CommandDef> ancestors, CommandDef? parent, CommandDef commandDef)
         {
             // TODO: **** When it is clear we will not nest these types, probably remove this method and replace with direct call

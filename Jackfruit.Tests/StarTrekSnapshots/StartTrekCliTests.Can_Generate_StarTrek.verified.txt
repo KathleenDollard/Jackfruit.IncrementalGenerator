@@ -62,8 +62,8 @@ namespace DemoHandlers
          var command = new Franchise();
          command.GreetingArgument = new Argument<string>("greetingArg");
          command.Add(command.GreetingArgument);
-         command.StarTrekCommand = StarTrek.Create(command);
-         command.AddCommandToScl(command.StarTrekCommand);
+         command.StarTrek = StarTrek.Create(command);
+         command.AddCommandToScl(command.StarTrek);
          command.SystemCommandLineCommand.AddValidator(command.Validate);
          command.Handler = command;
          return command;
@@ -114,7 +114,7 @@ namespace DemoHandlers
       }
       
       public Argument<string> GreetingArgument {get; set;}
-      public StarTrek StarTrekCommand {get; set;}
+      public StarTrek StarTrek {get; set;}
    }
    
    /// <summary>
@@ -138,8 +138,8 @@ namespace DemoHandlers
          command.UhuraOption = new Option<bool>("--Uhura");
          command.UhuraOption.Description = "Whether to greet Lieutenant Uhura";
          command.Add(command.UhuraOption);
-         command.NextGenerationCommand = NextGeneration.Create(command);
-         command.AddCommandToScl(command.NextGenerationCommand);
+         command.NextGeneration = NextGeneration.Create(command);
+         command.AddCommandToScl(command.NextGeneration);
          command.SystemCommandLineCommand.AddValidator(command.Validate);
          command.Handler = command;
          return command;
@@ -199,7 +199,7 @@ namespace DemoHandlers
       public Option<bool> KirkOption {get; set;}
       public Option<bool> SpockOption {get; set;}
       public Option<bool> UhuraOption {get; set;}
-      public NextGeneration NextGenerationCommand {get; set;}
+      public NextGeneration NextGeneration {get; set;}
    }
    
    /// <summary>
@@ -217,10 +217,10 @@ namespace DemoHandlers
          command.PicardOption = new Option<bool>("--Picard");
          command.PicardOption.Description = "This is the description for Picard";
          command.Add(command.PicardOption);
-         command.DeepSpaceNineCommand = DeepSpaceNine.Create(command);
-         command.AddCommandToScl(command.DeepSpaceNineCommand);
-         command.VoyagerCommand = Voyager.Create(command);
-         command.AddCommandToScl(command.VoyagerCommand);
+         command.DeepSpaceNine = DeepSpaceNine.Create(command);
+         command.AddCommandToScl(command.DeepSpaceNine);
+         command.Voyager = Voyager.Create(command);
+         command.AddCommandToScl(command.Voyager);
          command.SystemCommandLineCommand.AddValidator(command.Validate);
          command.Handler = command;
          return command;
@@ -280,8 +280,8 @@ namespace DemoHandlers
       }
       
       public Option<bool> PicardOption {get; set;}
-      public DeepSpaceNine DeepSpaceNineCommand {get; set;}
-      public Voyager VoyagerCommand {get; set;}
+      public DeepSpaceNine DeepSpaceNine {get; set;}
+      public Voyager Voyager {get; set;}
    }
    
    /// <summary>
