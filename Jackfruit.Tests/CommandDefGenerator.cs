@@ -22,12 +22,6 @@ public partial class Cli
             // To be a partial, this must be in the same namespace and assembly as the generated part
             initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource("Cli.partial.g.cs", cliClassCode));
 
-            var cliRootCommandDefs = initContext.SyntaxProvider
-                .CreateSyntaxProvider(
-                    predicate: static (s, _) => CliRootExtractAndBuild.IsSyntaxInteresting(s),
-                    transform: static (ctx, _) => CliRootExtractAndBuild.GetCommandDef(ctx))
-                .Where(static m => m is not null)!;
-
             IncrementalValuesProvider<CommandDef> commandDefs = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => Generator.IsCliCreateInvocation(s),

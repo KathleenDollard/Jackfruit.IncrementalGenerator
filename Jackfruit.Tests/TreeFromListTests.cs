@@ -1,11 +1,9 @@
 using Xunit;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using VerifyXunit;
-using System.Threading.Tasks;
-using Jackfruit.IncrementalGenerator;
 using System.Collections.Generic;
 using Jackfruit.Models;
+using Jackfruit.IncrementalGenerator;
 using System.Linq;
 
 namespace Jackfruit.Tests
