@@ -10,5 +10,4 @@ Cli.Create(new(Handlers.Franchise,
     )
 ));
 
-
 Cli.Franchise.Run(args);
