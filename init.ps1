@@ -1,3 +1,5 @@
+New-Item -Name LocalPackageSource -Type Directory -ErrorAction Ignore
+
 dotnet build Jackfruit.Runtime 
 dotnet pack Jackfruit.Runtime 
 foreach ($pkg in Get-ChildItem -Path "Jackfruit.Runtime/bin/Debug/Jackfruit.Runtime.*.nupkg") {
