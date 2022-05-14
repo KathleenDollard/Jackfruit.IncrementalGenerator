@@ -23,22 +23,24 @@ namespace Jackfruit.IncrementalGenerator
         private static string CommandPropertyName(CommandDef commandDef) => $"{commandDef.Name}Command";
         private static string CommandFullClassName(IEnumerable<CommandDef> ancestors, CommandDef? parent, CommandDef commandDef)
         {
-            if (commandDef.Name == Helpers.CliRootName)
-            { return Helpers.CliRootName; }
-            var ancestorList =
-                    parent is null
-                    ? ancestors
-                    : new List<CommandDef> { parent }.Union(ancestors);
-            ancestorList = ancestorList
-                    .Reverse()
-                    .Where(a => a.Name != Helpers.CliRootName);
-            var parentNames =
-                ancestorList.Any()
-                    ? string.Join(".", ancestorList.Select(a => CommandClassName(a))) + "."
-                    : "";
-            return Helpers.GetStyle(commandDef) == Helpers.Cli
-                ? $"{parentNames}{CommandClassName(commandDef)}"
-                : $"Commands.{parentNames}{CommandClassName(commandDef)}";
+            // TODO: **** When it is clear we will not nest these types, probably remove this method and replace with direct call
+            //if (commandDef.Name == Helpers.CliRootName)
+            //{ return Helpers.CliRootName; }
+            //var ancestorList =
+            //        parent is null
+            //        ? ancestors
+            //        : new List<CommandDef> { parent }.Union(ancestors);
+            //ancestorList = ancestorList
+            //        .Reverse()
+            //        .Where(a => a.Name != Helpers.CliRootName);
+            //var parentNames =
+            //    ancestorList.Any()
+            //        ? string.Join(".", ancestorList.Select(a => CommandClassName(a))) + "."
+            //        : "";
+            //return Helpers.GetStyle(commandDef) == Helpers.Cli
+            //    ? $"{parentNames}{CommandClassName(commandDef)}"
+            //    : $"Commands.{parentNames}{CommandClassName(commandDef)}";
+            return CommandClassName(commandDef);
         }
         private static string MemberPropertyName(MemberDef memberDef)
             => memberDef switch
@@ -94,13 +96,14 @@ namespace Jackfruit.IncrementalGenerator
                         CommandClass(Enumerable.Empty<CommandDef>(),
                                      Enumerable.Empty<MemberDef>(),
                                      null,
-                                     commandDef));
+                                     commandDef).ToArray());
 
-        private static ClassModel CommandClass(IEnumerable<CommandDef> ancestors,
+        private static IEnumerable<ClassModel> CommandClass(IEnumerable<CommandDef> ancestors,
                                                IEnumerable<MemberDef> ancestorMembers,
                                                CommandDef? parent,
                                                CommandDef commandDef)
         {
+            var commandClasses = new List<ClassModel>();
             // TODO: Consider moving Ancestors and ancestor members to CommandDef. These would be null until the tree is built.
             var ancestorsAndSelf = ancestors.ToList();
             if (parent is not null)
@@ -110,7 +113,7 @@ namespace Jackfruit.IncrementalGenerator
             var newAncestorMembers = ancestorMembers.Union(myMembers).ToList();
 
             string className = CommandClassName(commandDef);
-            return
+            commandClasses.Add(
                 Class(className)
                     .XmlDescription($"The wrapper class for the {className} command.")
                     .Public()
@@ -122,10 +125,13 @@ namespace Jackfruit.IncrementalGenerator
                     .InheritedFrom(parent is null
                         ? GeneratedCommandBase(className)
                         : GeneratedCommandBase(className, CommandClassName(parent)))
-                    .Members(CommonClassMembers(ancestorsAndSelf, ancestorMembers, NonAncestorMembers(ancestorMembers, commandDef), commandDef))
-                    .Members(commandDef.SubCommands
+                    .Members(CommonClassMembers(ancestorsAndSelf, ancestorMembers, NonAncestorMembers(ancestorMembers, commandDef), commandDef)));
+
+            commandClasses.AddRange(
+                    commandDef.SubCommands
                                 .OfType<CommandDef>()
-                                .Select(cmd => CommandClass(ancestorsAndSelf, newAncestorMembers, commandDef, cmd)));
+                                .SelectMany(cmd => CommandClass(ancestorsAndSelf, newAncestorMembers, commandDef, cmd)));
+            return commandClasses;
 
             static IEnumerable<MemberDef> NonAncestorMembers(IEnumerable<MemberDef> ancestorMembers, CommandDef commandDef)
                 => commandDef.Members
