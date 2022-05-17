@@ -24,12 +24,17 @@ jobs:
           dotnet-version: 6.0.300
       - name: setup local package feed
         run: mkdir LocalPackageSource
+
+      # we use the bash shell for the following to so that path globbing works on windows
       - name: build and pack the Runtime
+        shell: bash
         run: | 
           dotnet build Jackfruit.Runtime
           dotnet pack Jackfruit.Runtime -o package
           dotnet nuget push "package/Jackfruit.Runtime.*.nupkg" --source JackFruit
+      
       - name: build and pack the Source Generator
+        shell: bash
         run: |
           dotnet build Jackfruit.IncrementalGenerator
           dotnet pack Jackfruit.IncrementalGenerator -o package
