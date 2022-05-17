@@ -1,0 +1,43 @@
+name: Build and test
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      # PR builds don't checkout the commit by default, so we're going to correct that
+      - name: checkout commit
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      
+      - name: setup .NET
+        uses: actions/setup-dotnet
+        with:
+          version: 6.0.300
+      - name: setup local package feed
+        run: mkdir LocalPackageSource
+      - name: build and pack the Runtime
+        run: | 
+          dotnet build Jackfruit.Runtime
+          dotnet pack Jackfruit.Runtime -o package
+          dotnet nuget push "package/Jackfruit.Runtime.*.nupkg" --source JackFruit
+      - name: build and pack the Source Generator
+        run: |
+          dotnet build Jackfruit.IncrementalGenerator
+          dotnet pack Jackfruit.IncrementalGenerator -o package
+          dotnet nuget push "package/Jackfruit.IncrementalGenerator.*.nupkg" --source JackFruit
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Packages (${{ matrix.os }})
+          path: package/*.nupkg
+
