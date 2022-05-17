@@ -30,19 +30,22 @@ jobs:
         shell: bash
         run: | 
           dotnet build Jackfruit.Runtime
-          dotnet pack Jackfruit.Runtime -o package
-          dotnet nuget push "package/Jackfruit.Runtime.*.nupkg" --source JackFruit
+          dotnet pack Jackfruit.Runtime
+          dotnet nuget push Jackfruit.Runtime/bin/Debug/*.nupkg --source JackFruit
       
       - name: build and pack the Source Generator
         shell: bash
         run: |
           dotnet build Jackfruit.IncrementalGenerator
-          dotnet pack Jackfruit.IncrementalGenerator -o package
-          dotnet nuget push "package/Jackfruit.IncrementalGenerator.*.nupkg" --source JackFruit
+          dotnet pack Jackfruit.IncrementalGenerator
+          dotnet nuget push Jackfruit.IncrementalGenerator/bin/Debug/*.nupkg --source JackFruit
 
       - name: upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: Packages (${{ matrix.os }})
-          path: package/*.nupkg
+
+          path: |
+            Jackfruit.IncrementalGenerator/bin/Debug/*.nupkg
+            Jackfruit.Runtime/bin/Debug/*.nupkg
 
