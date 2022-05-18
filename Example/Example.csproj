@@ -8,7 +8,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Jackfruit.IncrementalGenerator" Version="0.0.1-alphaP" />
+		<PackageReference Include="Jackfruit.IncrementalGenerator" Version="0.0.1-alphaQ" />
 	</ItemGroup>
 
 

@@ -1,5 +1,5 @@
 ﻿using Jackfruit;
-using DemoHandlers;
+using Example;
 
 Cli.Create(new(Handlers.Franchise,
     new CliNode(Handlers.StarTrek,

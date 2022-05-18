@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel;
 
-namespace DemoHandlers
+namespace Example
 {
     public static class Handlers
     {
         private static void Greet(string greeting, string name)
         {
-            var defaultGreeting = "Hello";
-            Console.WriteLine($"{greeting ?? defaultGreeting}, {name}");
+            //var defaultGreeting = "Hello";
+            Console.WriteLine($"{greeting}, {name}");
             return;
         }
 
