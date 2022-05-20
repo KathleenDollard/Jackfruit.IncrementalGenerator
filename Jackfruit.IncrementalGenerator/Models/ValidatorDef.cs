@@ -17,13 +17,15 @@ namespace Jackfruit.Models
 
         // Attach this data to a command
 
-        public ValidatorDef(string methodName, IEnumerable<string> memberNames)
+        public ValidatorDef(string methodName, string nspace, IEnumerable<MemberDef> members)
         {
             MethodName = methodName;
-            MemberNames = memberNames;
+            Members = members;
+            Namespace = nspace;
         }
         public string MethodName { get; }
-        public IEnumerable<string> MemberNames  { get; set; }
+        public string Namespace { get; }
+        public IEnumerable<MemberDef> Members { get; set; }
 
     }
 }

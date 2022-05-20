@@ -11,6 +11,7 @@ public partial class Cli
 /*
 //Key:         
 //Id:          DemoHandlers.Handlers.Voyager(string, bool, bool, bool, bool, bool)
+//Handler:     DemoHandlers.Handlers.Voyager
 //Path:        
 //Parent:      
 //Description: 

@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 using System.Xml.Linq;
 using static Jackfruit.IncrementalGenerator.RoslynHelpers;
+using System.Linq;
 
 namespace Jackfruit.IncrementalGenerator
 {
@@ -21,21 +22,20 @@ namespace Jackfruit.IncrementalGenerator
             => commandDef.GenerationStyleTags.TryGetValue(Helpers.TriggerStyle, out var style)
                  ? style.ToString()
                  : string.Empty;
-        internal static string MethodFullName(IMethodSymbol method) 
+        internal static string MethodFullName(IMethodSymbol method)
             => $"{method.ContainingType.ToDisplayString()}.{method.Name}";
 
 
 
         internal static CommandDef? BuildCommandDef(string[] path,
                                                     CommandDef? parent,
-                                                    ValidatorDef? validatorDef,
                                                     string methodName,
                                                     CommandDetails? commandDetails,
                                                     string triggerStyle)
         {
             var members = new List<MemberDef>();
             if (commandDetails == null)
-            { return null;  }
+            { return null; }
             foreach (var memberPair in commandDetails.MemberDetails)
             {
                 if (memberPair.Key == CommandKey) { continue; }
@@ -72,7 +72,6 @@ namespace Jackfruit.IncrementalGenerator
                                             commandDetails.Namespace,
                                             path,
                                             parent,
-                                            validatorDef,
                                             commandDetails.Detail.Description,
                                             commandDetails.Detail.Aliases,
                                             members,
@@ -99,13 +98,38 @@ namespace Jackfruit.IncrementalGenerator
             return commandDetails;
         }
 
-        internal static ValidatorDef? GetValidatorDef(IMethodSymbol? validatorSymbol)
+        internal static ValidatorDef? GetValidatorDef(IMethodSymbol? validatorSymbol, CommandDef commandDef)
         {
             if (validatorSymbol is null)
             { return null; }
             var details = validatorSymbol.BasicDetails();
-            var members = details.MemberDetails.Select(x => x.Value.Id);
-            return new ValidatorDef(details.Detail.Name, members);
+            // This is N of M, but expect the number of members to be small
+            var members = new List<MemberDef>();
+
+            foreach (var member in details.MemberDetails)
+            {
+                var match = LookupMember(member.Key, commandDef.Members);
+                if (match is null)
+                {
+                    // TODO: This needs to be a diagnostic, so shows where we need to pipe diagnostics
+                    match = new UnknownMemberDef(member.Key);
+                }
+                members.Add(match);
+                // Normal type mismatch exception expected to be adequate if types do not match
+            }
+            var methodName = Helpers.MethodFullName(validatorSymbol);
+            return new ValidatorDef(methodName, details.Namespace, members);
+
+            static MemberDef? LookupMember(string name, IEnumerable<MemberDef> members)
+            {
+                var match = members.FirstOrDefault(m => m.Id == name);
+                if (match is null && !name.EndsWith("Arg"))
+                {
+                    var test = $"{name}Arg";
+                    match = members.FirstOrDefault(m => m.Id == test);
+                }
+                return match;
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Jackfruit;
 using Example;
 
-Cli.Create(new(Handlers.Franchise,
+Cli.Create(new(Handlers.Franchise, Validators.FranchiseValidate,
     new CliNode(Handlers.StarTrek,
         new CliNode(Handlers.NextGeneration,
             new CliNode(Handlers.DeepSpaceNine),

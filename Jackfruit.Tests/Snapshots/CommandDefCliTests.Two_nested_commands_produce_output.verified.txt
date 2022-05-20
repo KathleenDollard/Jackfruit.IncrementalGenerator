@@ -11,6 +11,7 @@ public partial class Cli
 /*
 //Key:         
 //Id:          MyClass.A(int)
+//Handler:     MyClass.A
 //Path:        
 //Parent:      
 //Description: 
@@ -28,6 +29,7 @@ public partial class Cli
 //SubCommands:     
    //Key:         A
    //Id:          MyClass.B(int)
+   //Handler:     MyClass.B
    //Path:        A
    //Parent:      A
    //Description: 

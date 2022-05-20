@@ -35,7 +35,6 @@ namespace Jackfruit.Models
             string nspace,
             IEnumerable<string> path,
             CommandDef? parent,
-            ValidatorDef? validator,
             string? description,
             string[] aliases,
             IEnumerable<MemberDef> members,
@@ -49,7 +48,6 @@ namespace Jackfruit.Models
             UniqueId = uniqueId;
             Namespace = nspace;
             Parent = parent;
-            Validator = validator;
             Description = description;
             Aliases = aliases;
             Members = members;
@@ -64,7 +62,7 @@ namespace Jackfruit.Models
         public string UniqueId { get; }
         public string Namespace { get; }
         public CommandDef? Parent { get; }
-        public ValidatorDef? Validator { get; }
+        public ValidatorDef? Validator { get; internal set; }
         public string? Description { get; }
         public string[] Aliases { get; }
         //Options, args, and services in order of handler parameters

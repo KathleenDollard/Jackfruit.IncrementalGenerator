@@ -11,9 +11,13 @@ public partial class Cli
 /*
 //Key:         
 //Id:          DemoHandlers.Handlers.Franchise(string)
+//Handler:     DemoHandlers.Handlers.Franchise
 //Path:        
 //Parent:      
-//Validator:   FranchiseValidate(greeting)
+//Validator:
+//   Namespace:   DemoHandlers
+//   MethodName:  DemoHandlers.Validators.FranchiseValidate
+//   Members:     greetingArg
 //Description: 
 //Aliases:     
 //Namespace:   DemoHandlers
@@ -27,6 +31,7 @@ public partial class Cli
 //SubCommands:     
    //Key:         Franchise
    //Id:          DemoHandlers.Handlers.StarTrek(string, bool, bool, bool)
+   //Handler:     DemoHandlers.Handlers.StarTrek
    //Path:        Franchise
    //Parent:      Franchise
    //Description: This is the description for StarTrek
@@ -66,6 +71,7 @@ public partial class Cli
    //SubCommands:     
       //Key:         FranchiseStarTrek
       //Id:          DemoHandlers.Handlers.NextGeneration(string, bool)
+      //Handler:     DemoHandlers.Handlers.NextGeneration
       //Path:        Franchise.StarTrek
       //Parent:      StarTrek
       //Description: This is the description for Next Generation
@@ -89,6 +95,7 @@ public partial class Cli
       //SubCommands:     
          //Key:         FranchiseStarTrekNextGeneration
          //Id:          DemoHandlers.Handlers.DeepSpaceNine(string, bool, bool, bool, bool, bool)
+         //Handler:     DemoHandlers.Handlers.DeepSpaceNine
          //Path:        Franchise.StarTrek.NextGeneration
          //Parent:      NextGeneration
          //Description: 
@@ -146,6 +153,7 @@ public partial class Cli
          
          //Key:         FranchiseStarTrekNextGeneration
          //Id:          DemoHandlers.Handlers.Voyager(string, bool, bool, bool, bool, bool)
+         //Handler:     DemoHandlers.Handlers.Voyager
          //Path:        Franchise.StarTrek.NextGeneration
          //Parent:      NextGeneration
          //Description: 

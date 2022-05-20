@@ -11,9 +11,13 @@ public partial class Cli
 /*
 //Key:         
 //Id:          MyClass.ToValidate(int, int, int)
+//Handler:     MyClass.ToValidate
 //Path:        
 //Parent:      
-//Validator:   Validator1(j)
+//Validator:
+//   Namespace:   <global namespace>
+//   MethodName:  MyClass.Validator1
+//   Members:     j
 //Description: 
 //Aliases:     
 //Namespace:   <global namespace>

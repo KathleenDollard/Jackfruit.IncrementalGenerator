@@ -233,7 +233,7 @@ namespace Jackfruit.IncrementalGenerator
 
         private static MethodModel ValidateMethod(ValidatorDef validatorDef)
         {
-            var arguments = validatorDef.MemberNames.Select(x => Symbol($"{result}.{x}")).ToArray();
+            var arguments = validatorDef.Members.Select(x => Symbol($"{result}.{x.Name}")).ToArray();
             return
                 Method("Validate", "void")
                     .XmlDescription("The validate method invoked by System.CommandLine.")
