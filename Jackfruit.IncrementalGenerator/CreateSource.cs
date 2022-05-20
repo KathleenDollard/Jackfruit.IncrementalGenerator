@@ -18,6 +18,7 @@ namespace Jackfruit.IncrementalGenerator
         private const string resultName = "Result";
         private const string getResultName = "GetResult";
         private const string commandResult = "CommandResult";
+        private const string commandResultVar = "commandResult";
 
         private static string CommandClassName(CommandDef commandDef) => commandDef.Name;
         private static string CommandPropertyName(CommandDef commandDef) => commandDef.Name;
@@ -160,6 +161,10 @@ namespace Jackfruit.IncrementalGenerator
                 InvokeHandlerMethod(commandDef),
                 InvokeAsyncHandlerMethod(commandDef)
             };
+
+            if (commandDef.Validator is not null)
+            { members.Add(ValidateMethod(commandDef.Validator)); }
+
             members.AddRange(myMembers
                 .Where(m => m is OptionDef || m is ArgumentDef)
                 .Select(m => Property(MemberPropertyName(m), Generic(MemberPropertyStyle(m), m.TypeName))
@@ -179,7 +184,7 @@ namespace Jackfruit.IncrementalGenerator
                     .Select(m => Symbol($"{result}.{m.Name}"));
             var method =
                 Method("InvokeAsync", Generic("Task", "int"))
-                    .XmlDescription("The handler invoked by System.CommandLine. This will not bee public when generated is more sophisticated.")
+                    .XmlDescription("The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.")
                     .Public()
                     .Parameters(
                         Parameter("context", "InvocationContext")
@@ -207,7 +212,7 @@ namespace Jackfruit.IncrementalGenerator
                     .Select(m => Symbol($"{result}.{m.Name}"));
             var method =
                 Method("Invoke", "int")
-                    .XmlDescription("The handler invoked by System.CommandLine. This will not bee public when generated is more sophisticated.")
+                    .XmlDescription("The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.")
                     .Public()
                     .Parameters(
                         Parameter("context", "InvocationContext")
@@ -224,6 +229,29 @@ namespace Jackfruit.IncrementalGenerator
                 method.Statements.Add(Return(Symbol("context.ExitCode")));
             }
             return method;
+        }
+
+        private static MethodModel ValidateMethod(ValidatorDef validatorDef)
+        {
+            var arguments = validatorDef.Members.Select(x => Symbol($"{result}.{x.Name}")).ToArray();
+            return
+                Method("Validate", "void")
+                    .XmlDescription("The validate method invoked by System.CommandLine.")
+                    .Public()
+                    .Override()
+                    .Parameters(
+                        Parameter(commandResultVar, "CommandResult")
+                            .XmlDescription("The System.CommandLine CommandResult used to retrieve values for validation and it will hold any errors."))
+                    .Statements(
+                        // TODO: Fix invoke to take base in langugae neutral way
+                        SimpleCall(Invoke("base", "Validate", Symbol(commandResultVar))),
+                        AssignWithDeclare(result, Invoke("", getResultName, Symbol(commandResultVar))),
+                        AssignWithDeclare("err", Invoke("string", "Join",
+                                    Symbol("Environment.NewLine"),
+                                    Invoke("", validatorDef.MethodName, arguments))),
+                        If(Not(Invoke("string","IsNullOrWhiteSpace", Symbol("err"))),
+                                Assign($"{commandResultVar}.ErrorMessage", Symbol("err"))));
+
         }
 
         private static MethodModel CreateMethod(IEnumerable<CommandDef> ancestors, IEnumerable<MemberDef> myMembers, CommandDef commandDef)

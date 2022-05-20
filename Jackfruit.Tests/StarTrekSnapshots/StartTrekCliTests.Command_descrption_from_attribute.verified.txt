@@ -11,6 +11,7 @@ public partial class Cli
 /*
 //Key:         
 //Id:          DemoHandlers.Handlers.NextGeneration(string, bool)
+//Handler:     DemoHandlers.Handlers.NextGeneration
 //Path:        
 //Parent:      
 //Description: This is the description for Next Generation

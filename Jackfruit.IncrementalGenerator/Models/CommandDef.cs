@@ -47,7 +47,7 @@ namespace Jackfruit.Models
             Name = name;
             UniqueId = uniqueId;
             Namespace = nspace;
-            Parent = parent; 
+            Parent = parent;
             Description = description;
             Aliases = aliases;
             Members = members;
@@ -62,6 +62,7 @@ namespace Jackfruit.Models
         public string UniqueId { get; }
         public string Namespace { get; }
         public CommandDef? Parent { get; }
+        public ValidatorDef? Validator { get; internal set; }
         public string? Description { get; }
         public string[] Aliases { get; }
         //Options, args, and services in order of handler parameters

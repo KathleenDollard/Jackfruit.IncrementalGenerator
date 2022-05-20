@@ -123,7 +123,7 @@ namespace Jackfruit.IncrementalGenerator
         public abstract string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments);
         public abstract string Instantiate(NamedItemModel typeName, IEnumerable<ExpressionBase> arguments);
         public abstract string Compare(ExpressionBase left, Operator @operator, ExpressionBase right);
-
+        public abstract string Not(ExpressionBase expression);
 
 
         public IWriter AddCodeFile(CodeFileModel codeFile)
@@ -347,6 +347,7 @@ namespace Jackfruit.IncrementalGenerator
                 StringLiteralModel literalModel => $@"""{literalModel.Value}""",
                 LiteralModel literalModel => literalModel.Value ?? "",
                 SymbolModel symbolModel => symbolModel.Name ?? "",
+                NotModel notModel => Not(notModel.Expression),
                 NullLiteralModel _ => NullKeyword,
                 ThisLiteralModel _ => ThisKeyword,
                 TrueLiteralModel _ => TrueKeyword,

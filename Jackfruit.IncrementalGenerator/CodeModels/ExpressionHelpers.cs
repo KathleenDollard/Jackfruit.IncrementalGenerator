@@ -67,8 +67,6 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public IEnumerable<string> Values { get; set; }
     }
 
-
-
     public class LiteralModel : ExpressionBase
     {
         public LiteralModel(string value)
@@ -88,6 +86,17 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         }
 
         public string Name { get; set; }
+    }
+
+    public class NotModel : ExpressionBase
+    {
+        public NotModel(ExpressionBase exp)
+        {
+            Expression = exp;
+        } 
+        
+        public ExpressionBase Expression { get; set; }
+
     }
 
     public class NullLiteralModel : ExpressionBase
@@ -123,8 +132,13 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public static ThisLiteralModel This
             => new();
 
+        public static NotModel Not(ExpressionBase exp)
+            => new NotModel(exp);
+
 
     }
+
+ 
 }
 
 

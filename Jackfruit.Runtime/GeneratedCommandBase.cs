@@ -22,6 +22,7 @@ namespace Jackfruit.Internal
 
         public override void Validate(CommandResult commandResult)
         {
+            base.Validate(commandResult);
             Parent.Validate(commandResult);
         }
     }
@@ -35,6 +36,11 @@ namespace Jackfruit.Internal
         public abstract TResult GetResult(CommandResult commandResult);
 
         public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
+
+        public override void Validate(CommandResult commandResult)
+        {
+            base.Validate(commandResult);
+        }
     }
 
     public abstract class GeneratedCommandBase

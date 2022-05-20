@@ -1,0 +1,52 @@
+﻿
+using Jackfruit;
+
+public partial class Cli
+{
+    public static void Create(CliNode cliRoot)
+    { }
+}
+// *******************************
+
+/*
+//Key:         
+//Id:          MyClass.ToValidate(int, int, int)
+//Handler:     MyClass.ToValidate
+//Path:        
+//Parent:      
+//Validator:
+//   Namespace:   <global namespace>
+//   MethodName:  MyClass.Validator1
+//   Members:     j
+//Description: 
+//Aliases:     
+//Namespace:   <global namespace>
+//Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           I
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
+   //Option:
+      //Option Id:      j
+      //Name:           J
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
+   //Option:
+      //Option Id:      k
+      //Name:           K
+      //TypeName:       int
+      //Description:    
+      //Aliases:        
+      //ArgDisplayName: 
+      //Required:       False
+//SubCommands:     
+//**************************************    
+
+*/

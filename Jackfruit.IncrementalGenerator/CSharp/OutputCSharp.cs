@@ -8,42 +8,42 @@ namespace Jackfruit.IncrementalGenerator
         public LanguageCSharp(IWriter writer) : base(writer) { }
 
         public override string XmlDocPrefix => "/// ";
-        public override string PrivateKeyword { get; } = "private";
-        public override string PublicKeyword { get; } = "public";
-        public override string InternalKeyword { get; } = "internal";
-        public override string ProtectedKeyword { get; } = "protected";
-        public override string ProtectedInternalKeyword { get; } = "protected internal";
-        public override string PrivateProtectedKeyword { get; } = "private protected";
+        public override string PrivateKeyword => "private";
+        public override string PublicKeyword => "public";
+        public override string InternalKeyword => "internal";
+        public override string ProtectedKeyword => "protected";
+        public override string ProtectedInternalKeyword => "protected internal";
+        public override string PrivateProtectedKeyword => "private protected";
 
-        public override string StaticKeyword { get; } = "static";
-        public override string OverrideKeyword { get; } = "override";
-        public override string AsyncKeyword { get; } = "async";
-        public override string PartialKeyword { get; } = "partial";
-        public override string AbstractKeyword { get; } = "abstract";
-        public override string ReadonlyKeyword { get; } = "readonly";
-        public override string SealedKeyword { get; } = "sealed";
-        public override string HideByNameKeyword { get; } = "new";
+        public override string StaticKeyword => "static";
+        public override string OverrideKeyword => "override";
+        public override string AsyncKeyword => "async";
+        public override string PartialKeyword => "partial";
+        public override string AbstractKeyword => "abstract";
+        public override string ReadonlyKeyword => "readonly";
+        public override string SealedKeyword => "sealed";
+        public override string HideByNameKeyword => "new";
 
-        public override string UsingKeyword { get; } = "using";
-        public override string NamespaceKeyword { get; } = "namespace";
-        public override string ClassKeyword { get; } = "class";
-        public override string ThrowKeyword { get; } = "throw";
-        public override string GetKeyword { get; } = "get";
-        public override string SetKeyword { get; } = "set";
-        public override string IfKeyword { get; } = "if";
-        public override string ReturnKeyword { get; } = "return";
-        public override string AwaitKeyword { get; } = "await";
-        public override string NewKeyword { get; } = "new";
-        public override string NullKeyword { get; } = "null";
-        public override string ThisKeyword { get; } = "this";
-        public override string TrueKeyword { get; } = "true";
-        public override string FalseKeyword { get; } = "false";
+        public override string UsingKeyword => "using";
+        public override string NamespaceKeyword => "namespace";
+        public override string ClassKeyword => "class";
+        public override string ThrowKeyword => "throw";
+        public override string GetKeyword => "get";
+        public override string SetKeyword => "set";
+        public override string IfKeyword => "if";
+        public override string ReturnKeyword => "return";
+        public override string AwaitKeyword => "await";
+        public override string NewKeyword => "new";
+        public override string NullKeyword => "null";
+        public override string ThisKeyword => "this";
+        public override string TrueKeyword => "true";
+        public override string FalseKeyword => "false";
 
-        public override string EqualsOperator { get; } = "==";
-        public override string NotEqualsOperator { get; } = "!=";
-        public override string BlockOpen { get; } = "{";
-        public override string EndOfStatement { get; } = ";";
-        public override string CommentPrefix { get; } = "//";
+        public override string EqualsOperator => "==";
+        public override string NotEqualsOperator => "!=";
+        public override string BlockOpen => "{";
+        public override string EndOfStatement => ";";
+        public override string CommentPrefix => "//";
 
         public override string NamedItem(NamedItemModel namedItem)
             => namedItem switch
@@ -371,6 +371,9 @@ namespace Jackfruit.IncrementalGenerator
 
         public override string Compare(ExpressionBase left, Operator op, ExpressionBase right)
             => $"{Expression(left)} {Operator(op)} {Expression(right)}";
+
+        public override string Not(ExpressionBase expression)
+            => $"!({Expression(expression)})";
 
     }
 }

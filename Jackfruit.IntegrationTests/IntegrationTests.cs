@@ -9,7 +9,7 @@ namespace Jackfruit.Tests
 
 
         [Fact]
-        public void Invocation_outputs_correctly()
+            public void Invocation_outputs_correctly()
         {
             var franchise = Cli.Franchise;
             Assert.NotNull(franchise);

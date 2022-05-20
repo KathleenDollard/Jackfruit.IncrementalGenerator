@@ -11,6 +11,7 @@ public partial class Cli
 /*
 //Key:         
 //Id:          MyClass.AA(int)
+//Handler:     MyClass.AA
 //Path:        
 //Parent:      
 //Description: Command description in XmlComment

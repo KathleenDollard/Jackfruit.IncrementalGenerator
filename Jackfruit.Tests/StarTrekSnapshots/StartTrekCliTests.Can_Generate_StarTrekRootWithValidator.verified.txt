@@ -113,6 +113,21 @@ namespace DemoHandlers
          return Task.FromResult(context.ExitCode);
       }
       
+      /// <summary>
+      /// The validate method invoked by System.CommandLine.
+      /// </summary>
+      /// <param name="commandResult">The System.CommandLine CommandResult used to retrieve values for validation and it will hold any errors.</param>
+      public override void Validate(CommandResult commandResult)
+      {
+         base.Validate(commandResult);
+         var result = GetResult(commandResult);
+         var err = string.Join(Environment.NewLine, DemoHandlers.Validators.FranchiseValidate(result.Greeting));
+         if (!(string.IsNullOrWhiteSpace(err)))
+         {
+            commandResult.ErrorMessage = err;
+         }
+      }
+      
       public Argument<string> GreetingArgument {get; set;}
       public StarTrek StarTrek {get; set;}
    }

@@ -65,4 +65,12 @@
             : base(id,name, description, typeName)
         { }
     }
+
+    public class UnknownMemberDef : MemberDef
+    {
+        public UnknownMemberDef(
+            string id)
+    : base(id, id, "", "")
+        { }
+    }
 }
