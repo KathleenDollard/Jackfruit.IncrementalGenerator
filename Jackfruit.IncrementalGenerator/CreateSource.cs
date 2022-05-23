@@ -70,7 +70,7 @@ namespace Jackfruit.IncrementalGenerator
             return !roots.Any()
                 ? null
                 : new CodeFileModel(Helpers.Cli)
-                    .Usings(roots.Select(x => new UsingModel(x.Namespace)).ToArray())
+                    .Usings(roots.Select(x => new UsingModel(x.Namespace)).Distinct().ToArray())
                     .Namespace("Jackfruit",
                         Class(Helpers.Cli)
                             .Public()
@@ -91,6 +91,7 @@ namespace Jackfruit.IncrementalGenerator
                             "System.CommandLine",
                             "System.CommandLine.Invocation",
                             "System.CommandLine.Parsing",
+                            "System.Threading.Tasks",
                             "Jackfruit.Internal",
                             libName)
                     .Namespace(commandDef.Namespace,
