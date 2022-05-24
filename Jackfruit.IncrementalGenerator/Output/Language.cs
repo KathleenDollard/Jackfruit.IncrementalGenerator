@@ -344,6 +344,7 @@ namespace Jackfruit.IncrementalGenerator
                 InvocationModel invocationModel => Invoke(invocationModel.Instance, invocationModel.MethodName, invocationModel.Arguments),
                 InstantiationModel instantiationModel => Instantiate(instantiationModel.TypeName, instantiationModel.Arguments),
                 ComparisonModel comparisonModel => Compare(comparisonModel.Left, comparisonModel.Operator, comparisonModel.Right),
+                ListModel listModel => Instantiate("List<ExpressionBase>", listModel.Values ),
                 StringLiteralModel literalModel => $@"""{literalModel.Value}""",
                 LiteralModel literalModel => literalModel.Value ?? "",
                 SymbolModel symbolModel => symbolModel.Name ?? "",

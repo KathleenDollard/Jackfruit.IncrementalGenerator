@@ -281,8 +281,10 @@ namespace Jackfruit.IncrementalGenerator
                         method.Statements.Add(Assign(optPropertyName, New(Generic("Option", opt.TypeName), $"--{opt.Name}")));
                         if (!string.IsNullOrWhiteSpace(opt.Description))
                         { method.Statements.Add(Assign($"{optPropertyName}.Description", opt.Description)); }
-                        if (opt.Aliases.Any())
-                        { method.Statements.Add(Assign($"{optPropertyName}.Aliases", new ListLiteralModel(opt.Aliases))); }
+                        foreach (var alias in opt.Aliases)
+                        {
+                            method.Statements.Add(SimpleCall(Invoke(optPropertyName, "AddAlias", alias)));
+                        }
                         if (!string.IsNullOrWhiteSpace(opt.ArgDisplayName))
                         { method.Statements.Add(Assign($"{optPropertyName}.ArgDisplayName", opt.ArgDisplayName)); }
                         if (opt.Required)
