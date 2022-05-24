@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿
+using System.ComponentModel;
+using System;
 
 namespace DemoHandlers
 {
@@ -7,7 +9,7 @@ namespace DemoHandlers
         private static void Greet(string greeting, string name)
         {
             var defaultGreeting = "Hello";
-            Console.WriteLine($"{greeting ?? defaultGreeting}, {name}");
+            Console.WriteLine($"{ greeting ?? defaultGreeting}, { name}");
             return;
         }
 
