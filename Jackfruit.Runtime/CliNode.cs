@@ -4,6 +4,7 @@
     {
         // I do not see a use case for exposing these
         internal Delegate Action { get; }
+        internal Delegate Validator { get; }
         internal IEnumerable<CliNode> SubCommands { get; }
 
         /// <summary>
@@ -18,6 +19,13 @@
         public CliNode(Delegate action, params CliNode[] subCommands)
         {
             Action = action;
+            SubCommands = subCommands;
+        }
+
+        public CliNode(Delegate action, Delegate validator, params CliNode[] subCommands)
+        {
+            Action = action;
+            Validator = validator;
             SubCommands = subCommands;
         }
     }

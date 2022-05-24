@@ -74,7 +74,7 @@ public class TestHelpers
             "generator",
             syntaxTrees,
             references,
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            new CSharpCompilationOptions(OutputKind.ConsoleApplication));
         var inputDiagnostics = compilation.GetDiagnostics();
         return (compilation, inputDiagnostics);
     }
