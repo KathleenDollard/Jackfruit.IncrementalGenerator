@@ -51,20 +51,20 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
     public class StringLiteralModel : ExpressionBase
     {
-        public StringLiteralModel(string value) 
+        public StringLiteralModel(string value)
         {
             Value = value;
         }
         public string Value { get; set; }
     }
 
-    public class ListLiteralModel : ExpressionBase
+    public class ListModel : ExpressionBase
     {
-        public ListLiteralModel(IEnumerable<string> values)
+        public ListModel(IEnumerable<ExpressionBase> values)
         {
             Values = values;
         }
-        public IEnumerable<string> Values { get; set; }
+        public IEnumerable<ExpressionBase> Values { get; set; }
     }
 
     public class LiteralModel : ExpressionBase
@@ -93,24 +93,16 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public NotModel(ExpressionBase exp)
         {
             Expression = exp;
-        } 
-        
+        }
+
         public ExpressionBase Expression { get; set; }
 
     }
 
-    public class NullLiteralModel : ExpressionBase
-    {
-    }
-    public class ThisLiteralModel : ExpressionBase
-    {
-    }
-    public class TrueLiteralModel : ExpressionBase
-    {
-    }
-    public class FalseLiteralModel : ExpressionBase
-    {
-    }
+    public class NullLiteralModel : ExpressionBase { }
+    public class ThisLiteralModel : ExpressionBase { }
+    public class TrueLiteralModel : ExpressionBase { }
+    public class FalseLiteralModel : ExpressionBase { }
 
     public static class ExpressionHelpers
     {
@@ -138,7 +130,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
     }
 
- 
+
 }
 
 

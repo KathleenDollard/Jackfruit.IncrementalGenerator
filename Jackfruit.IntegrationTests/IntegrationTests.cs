@@ -7,8 +7,20 @@ using System.Diagnostics;
 
 namespace Jackfruit.Tests
 {
-    public class IntegrationTests
+    public class FranchiseFixture
     {
+        internal const string dotnetVersion = "net6.0";
+        internal const string testSetName = "TestOutputExample";
+        internal const string testInputPath = @$"..\..\..\..\{testSetName}";
+        internal static string testGeneratedCodePath = Path.Combine(testInputPath, "GeneratedViaTest");
+        internal static string testBuildPath = Path.Combine(testInputPath, "bin", "Debug", dotnetVersion);
+        internal static string handlerFilePath = Path.Combine(testInputPath, "Handlers.cs");
+        internal static string validatorFilePath = Path.Combine(testInputPath, "Validators.cs");
+        internal static string programFilePath = Path.Combine(testInputPath, "Program.cs");
+
+        private static SyntaxTree HandlerSyntaxTree => CSharpSyntaxTree.ParseText(File.ReadAllText(handlerFilePath));
+        private static SyntaxTree ValidatorSyntaxTree => CSharpSyntaxTree.ParseText(File.ReadAllText(validatorFilePath));
+        private static SyntaxTree ProgramSyntaxTree => CSharpSyntaxTree.ParseText(File.ReadAllText(programFilePath));
 
         private static CSharpCompilation TestCreatingCompilation(params SyntaxTree[] syntaxTrees)
         {
@@ -19,7 +31,6 @@ namespace Jackfruit.Tests
             Assert.Empty(trouble);
             return compilation;
         }
-
 
         private static Compilation TestGeneration<T>(CSharpCompilation compilation, T generator)
             where T : IIncrementalGenerator, new()
@@ -50,18 +61,6 @@ namespace Jackfruit.Tests
             Assert.Equal(3, Directory.GetFiles(testGeneratedCodePath).Count());
         }
 
-        private const string dotnetVersion = "net6.0";
-        private const string testSetName = "TestOutputExample";
-        private const string testInputPath = @$"..\..\..\..\{testSetName}";
-        private static string testGeneratedCodePath = Path.Combine(testInputPath, "GeneratedViaTest");
-        private static string testBuildPath = Path.Combine(testInputPath, "bin", "Debug", dotnetVersion);
-        private static string handlerFilePath = Path.Combine(testInputPath, "Handlers.cs");
-        private static string validatorFilePath = Path.Combine(testInputPath, "Validators.cs");
-        private static string programFilePath = Path.Combine(testInputPath, "Program.cs");
-
-        private static SyntaxTree HandlerSyntaxTree => CSharpSyntaxTree.ParseText(File.ReadAllText(handlerFilePath));
-        private static SyntaxTree ValidatorSyntaxTree => CSharpSyntaxTree.ParseText(File.ReadAllText(validatorFilePath));
-        private static SyntaxTree ProgramSyntaxTree => CSharpSyntaxTree.ParseText(File.ReadAllText(programFilePath));
         private static Process? TestOutputCompiles()
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -88,46 +87,31 @@ namespace Jackfruit.Tests
             return exeProcess;
         }
 
-        [Fact]
-        public void Example_compiles()
+        public FranchiseFixture()
         {
-            var compilation = TestCreatingCompilation(ProgramSyntaxTree, HandlerSyntaxTree, ValidatorSyntaxTree);
-            TestGeneration(compilation, new Generator());
-        }
-
-        [Fact]
-        public void Example_outputs()
-        {
-            var compilation = TestCreatingCompilation(ProgramSyntaxTree, HandlerSyntaxTree, ValidatorSyntaxTree);
-            var outputCompilation = TestGeneration(compilation, new Generator());
-            TestOutput(outputCompilation);
-        }
-
-        [Fact]
-        public void Example_output_builds()
-        {
-            var compilation = TestCreatingCompilation(ProgramSyntaxTree, HandlerSyntaxTree, ValidatorSyntaxTree);
-            var outputCompilation = TestGeneration(compilation, new Generator());
+            var inputCompilation = TestCreatingCompilation(ProgramSyntaxTree, HandlerSyntaxTree, ValidatorSyntaxTree);
+            var outputCompilation = TestGeneration(inputCompilation, new Generator());
             TestOutput(outputCompilation);
             TestOutputCompiles();
         }
 
-        [Fact]
-        public void Example_output_runs()
+    }
+
+    public class IntegrationTests : IClassFixture<FranchiseFixture>
+    {
+ 
+
+        private static string? RunGeneratedProject(string arguments)
         {
-            var compilation = TestCreatingCompilation(ProgramSyntaxTree, HandlerSyntaxTree, ValidatorSyntaxTree);
-            var outputCompilation = TestGeneration(compilation, new Generator());
-            TestOutput(outputCompilation);
-            TestOutputCompiles();
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.UseShellExecute = false;
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
-            startInfo.FileName = $"{Path.Combine(testBuildPath, testSetName)}.exe";
-            startInfo.Arguments = "StarTrek --Uhura";
+            startInfo.FileName = $"{Path.Combine(FranchiseFixture.testBuildPath, FranchiseFixture.testSetName)}.exe";
+            startInfo.Arguments = arguments;
 
-            using Process? exeProcess = Process.Start(startInfo);
+            Process? exeProcess = Process.Start(startInfo);
             Assert.NotNull(exeProcess);
             if (exeProcess is not null)
             {
@@ -137,9 +121,57 @@ namespace Jackfruit.Tests
                 var error = exeProcess.StandardError.ReadToEnd();
 
                 Assert.Equal(0, exeProcess.ExitCode);
-                Assert.Equal("Hello, Nyota Uhura\r\n", output);
                 Assert.Equal("", error);
+                return output;
             }
+            return null;
+        }
+
+
+        //[Fact]
+        //public void Example_compiles()
+        //{
+        //    //var compilation = TestCreatingCompilation(ProgramSyntaxTree, HandlerSyntaxTree, ValidatorSyntaxTree);
+        //    TestGeneration(inputCompilation, new Generator());
+        //}
+
+        //[Fact]
+        //public void Example_outputs()
+        //{
+        //    var compilation = TestCreatingCompilation(ProgramSyntaxTree, HandlerSyntaxTree, ValidatorSyntaxTree);
+        //    var outputCompilation = TestGeneration(compilation, new Generator());
+        //    TestOutput(outputCompilation);
+        //}
+
+        //[Fact]
+        //public void Example_output_builds()
+        //{
+        //    var compilation = TestCreatingCompilation(ProgramSyntaxTree, HandlerSyntaxTree, ValidatorSyntaxTree);
+        //    var outputCompilation = TestGeneration(compilation, new Generator());
+        //    TestOutput(outputCompilation);
+        //    TestOutputCompiles();
+        //}
+
+        [Fact]
+        public void Simple_uhura()
+        {
+            var output = RunGeneratedProject("StarTrek --Uhura");
+            Assert.Equal("Hello, Nyota Uhura\r\n", output);
+        }
+
+
+        [Fact]
+        public void Nested_janeway()
+        {
+            var output = RunGeneratedProject("StarTrek NextGeneration Voyager --Janeway");
+            Assert.Equal("Hello, Kathryn Janeway\r\n", output);
+        }
+
+        [Fact]
+        public void Alias_picard()
+        {
+            var output = RunGeneratedProject("StarTrek NextGeneration -p");
+            Assert.Equal("Hello, Jean-Luc Picard\r\n", output);
         }
     }
 }

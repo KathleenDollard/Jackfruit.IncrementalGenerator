@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "ExampleOutput": {
-      "commandName": "Project",
-      "commandLineArgs": "Hello StarTrek --kirk NextGeneration  --picard"
-    }
-  }
-}

@@ -51,10 +51,10 @@ namespace DemoHandlers
 
         [Description(""This is the description for Next Generation"")]
         public static void NextGeneration(
-            string greetingArg, [Description(""This is the description for Picard"")] bool picard)
+            string greetingArg, [Description(""This is the description for Picard"")][Aliases(""-p"")] bool picard)
         {
 
-            if (picard) { Greet(greetingArg, ""Jean - Luc Picard""); }
+            if (picard) { Greet(greetingArg, ""Jean-Luc Picard""); }
         }
 
         public static void DeepSpaceNine(string greetingArg, bool sisko, bool odo, bool dax, bool worf, bool oBrien)

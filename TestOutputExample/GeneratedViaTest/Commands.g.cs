@@ -192,6 +192,7 @@ namespace DemoHandlers
          var command = new NextGeneration(parent);
          command.PicardOption = new Option<bool>("--Picard");
          command.PicardOption.Description = "This is the description for Picard";
+         command.PicardOption.AddAlias("-p");
          command.Add(command.PicardOption);
          command.DeepSpaceNine = DeepSpaceNine.Create(command);
          command.AddCommandToScl(command.DeepSpaceNine);

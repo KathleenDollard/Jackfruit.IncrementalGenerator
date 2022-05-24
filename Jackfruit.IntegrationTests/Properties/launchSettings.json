@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Jackfruit.IntegrationTests": {
-      "commandName": "Project",
-      "commandLineArgs": "Hiya StarTrek --Uhura"
-    }
-  }
-}
