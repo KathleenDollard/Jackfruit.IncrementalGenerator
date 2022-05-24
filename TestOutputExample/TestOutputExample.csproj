@@ -11,4 +11,8 @@
     <ProjectReference Include="..\Jackfruit.Runtime\Jackfruit.Runtime.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="GeneratedViaTest\" />
+  </ItemGroup>
+
 </Project>
