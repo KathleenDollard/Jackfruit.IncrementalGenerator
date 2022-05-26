@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 using System.Diagnostics;
+using System.Net.NetworkInformation;
 
 namespace Jackfruit.Tests
 {
@@ -101,6 +102,10 @@ namespace Jackfruit.Tests
     public class IntegrationTests : IClassFixture<FranchiseFixture>
     {
 
+        private static string IfOsIsWindows(string windowsString, string unixString)
+            => Environment.OSVersion.Platform == PlatformID.Unix
+                ? unixString
+                : windowsString;
 
         private static string? RunGeneratedProject(string arguments)
         {
@@ -110,10 +115,8 @@ namespace Jackfruit.Tests
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
             var fieName = Path.Combine(FranchiseFixture.testBuildPath, FranchiseFixture.testSetName);
-            var extension = Environment.OSVersion.Platform == PlatformID.Unix
-                                ? ""
-                                : ".exe";
-            startInfo.FileName = $"{fieName}{extension}";
+
+            startInfo.FileName = $"{fieName}{IfOsIsWindows(".exe", "")}";
             startInfo.Arguments = arguments;
 
             Process? exeProcess = Process.Start(startInfo);
@@ -161,7 +164,7 @@ namespace Jackfruit.Tests
         public void Simple_uhura()
         {
             var output = RunGeneratedProject("StarTrek --Uhura");
-            Assert.Equal("Hello, Nyota Uhura\r\n", output);
+            Assert.Equal($"Hello, Nyota Uhura{Environment.NewLine}", output);
         }
 
 
@@ -169,14 +172,14 @@ namespace Jackfruit.Tests
         public void Nested_janeway()
         {
             var output = RunGeneratedProject("StarTrek NextGeneration Voyager --Janeway");
-            Assert.Equal("Hello, Kathryn Janeway\r\n", output);
+            Assert.Equal($"Hello, Kathryn Janeway{Environment.NewLine}", output);
         }
 
         [Fact]
         public void Alias_picard()
         {
             var output = RunGeneratedProject("StarTrek NextGeneration -p");
-            Assert.Equal("Hello, Jean-Luc Picard\r\n", output);
+            Assert.Equal($"Hello, Jean-Luc Picard{Environment.NewLine}", output);
         }
     }
 }
