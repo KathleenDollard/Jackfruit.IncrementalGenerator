@@ -3,9 +3,6 @@ name: Build and test
 on:
   pull_request:
     branches: [ main ]
-defaults:
-  run:
-    shell: bash
 jobs:
   build:
     strategy:
@@ -24,30 +21,13 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 6.0.300
-      - name: setup local package feed
-        run: mkdir LocalPackageSource
 
-      # we use the bash shell for the following to so that path globbing works on windows
-      - name: build and pack the Runtime
-        shell: bash
-        run: | 
-          dotnet build Jackfruit.Runtime
-          dotnet pack Jackfruit.Runtime
-          dotnet nuget push Jackfruit.Runtime/bin/Debug/*.nupkg --source JackFruit
-      
-      - name: build and pack the Source Generator
-        shell: bash
-        run: |
-          dotnet build Jackfruit.IncrementalGenerator
-          dotnet pack Jackfruit.IncrementalGenerator
-          dotnet nuget push Jackfruit.IncrementalGenerator/bin/Debug/*.nupkg --source JackFruit
+      - name: build the Source Generator
+        run: dotnet build Jackfruit.IncrementalGenerator
 
-      - name: upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: Packages (${{ matrix.os }})
+      - name: unit tests
+        run: dotnet test Jackfruit.Tests
 
-          path: |
-            Jackfruit.IncrementalGenerator/bin/Debug/*.nupkg
-            Jackfruit.Runtime/bin/Debug/*.nupkg
+      - name: integration tests
+        run: dotnet test Jackfruit.IntegrationTests
 
