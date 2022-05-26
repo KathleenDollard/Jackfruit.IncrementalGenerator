@@ -12,7 +12,7 @@ namespace Jackfruit.Tests
         internal const string dotnetVersion = "net6.0";
         internal const string testSetName = "TestOutputExample";
         internal static string currentPath = Environment.CurrentDirectory;
-        internal static string testInputPath = Path.Combine(currentPath, @$"..\..\..\..\{testSetName}");
+        internal static string testInputPath = Path.Combine(currentPath, @$"../../../../{testSetName}");
         internal static string testGeneratedCodePath = Path.Combine(testInputPath, "GeneratedViaTest");
         internal static string testBuildPath = Path.Combine(testInputPath, "bin", "Debug", dotnetVersion);
         internal static string handlerFilePath = Path.Combine(testInputPath, "Handlers.cs");
