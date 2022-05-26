@@ -11,7 +11,7 @@ namespace Jackfruit.Tests
     {
         internal const string dotnetVersion = "net6.0";
         internal const string testSetName = "TestOutputExample";
-        internal const string testInputPath = @$"..\..\..\..\{testSetName}";
+        internal static string testInputPath = Path.GetFullPath(@$"..\..\..\..\{testSetName}");
         internal static string testGeneratedCodePath = Path.Combine(testInputPath, "GeneratedViaTest");
         internal static string testBuildPath = Path.Combine(testInputPath, "bin", "Debug", dotnetVersion);
         internal static string handlerFilePath = Path.Combine(testInputPath, "Handlers.cs");
@@ -99,7 +99,7 @@ namespace Jackfruit.Tests
 
     public class IntegrationTests : IClassFixture<FranchiseFixture>
     {
- 
+
 
         private static string? RunGeneratedProject(string arguments)
         {
