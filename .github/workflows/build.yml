@@ -3,7 +3,9 @@ name: Build and test
 on:
   pull_request:
     branches: [ main ]
-
+defaults:
+  run:
+    shell: bash
 jobs:
   build:
     strategy:
