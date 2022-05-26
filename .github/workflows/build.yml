@@ -1,0 +1,34 @@
+name: Build and test
+
+on:
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      # PR builds don't checkout the commit by default, so we're going to correct that
+      - name: checkout commit
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      
+      - name: setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.300
+
+      - name: build the Source Generator
+        run: dotnet build Jackfruit.IncrementalGenerator
+
+      - name: unit tests
+        run: dotnet test Jackfruit.Tests
+
+      - name: integration tests
+        run: dotnet test Jackfruit.IntegrationTests
+

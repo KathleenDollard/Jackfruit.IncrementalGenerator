@@ -20,6 +20,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jackfruit.IntegrationTests", "Jackfruit.IntegrationTests\Jackfruit.IntegrationTests.csproj", "{1FED63CC-3664-4488-8645-DF02A5E75860}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{84C752FF-9504-4568-82F5-EED04AAE67F5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{A3F296B1-F789-4E5A-AF56-CF6A63E55304}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+	EndProjectSection
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestOutputExample", "TestOutputExample\TestOutputExample.csproj", "{104E63F6-E426-4310-B490-79601B118CC3}"
 EndProject
 Global
@@ -51,6 +58,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{84C752FF-9504-4568-82F5-EED04AAE67F5} = {F9C97B07-DEBD-4B37-836F-E4629157B17D}
+		{A3F296B1-F789-4E5A-AF56-CF6A63E55304} = {84C752FF-9504-4568-82F5-EED04AAE67F5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {62F79128-8645-4BF7-B346-AD9C81B06D71}
