@@ -109,7 +109,11 @@ namespace Jackfruit.Tests
             startInfo.UseShellExecute = false;
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
-            startInfo.FileName = $"{Path.Combine(FranchiseFixture.testBuildPath, FranchiseFixture.testSetName)}.exe";
+            var fieName = Path.Combine(FranchiseFixture.testBuildPath, FranchiseFixture.testSetName);
+            var extension = Environment.OSVersion.Platform == PlatformID.Unix
+                                ? ""
+                                : ".exe";
+            startInfo.FileName = $"{fieName}{extension}";
             startInfo.Arguments = arguments;
 
             Process? exeProcess = Process.Start(startInfo);
