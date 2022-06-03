@@ -8,9 +8,9 @@ namespace Jackfruit.IncrementalGenerator
 {
     public static class CliExtractAndBuild
     {
-        public static CommandDef? GetCommandDef(GeneratorSyntaxContext context)
+        public static CommandDef? GetCommandDef(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         {
-            if (context.SemanticModel.GetOperation(context.Node) is not IInvocationOperation cliCreateInvocation)
+            if (context.SemanticModel.GetOperation(context.Node, cancellationToken) is not IInvocationOperation cliCreateInvocation)
             {
                 // Should not occur
                 return null;

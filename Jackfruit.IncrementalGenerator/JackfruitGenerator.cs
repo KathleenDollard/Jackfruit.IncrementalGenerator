@@ -22,6 +22,12 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Jackfruit.IncrementalGenerator
 {
+    // Perf
+    // Does the predicate need a cancellation token?
+    // Assume commandDef does because of GetOperation
+    // Does using class (over struct) undermine caching?
+    // How much work before considering cancellation in my code?
+
      [Generator]
     public class Generator : IIncrementalGenerator
     {
@@ -57,7 +63,7 @@ namespace Jackfruit
             var cliCommandDefs = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => IsCliCreateInvocation(s),
-                    transform: static (ctx, _) => CliExtractAndBuild.GetCommandDef(ctx))
+                    transform: static (ctx, cancellationToken) => CliExtractAndBuild.GetCommandDef(ctx, cancellationToken))
                 .Where(static m => m is not null)!;
 
             // Generate classes for each command. This code creates the System.CommandLine tree and includes the handler
