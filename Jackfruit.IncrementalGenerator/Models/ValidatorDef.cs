@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Jackfruit.Models
 {
-    public class ValidatorDef
+    public record ValidatorDef
     {
         // Find use of AddValidator method
         // Find type of instance it is called on
@@ -27,5 +27,14 @@ namespace Jackfruit.Models
         public string Namespace { get; }
         public IEnumerable<MemberDef> Members { get; set; }
 
+        // @samharwell This does not seem the right way to handle these
+        public virtual bool Equals(ValidatorDef other)
+            =>
+                MethodName == other.MethodName &&
+                Namespace == other.Namespace && 
+                Members.SequenceEqual(other.Members);
+
+        public override int GetHashCode()
+            => (MethodName, Namespace, String.Join(",", Members)).GetHashCode();
     }
 }
