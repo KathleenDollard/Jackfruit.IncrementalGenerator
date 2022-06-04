@@ -102,16 +102,16 @@ namespace Jackfruit.IncrementalGenerator
 
         public const string CommandKey = "__commandKey__";
 
-        public static IMethodSymbol? MethodOrCandidateSymbol(SemanticModel semanticModel, SyntaxNode? expression)
-        {
-            if (expression == null) { return null; }
-            var symbolInfo = semanticModel.GetSymbolInfo(expression);
-            return symbolInfo.Symbol is IMethodSymbol methodSymbol
-                ? methodSymbol
-                : symbolInfo.CandidateSymbols.FirstOrDefault() is IMethodSymbol candidate
-                    ? candidate
-                    : null;
-        }
+        //public static IMethodSymbol? MethodOrCandidateSymbol(SemanticModel semanticModel, SyntaxNode? expression)
+        //{
+        //    if (expression == null) { return null; }
+        //    var symbolInfo = semanticModel.GetSymbolInfo(expression);
+        //    return symbolInfo.Symbol is IMethodSymbol methodSymbol
+        //        ? methodSymbol
+        //        : symbolInfo.CandidateSymbols.FirstOrDefault() is IMethodSymbol candidate
+        //            ? candidate
+        //            : null;
+        //}
 
         public static CommandDetails BasicDetails(this IMethodSymbol methodSymbol)
         {

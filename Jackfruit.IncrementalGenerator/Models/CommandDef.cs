@@ -1,15 +1,16 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Linq;
 
 namespace Jackfruit.Models
 {
-    public abstract class CommandDefBase
+    public abstract record CommandDefBase
     { }
 
-    public  class EmptyCommandDef:CommandDefBase
+    public record EmptyCommandDef : CommandDefBase
     { }
 
 
-    public class CommandDef : CommandDefBase
+    public record CommandDef : CommandDefBase
     {
         public CommandDef(
             string id,
@@ -72,6 +73,39 @@ namespace Jackfruit.Models
         public IEnumerable<string> Path { get; }
         public string ReturnType { get; }
         public Dictionary<string, object> GenerationStyleTags { get; } = new Dictionary<string, object>();
+
+        public virtual bool Equals(CommandDef other)
+            => base.Equals(other) &&
+                Id == other.Id &&
+                Name == other.Name &&
+                UniqueId == other.UniqueId &&
+                Namespace == other.Namespace &&
+                Parent == other.Parent &&
+                Validator == other.Validator &&
+                Description == other.Description &&
+                HandlerMethodName == other.HandlerMethodName &&
+                ReturnType == other.ReturnType &&
+                Aliases.SequenceEqual(other.Aliases) &&
+                Members.SequenceEqual(other.Members) &&
+                SubCommands.SequenceEqual(other.SubCommands) &&
+                GenerationStyleTags.SequenceEqual(other.GenerationStyleTags) &&
+                Path.SequenceEqual(other.Path);
+
+        public override int GetHashCode()
+            => (Id,
+                Name,
+                UniqueId,
+                Namespace,
+                Parent,
+                Validator,
+                Description,
+                HandlerMethodName,
+                ReturnType,
+                string.Join(",", Aliases),
+                string.Join(",", Members),
+                string.Join(",", SubCommands),
+                string.Join(",", GenerationStyleTags),
+                string.Join(",", Path)).GetHashCode();
 
     }
 }
