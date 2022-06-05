@@ -4,6 +4,8 @@ using static Jackfruit.IncrementalGenerator.CodeModels.StatementHelpers;
 using static Jackfruit.IncrementalGenerator.CodeModels.ExpressionHelpers;
 using static Jackfruit.IncrementalGenerator.CodeModels.StructureHelpers;
 using System.Net;
+using System.CommandLine.Invocation;
+using System.Reflection;
 
 namespace Jackfruit.IncrementalGenerator
 {
@@ -19,6 +21,8 @@ namespace Jackfruit.IncrementalGenerator
         private const string getResultName = "GetResult";
         private const string commandResult = "CommandResult";
         private const string commandResultVar = "commandResult";
+        private const string bindingContext = "bindingContext";
+        private const string invocationContext = "invocationContext"; 
 
         private static string CommandClassName(CommandDef commandDef) => commandDef.Name;
         private static string CommandPropertyName(CommandDef commandDef) => commandDef.Name;
@@ -83,7 +87,7 @@ namespace Jackfruit.IncrementalGenerator
                             .Members(roots.Select(x => Property(x.Name, x.Name).Public().Static())));
         }
 
-        public static CodeFileModel? GetCommandCodeFile(CommandDefBase rootCommandDef) 
+        public static CodeFileModel? GetCommandCodeFile(CommandDefBase rootCommandDef)
             => rootCommandDef is not CommandDef commandDef
                 ? null
                 : CodeFile("Commands")
@@ -91,6 +95,7 @@ namespace Jackfruit.IncrementalGenerator
                             "System.CommandLine",
                             "System.CommandLine.Invocation",
                             "System.CommandLine.Parsing",
+                            "System.CommandLine.Binding",
                             "System.Threading.Tasks",
                             "Jackfruit.Internal",
                             libName)
@@ -146,7 +151,7 @@ namespace Jackfruit.IncrementalGenerator
                                                     IEnumerable<MemberDef> myMembers,
                                                     CommandDef commandDef)
         {
-           List<IMember> members = new()
+            List<IMember> members = new()
             {
                 ancestors.Any()
                     ? Constructor(CommandClassName(commandDef))
@@ -188,10 +193,9 @@ namespace Jackfruit.IncrementalGenerator
                     .XmlDescription("The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.")
                     .Public()
                     .Parameters(
-                        Parameter("context", "InvocationContext")
+                        Parameter(invocationContext, "InvocationContext")
                             .XmlDescription("The System.CommandLine Invocation context used to retrieve values."))
-                    .Statements(
-                        AssignWithDeclare(result, Invoke("", getResultName, Symbol("context"))));
+                    .Statements(GetResultFromInvocationContext());
 
             if (commandDef.ReturnType == "int")
             {
@@ -201,9 +205,14 @@ namespace Jackfruit.IncrementalGenerator
             else
             {
                 method.Statements.Add(SimpleCall(Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
-                method.Statements.Add(Return(Invoke("Task", "FromResult", Symbol("context.ExitCode"))));
+                method.Statements.Add(Return(Invoke("Task", "FromResult", Symbol($"{invocationContext}.ExitCode"))));
             }
             return method;
+        }
+
+        private static AssignWithDeclareModel GetResultFromInvocationContext()
+        {
+            return AssignWithDeclare(result, Invoke("", getResultName, Symbol($"{invocationContext}.ParseResult.CommandResult"), Symbol($"{invocationContext}.BindingContext")));
         }
 
         private static MethodModel InvokeHandlerMethod(CommandDef commandDef)
@@ -216,10 +225,9 @@ namespace Jackfruit.IncrementalGenerator
                     .XmlDescription("The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.")
                     .Public()
                     .Parameters(
-                        Parameter("context", "InvocationContext")
+                        Parameter(invocationContext, "InvocationContext")
                             .XmlDescription("The System.CommandLine Invocation context used to retrieve values."))
-                    .Statements(
-                        AssignWithDeclare(result, Invoke("", getResultName, Symbol("context"))));
+                    .Statements(GetResultFromInvocationContext());
             if (commandDef.ReturnType == "int")
             {
                 method.Statements.Add(Return(Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
@@ -227,7 +235,7 @@ namespace Jackfruit.IncrementalGenerator
             else
             {
                 method.Statements.Add(SimpleCall(Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
-                method.Statements.Add(Return(Symbol("context.ExitCode")));
+                method.Statements.Add(Return(Symbol($"{invocationContext}.ExitCode")));
             }
             return method;
         }
@@ -246,11 +254,11 @@ namespace Jackfruit.IncrementalGenerator
                     .Statements(
                         // TODO: Fix invoke to take base in langugae neutral way
                         SimpleCall(Invoke("base", "Validate", Symbol(commandResultVar))),
-                        AssignWithDeclare(result, Invoke("", getResultName, Symbol(commandResultVar))),
+                        AssignWithDeclare(result, Invoke("", getResultName, Symbol(commandResultVar), Null)),
                         AssignWithDeclare("err", Invoke("string", "Join",
                                     Symbol("Environment.NewLine"),
                                     Invoke("", validatorDef.MethodName, arguments))),
-                        If(Not(Invoke("string","IsNullOrWhiteSpace", Symbol("err"))),
+                        If(Not(Invoke("string", "IsNullOrWhiteSpace", Symbol("err"))),
                                 Assign($"{commandResultVar}.ErrorMessage", Symbol("err"))));
 
         }
@@ -331,7 +339,8 @@ namespace Jackfruit.IncrementalGenerator
                             .Internal()
                             .Parameters(
                                     Parameter(command, CommandClassName(commandDef)),
-                                    Parameter(name: "result", commandResult))
+                                    Parameter(name: result, commandResult),
+                                    Parameter(bindingContext, "BindingContext"))
                             .Statements(ResultConstructorStatements(ancestorMembers, myMembers, commandDef)));
             resultClass.Members.AddRange(ancestorMembers
                     .Select(x => Property(x.Name, x.TypeName).Public()));
@@ -347,7 +356,7 @@ namespace Jackfruit.IncrementalGenerator
                 List<IStatement> statements = new();
                 if (ancestorOptionsAndArguments.Any())
                 {
-                    statements.Add(AssignWithDeclare(parentResult, Invoke($"{command}.Parent", "GetResult", Symbol(result))));
+                    statements.Add(AssignWithDeclare(parentResult, Invoke($"{command}.Parent", "GetResult", Symbol(result), Symbol(bindingContext))));
                 }
                 foreach (var member in ancestorOptionsAndArguments)
                 {
@@ -355,10 +364,20 @@ namespace Jackfruit.IncrementalGenerator
                 }
                 foreach (var member in myMembers)
                 {
-                    var methodName = member is OptionDef
-                            ? "GetValueForOption"
-                            : "GetValueForArgument";
-                    statements.Add(Assign(member.Name, Invoke(result, methodName, Symbol($"command.{MemberPropertyName(member)}"))));
+                    if (member is ServiceDef service)
+                    {
+                        if (service.TypeName is not null)
+                        {
+                            statements.Add(Assign(member.Name, Invoke("bindingContext", "GetService", TypeOf(service.TypeName))));
+                        }
+                    }
+                    else
+                    {
+                        var methodName = member is OptionDef
+                                ? "GetValueForOption"
+                                : "GetValueForArgument";
+                        statements.Add(Assign(member.Name, Invoke(result, methodName, Symbol($"command.{MemberPropertyName(member)}"))));
+                    }
                 }
                 return statements.ToArray();
             }
@@ -371,10 +390,12 @@ namespace Jackfruit.IncrementalGenerator
                 .Public()
                 .Override()
                 .Parameters(
-                    Parameter("commadResult", commandResult)
-                        .XmlDescription("The System.CommandLine CommandResult used to retrieve values for the Result object"))
+                    Parameter(name: result, commandResult)
+                        .XmlDescription("The System.CommandLine CommandResult used to retrieve values. This is available on the ParseResult of the InvocationContext."),
+                    Parameter(bindingContext, "BindingContext")
+                        .XmlDescription("The System.CommandLine BindingContext used to retrieve services. This is available on the ParseResult of the InvocationContext."))
                 .Statements(
-                    Return(New("Result", This, Symbol("commadResult"))));
+                    Return(New("Result", This, Symbol(result), Symbol(bindingContext))));
 
     }
 }

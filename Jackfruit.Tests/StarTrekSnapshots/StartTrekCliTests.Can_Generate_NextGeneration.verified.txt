@@ -76,8 +76,10 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(NextGeneration command, CommandResult result)
+         internal Result(NextGeneration command, invocationContext invocationContext)
          {
+            var result = invocationContext.ParseResult.CommandResult;
+            var bindingContext = invocationContext.BindingContext;
             Greeting = result.GetValueForArgument(command.GreetingArgument);
             Picard = result.GetValueForOption(command.PicardOption);
          }
@@ -89,10 +91,10 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the NextGeneration command.
       /// </summary>
-      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(CommandResult commadResult)
+      /// <param name="invocationContext">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
+      public override Result GetResult(invocationContext invocationContext)
       {
-         return new Result(this, commadResult);
+         return new Result(this, invocationContext);
       }
       
       /// <summary>

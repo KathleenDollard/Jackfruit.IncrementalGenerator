@@ -5,6 +5,7 @@ internal class Program
 {
     private static void Main(string[] args)
     {
+        // TODO: Add conditional to generated output
         Cli.Create(new CliNode(Handlers.Franchise, Validators.FranchiseValidate,
             new CliNode(Handlers.StarTrek,
                 new CliNode(Handlers.NextGeneration,

@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.CommandLine.Binding;
 using System.CommandLine.Completions;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
@@ -33,9 +34,9 @@ namespace Jackfruit.Internal
         protected GeneratedCommandBase(string name, string? description = null)
             : base(name, description) { }
 
-        public abstract TResult GetResult(CommandResult commandResult);
+        public abstract TResult GetResult(CommandResult commandResult,BindingContext? bindingContext);
 
-        public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
+        //public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
 
         public override void Validate(CommandResult commandResult)
         {
@@ -172,7 +173,22 @@ namespace Jackfruit.Internal
             set => SystemCommandLineCommand.Handler = value;
         }
 
-
+        protected static T? GetValueForHandlerParameter<T>(
+            IValueDescriptor<T> symbol,
+            BindingContext bindingContext,
+            )
+        {
+            if (symbol is IValueSource valueSource &&
+                valueSource.TryGetValue(symbol, context.BindingContext, out var boundValue) &&
+                boundValue is T value)
+            {
+                return value;
+            }
+            else
+            {
+                return context.ParseResult.GetValueFor(symbol);
+            }
+        }
 
     }
 

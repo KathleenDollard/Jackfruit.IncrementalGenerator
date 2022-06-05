@@ -368,6 +368,8 @@ namespace Jackfruit.IncrementalGenerator
         public override string Instantiate(NamedItemModel typeName, IEnumerable<ExpressionBase> arguments)
             => $"new {NamedItem(typeName)}({string.Join(", ", arguments.Select(x => Expression(x)))})";
 
+        public override string TypeOf(NamedItemModel typeName)
+            => $"typeof({NamedItem(typeName)})";
 
         public override string Compare(ExpressionBase left, Operator op, ExpressionBase right)
             => $"{Expression(left)} {Operator(op)} {Expression(right)}";

@@ -3,6 +3,7 @@ using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using System.CommandLine.Binding;
 using System.Threading.Tasks;
 using Jackfruit.Internal;
 using Jackfruit;
@@ -35,7 +36,7 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(Franchise command, CommandResult result)
+         internal Result(Franchise command, CommandResult result, BindingContext bindingContext)
          {
             Greeting = result.GetValueForArgument(command.GreetingArgument);
          }
@@ -46,32 +47,33 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the Franchise command.
       /// </summary>
-      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(CommandResult commadResult)
+      /// <param name="result">The System.CommandLine CommandResult used to retrieve values. This is available on the ParseResult of the InvocationContext.</param>
+      /// <param name="bindingContext">The System.CommandLine BindingContext used to retrieve services. This is available on the ParseResult of the InvocationContext.</param>
+      public override Result GetResult(CommandResult result, BindingContext bindingContext)
       {
-         return new Result(this, commadResult);
+         return new Result(this, result, bindingContext);
       }
       
       /// <summary>
       /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
       /// </summary>
-      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
-      public int Invoke(InvocationContext context)
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public int Invoke(InvocationContext invocationContext)
       {
-         var result = GetResult(context);
+         var result = GetResult(invocationContext.ParseResult.CommandResult, invocationContext.BindingContext);
          DemoHandlers.Handlers.Franchise(result.Greeting);
-         return context.ExitCode;
+         return invocationContext.ExitCode;
       }
       
       /// <summary>
       /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
       /// </summary>
-      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
-      public Task<int> InvokeAsync(InvocationContext context)
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public Task<int> InvokeAsync(InvocationContext invocationContext)
       {
-         var result = GetResult(context);
+         var result = GetResult(invocationContext.ParseResult.CommandResult, invocationContext.BindingContext);
          DemoHandlers.Handlers.Franchise(result.Greeting);
-         return Task.FromResult(context.ExitCode);
+         return Task.FromResult(invocationContext.ExitCode);
       }
       
       /// <summary>
@@ -81,7 +83,7 @@ namespace DemoHandlers
       public override void Validate(CommandResult commandResult)
       {
          base.Validate(commandResult);
-         var result = GetResult(commandResult);
+         var result = GetResult(commandResult, null);
          var err = string.Join(Environment.NewLine, DemoHandlers.Validators.FranchiseValidate(result.Greeting));
          if (!(string.IsNullOrWhiteSpace(err)))
          {
@@ -126,9 +128,9 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(StarTrek command, CommandResult result)
+         internal Result(StarTrek command, CommandResult result, BindingContext bindingContext)
          {
-            var parentResult = command.Parent.GetResult(result);
+            var parentResult = command.Parent.GetResult(result, bindingContext);
             Greeting = parentResult.Greeting;
             Kirk = result.GetValueForOption(command.KirkOption);
             Spock = result.GetValueForOption(command.SpockOption);
@@ -144,32 +146,33 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the StarTrek command.
       /// </summary>
-      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(CommandResult commadResult)
+      /// <param name="result">The System.CommandLine CommandResult used to retrieve values. This is available on the ParseResult of the InvocationContext.</param>
+      /// <param name="bindingContext">The System.CommandLine BindingContext used to retrieve services. This is available on the ParseResult of the InvocationContext.</param>
+      public override Result GetResult(CommandResult result, BindingContext bindingContext)
       {
-         return new Result(this, commadResult);
+         return new Result(this, result, bindingContext);
       }
       
       /// <summary>
       /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
       /// </summary>
-      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
-      public int Invoke(InvocationContext context)
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public int Invoke(InvocationContext invocationContext)
       {
-         var result = GetResult(context);
+         var result = GetResult(invocationContext.ParseResult.CommandResult, invocationContext.BindingContext);
          DemoHandlers.Handlers.StarTrek(result.Greeting, result.Kirk, result.Spock, result.Uhura);
-         return context.ExitCode;
+         return invocationContext.ExitCode;
       }
       
       /// <summary>
       /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
       /// </summary>
-      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
-      public Task<int> InvokeAsync(InvocationContext context)
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public Task<int> InvokeAsync(InvocationContext invocationContext)
       {
-         var result = GetResult(context);
+         var result = GetResult(invocationContext.ParseResult.CommandResult, invocationContext.BindingContext);
          DemoHandlers.Handlers.StarTrek(result.Greeting, result.Kirk, result.Spock, result.Uhura);
-         return Task.FromResult(context.ExitCode);
+         return Task.FromResult(invocationContext.ExitCode);
       }
       
       public Option<bool> KirkOption {get; set;}
@@ -208,9 +211,9 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(NextGeneration command, CommandResult result)
+         internal Result(NextGeneration command, CommandResult result, BindingContext bindingContext)
          {
-            var parentResult = command.Parent.GetResult(result);
+            var parentResult = command.Parent.GetResult(result, bindingContext);
             Greeting = parentResult.Greeting;
             Kirk = parentResult.Kirk;
             Spock = parentResult.Spock;
@@ -228,32 +231,33 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the NextGeneration command.
       /// </summary>
-      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(CommandResult commadResult)
+      /// <param name="result">The System.CommandLine CommandResult used to retrieve values. This is available on the ParseResult of the InvocationContext.</param>
+      /// <param name="bindingContext">The System.CommandLine BindingContext used to retrieve services. This is available on the ParseResult of the InvocationContext.</param>
+      public override Result GetResult(CommandResult result, BindingContext bindingContext)
       {
-         return new Result(this, commadResult);
+         return new Result(this, result, bindingContext);
       }
       
       /// <summary>
       /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
       /// </summary>
-      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
-      public int Invoke(InvocationContext context)
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public int Invoke(InvocationContext invocationContext)
       {
-         var result = GetResult(context);
+         var result = GetResult(invocationContext.ParseResult.CommandResult, invocationContext.BindingContext);
          DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
-         return context.ExitCode;
+         return invocationContext.ExitCode;
       }
       
       /// <summary>
       /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
       /// </summary>
-      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
-      public Task<int> InvokeAsync(InvocationContext context)
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public Task<int> InvokeAsync(InvocationContext invocationContext)
       {
-         var result = GetResult(context);
+         var result = GetResult(invocationContext.ParseResult.CommandResult, invocationContext.BindingContext);
          DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
-         return Task.FromResult(context.ExitCode);
+         return Task.FromResult(invocationContext.ExitCode);
       }
       
       public Option<bool> PicardOption {get; set;}
@@ -293,9 +297,9 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(DeepSpaceNine command, CommandResult result)
+         internal Result(DeepSpaceNine command, CommandResult result, BindingContext bindingContext)
          {
-            var parentResult = command.Parent.GetResult(result);
+            var parentResult = command.Parent.GetResult(result, bindingContext);
             Greeting = parentResult.Greeting;
             Kirk = parentResult.Kirk;
             Spock = parentResult.Spock;
@@ -323,32 +327,33 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the DeepSpaceNine command.
       /// </summary>
-      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(CommandResult commadResult)
+      /// <param name="result">The System.CommandLine CommandResult used to retrieve values. This is available on the ParseResult of the InvocationContext.</param>
+      /// <param name="bindingContext">The System.CommandLine BindingContext used to retrieve services. This is available on the ParseResult of the InvocationContext.</param>
+      public override Result GetResult(CommandResult result, BindingContext bindingContext)
       {
-         return new Result(this, commadResult);
+         return new Result(this, result, bindingContext);
       }
       
       /// <summary>
       /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
       /// </summary>
-      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
-      public int Invoke(InvocationContext context)
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public int Invoke(InvocationContext invocationContext)
       {
-         var result = GetResult(context);
+         var result = GetResult(invocationContext.ParseResult.CommandResult, invocationContext.BindingContext);
          DemoHandlers.Handlers.DeepSpaceNine(result.Greeting, result.Sisko, result.Odo, result.Dax, result.Worf, result.OBrien);
-         return context.ExitCode;
+         return invocationContext.ExitCode;
       }
       
       /// <summary>
       /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
       /// </summary>
-      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
-      public Task<int> InvokeAsync(InvocationContext context)
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public Task<int> InvokeAsync(InvocationContext invocationContext)
       {
-         var result = GetResult(context);
+         var result = GetResult(invocationContext.ParseResult.CommandResult, invocationContext.BindingContext);
          DemoHandlers.Handlers.DeepSpaceNine(result.Greeting, result.Sisko, result.Odo, result.Dax, result.Worf, result.OBrien);
-         return Task.FromResult(context.ExitCode);
+         return Task.FromResult(invocationContext.ExitCode);
       }
       
       public Option<bool> SiskoOption {get; set;}
@@ -390,14 +395,15 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(Voyager command, CommandResult result)
+         internal Result(Voyager command, CommandResult result, BindingContext bindingContext)
          {
-            var parentResult = command.Parent.GetResult(result);
+            var parentResult = command.Parent.GetResult(result, bindingContext);
             Greeting = parentResult.Greeting;
             Kirk = parentResult.Kirk;
             Spock = parentResult.Spock;
             Uhura = parentResult.Uhura;
             Picard = parentResult.Picard;
+            Console = bindingContext.GetService(typeof(System.CommandLine.IConsole));
             Janeway = result.GetValueForOption(command.JanewayOption);
             Chakotay = result.GetValueForOption(command.ChakotayOption);
             Torres = result.GetValueForOption(command.TorresOption);
@@ -410,6 +416,7 @@ namespace DemoHandlers
          public bool Spock {get; set;}
          public bool Uhura {get; set;}
          public bool Picard {get; set;}
+         public System.CommandLine.IConsole Console {get; set;}
          public bool Janeway {get; set;}
          public bool Chakotay {get; set;}
          public bool Torres {get; set;}
@@ -420,32 +427,33 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the Voyager command.
       /// </summary>
-      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(CommandResult commadResult)
+      /// <param name="result">The System.CommandLine CommandResult used to retrieve values. This is available on the ParseResult of the InvocationContext.</param>
+      /// <param name="bindingContext">The System.CommandLine BindingContext used to retrieve services. This is available on the ParseResult of the InvocationContext.</param>
+      public override Result GetResult(CommandResult result, BindingContext bindingContext)
       {
-         return new Result(this, commadResult);
+         return new Result(this, result, bindingContext);
       }
       
       /// <summary>
       /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
       /// </summary>
-      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
-      public int Invoke(InvocationContext context)
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public int Invoke(InvocationContext invocationContext)
       {
-         var result = GetResult(context);
-         DemoHandlers.Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
-         return context.ExitCode;
+         var result = GetResult(invocationContext.ParseResult.CommandResult, invocationContext.BindingContext);
+         DemoHandlers.Handlers.Voyager(result.Console, result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         return invocationContext.ExitCode;
       }
       
       /// <summary>
       /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
       /// </summary>
-      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
-      public Task<int> InvokeAsync(InvocationContext context)
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public Task<int> InvokeAsync(InvocationContext invocationContext)
       {
-         var result = GetResult(context);
-         DemoHandlers.Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
-         return Task.FromResult(context.ExitCode);
+         var result = GetResult(invocationContext.ParseResult.CommandResult, invocationContext.BindingContext);
+         DemoHandlers.Handlers.Voyager(result.Console, result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         return Task.FromResult(invocationContext.ExitCode);
       }
       
       public Option<bool> JanewayOption {get; set;}

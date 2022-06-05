@@ -34,6 +34,17 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
     }
 
+    public class TypeOfModel : ExpressionBase
+    {
+        public TypeOfModel(NamedItemModel typeName)
+        {
+            TypeName = typeName;
+        }
+
+        public NamedItemModel TypeName { get; set; }
+
+    }
+
     public class ComparisonModel : ExpressionBase
     {
         public ComparisonModel(ExpressionBase left, Operator op, ExpressionBase right)
@@ -111,6 +122,9 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
         public static InstantiationModel New(NamedItemModel typeName, params ExpressionBase[] args)
             => new(typeName, args);
+
+        public static TypeOfModel TypeOf(NamedItemModel typeName)
+            => new(typeName);
 
         public static ComparisonModel Compare(ExpressionBase left, Operator op, ExpressionBase right)
             => new(left, op, right);

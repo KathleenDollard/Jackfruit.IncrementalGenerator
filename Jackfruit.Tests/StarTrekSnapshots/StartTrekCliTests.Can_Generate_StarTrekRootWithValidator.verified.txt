@@ -75,8 +75,10 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(Franchise command, CommandResult result)
+         internal Result(Franchise command, invocationContext invocationContext)
          {
+            var result = invocationContext.ParseResult.CommandResult;
+            var bindingContext = invocationContext.BindingContext;
             Greeting = result.GetValueForArgument(command.GreetingArgument);
          }
          
@@ -86,10 +88,10 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the Franchise command.
       /// </summary>
-      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(CommandResult commadResult)
+      /// <param name="invocationContext">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
+      public override Result GetResult(invocationContext invocationContext)
       {
-         return new Result(this, commadResult);
+         return new Result(this, invocationContext);
       }
       
       /// <summary>
@@ -166,8 +168,10 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(StarTrek command, CommandResult result)
+         internal Result(StarTrek command, invocationContext invocationContext)
          {
+            var result = invocationContext.ParseResult.CommandResult;
+            var bindingContext = invocationContext.BindingContext;
             var parentResult = command.Parent.GetResult(result);
             Greeting = parentResult.Greeting;
             Kirk = result.GetValueForOption(command.KirkOption);
@@ -184,10 +188,10 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the StarTrek command.
       /// </summary>
-      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(CommandResult commadResult)
+      /// <param name="invocationContext">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
+      public override Result GetResult(invocationContext invocationContext)
       {
-         return new Result(this, commadResult);
+         return new Result(this, invocationContext);
       }
       
       /// <summary>
@@ -247,8 +251,10 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(NextGeneration command, CommandResult result)
+         internal Result(NextGeneration command, invocationContext invocationContext)
          {
+            var result = invocationContext.ParseResult.CommandResult;
+            var bindingContext = invocationContext.BindingContext;
             var parentResult = command.Parent.GetResult(result);
             Greeting = parentResult.Greeting;
             Kirk = parentResult.Kirk;
@@ -267,10 +273,10 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the NextGeneration command.
       /// </summary>
-      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(CommandResult commadResult)
+      /// <param name="invocationContext">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
+      public override Result GetResult(invocationContext invocationContext)
       {
-         return new Result(this, commadResult);
+         return new Result(this, invocationContext);
       }
       
       /// <summary>
@@ -332,8 +338,10 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(DeepSpaceNine command, CommandResult result)
+         internal Result(DeepSpaceNine command, invocationContext invocationContext)
          {
+            var result = invocationContext.ParseResult.CommandResult;
+            var bindingContext = invocationContext.BindingContext;
             var parentResult = command.Parent.GetResult(result);
             Greeting = parentResult.Greeting;
             Kirk = parentResult.Kirk;
@@ -362,10 +370,10 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the DeepSpaceNine command.
       /// </summary>
-      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(CommandResult commadResult)
+      /// <param name="invocationContext">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
+      public override Result GetResult(invocationContext invocationContext)
       {
-         return new Result(this, commadResult);
+         return new Result(this, invocationContext);
       }
       
       /// <summary>
@@ -429,14 +437,17 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(Voyager command, CommandResult result)
+         internal Result(Voyager command, invocationContext invocationContext)
          {
+            var result = invocationContext.ParseResult.CommandResult;
+            var bindingContext = invocationContext.BindingContext;
             var parentResult = command.Parent.GetResult(result);
             Greeting = parentResult.Greeting;
             Kirk = parentResult.Kirk;
             Spock = parentResult.Spock;
             Uhura = parentResult.Uhura;
             Picard = parentResult.Picard;
+            Console = bindingContext.GetService(System.CommandLine.IConsole);
             Janeway = result.GetValueForOption(command.JanewayOption);
             Chakotay = result.GetValueForOption(command.ChakotayOption);
             Torres = result.GetValueForOption(command.TorresOption);
@@ -449,6 +460,7 @@ namespace DemoHandlers
          public bool Spock {get; set;}
          public bool Uhura {get; set;}
          public bool Picard {get; set;}
+         public System.CommandLine.IConsole Console {get; set;}
          public bool Janeway {get; set;}
          public bool Chakotay {get; set;}
          public bool Torres {get; set;}
@@ -459,10 +471,10 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the Voyager command.
       /// </summary>
-      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(CommandResult commadResult)
+      /// <param name="invocationContext">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
+      public override Result GetResult(invocationContext invocationContext)
       {
-         return new Result(this, commadResult);
+         return new Result(this, invocationContext);
       }
       
       /// <summary>
@@ -472,7 +484,7 @@ namespace DemoHandlers
       public int Invoke(InvocationContext context)
       {
          var result = GetResult(context);
-         DemoHandlers.Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         DemoHandlers.Handlers.Voyager(result.Console, result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
          return context.ExitCode;
       }
       
@@ -483,7 +495,7 @@ namespace DemoHandlers
       public Task<int> InvokeAsync(InvocationContext context)
       {
          var result = GetResult(context);
-         DemoHandlers.Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         DemoHandlers.Handlers.Voyager(result.Console, result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
          return Task.FromResult(context.ExitCode);
       }
       

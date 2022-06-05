@@ -152,7 +152,7 @@ public partial class Cli
          //**************************************    
          
          //Key:         FranchiseStarTrekNextGeneration
-         //Id:          DemoHandlers.Handlers.Voyager(string, bool, bool, bool, bool, bool)
+         //Id:          DemoHandlers.Handlers.Voyager(System.CommandLine.IConsole, string, bool, bool, bool, bool, bool)
          //Handler:     DemoHandlers.Handlers.Voyager
          //Path:        Franchise.StarTrek.NextGeneration
          //Parent:      NextGeneration
@@ -160,6 +160,11 @@ public partial class Cli
          //Aliases:     
          //Namespace:   DemoHandlers
          //Members:     
+            //Service:
+               //Service Id:     console
+               //Name:           Console
+               //TypeName:       System.CommandLine.IConsole
+               //Description:    
             //Argument:
                //Argumet Id:     greetingArg
                //Name:           Greeting

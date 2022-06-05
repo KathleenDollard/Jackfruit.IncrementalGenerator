@@ -60,7 +60,7 @@ public class MyClass
    }
 
 }";
-
+    
         private const string StarTrekRootWithValidator = @"
 using DemoHandlers;
 using Jackfruit;

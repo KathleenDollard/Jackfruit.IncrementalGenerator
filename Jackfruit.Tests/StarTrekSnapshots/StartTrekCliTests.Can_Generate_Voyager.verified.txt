@@ -83,8 +83,11 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(Voyager command, CommandResult result)
+         internal Result(Voyager command, invocationContext invocationContext)
          {
+            var result = invocationContext.ParseResult.CommandResult;
+            var bindingContext = invocationContext.BindingContext;
+            Console = bindingContext.GetService(System.CommandLine.IConsole);
             Greeting = result.GetValueForArgument(command.GreetingArgument);
             Janeway = result.GetValueForOption(command.JanewayOption);
             Chakotay = result.GetValueForOption(command.ChakotayOption);
@@ -93,6 +96,7 @@ namespace DemoHandlers
             SevenOfNine = result.GetValueForOption(command.SevenOfNineOption);
          }
          
+         public System.CommandLine.IConsole Console {get; set;}
          public string Greeting {get; set;}
          public bool Janeway {get; set;}
          public bool Chakotay {get; set;}
@@ -104,10 +108,10 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the Voyager command.
       /// </summary>
-      /// <param name="commadResult">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(CommandResult commadResult)
+      /// <param name="invocationContext">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
+      public override Result GetResult(invocationContext invocationContext)
       {
-         return new Result(this, commadResult);
+         return new Result(this, invocationContext);
       }
       
       /// <summary>
@@ -117,7 +121,7 @@ namespace DemoHandlers
       public int Invoke(InvocationContext context)
       {
          var result = GetResult(context);
-         DemoHandlers.Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         DemoHandlers.Handlers.Voyager(result.Console, result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
          return context.ExitCode;
       }
       
@@ -128,7 +132,7 @@ namespace DemoHandlers
       public Task<int> InvokeAsync(InvocationContext context)
       {
          var result = GetResult(context);
-         DemoHandlers.Handlers.Voyager(result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         DemoHandlers.Handlers.Voyager(result.Console, result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
          return Task.FromResult(context.ExitCode);
       }
       

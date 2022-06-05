@@ -122,6 +122,7 @@ namespace Jackfruit.IncrementalGenerator
         // expressions
         public abstract string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments);
         public abstract string Instantiate(NamedItemModel typeName, IEnumerable<ExpressionBase> arguments);
+        public abstract string TypeOf(NamedItemModel typeName);
         public abstract string Compare(ExpressionBase left, Operator @operator, ExpressionBase right);
         public abstract string Not(ExpressionBase expression);
 
@@ -343,6 +344,7 @@ namespace Jackfruit.IncrementalGenerator
             {
                 InvocationModel invocationModel => Invoke(invocationModel.Instance, invocationModel.MethodName, invocationModel.Arguments),
                 InstantiationModel instantiationModel => Instantiate(instantiationModel.TypeName, instantiationModel.Arguments),
+                TypeOfModel typeOfModel => TypeOf(typeOfModel.TypeName),
                 ComparisonModel comparisonModel => Compare(comparisonModel.Left, comparisonModel.Operator, comparisonModel.Right),
                 ListModel listModel => Instantiate("List<ExpressionBase>", listModel.Values ),
                 StringLiteralModel literalModel => $@"""{literalModel.Value}""",

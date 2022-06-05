@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Jackfruit.Models
@@ -27,7 +28,7 @@ namespace Jackfruit.Models
         public string Namespace { get; }
         public IEnumerable<MemberDef> Members { get; set; }
 
-        // @samharwell This does not seem the right way to handle these
+        // @sharwell This does not seem the right way to handle these
         public virtual bool Equals(ValidatorDef other)
             =>
                 MethodName == other.MethodName &&
