@@ -43,6 +43,7 @@ using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using System.CommandLine.Binding;
 using System.Threading.Tasks;
 using Jackfruit.Internal;
 using Jackfruit;
@@ -83,17 +84,19 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(Voyager command, invocationContext invocationContext)
+         internal Result(Voyager command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult)
          {
-            var result = invocationContext.ParseResult.CommandResult;
-            var bindingContext = invocationContext.BindingContext;
-            Console = bindingContext.GetService(System.CommandLine.IConsole);
-            Greeting = result.GetValueForArgument(command.GreetingArgument);
-            Janeway = result.GetValueForOption(command.JanewayOption);
-            Chakotay = result.GetValueForOption(command.ChakotayOption);
-            Torres = result.GetValueForOption(command.TorresOption);
-            Tuvok = result.GetValueForOption(command.TuvokOption);
-            SevenOfNine = result.GetValueForOption(command.SevenOfNineOption);
+            Console = GetService<System.CommandLine.IConsole>(invocationContext);
+         }
+         
+         internal Result(Voyager command, CommandResult commandResult)
+         {
+            Greeting = GetValueForSymbol(command.GreetingArgument, commandResult);
+            Janeway = GetValueForSymbol(command.JanewayOption, commandResult);
+            Chakotay = GetValueForSymbol(command.ChakotayOption, commandResult);
+            Torres = GetValueForSymbol(command.TorresOption, commandResult);
+            Tuvok = GetValueForSymbol(command.TuvokOption, commandResult);
+            SevenOfNine = GetValueForSymbol(command.SevenOfNineOption, commandResult);
          }
          
          public System.CommandLine.IConsole Console {get; set;}
@@ -108,32 +111,41 @@ namespace DemoHandlers
       /// <summary>
       /// Get an instance of the Result class for the Voyager command.
       /// </summary>
-      /// <param name="invocationContext">The System.CommandLine CommandResult used to retrieve values for the Result object</param>
-      public override Result GetResult(invocationContext invocationContext)
+      /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve values.</param>
+      public override Result GetResult(InvocationContext invocationContext)
       {
          return new Result(this, invocationContext);
       }
       
       /// <summary>
-      /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
+      /// Get an instance of the Result class for the Voyager command that will not include any services.
       /// </summary>
-      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
-      public int Invoke(InvocationContext context)
+      /// <param name="result">The System.CommandLine CommandResult used to retrieve values.</param>
+      public override Result GetResult(CommandResult result)
       {
-         var result = GetResult(context);
-         DemoHandlers.Handlers.Voyager(result.Console, result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
-         return context.ExitCode;
+         return new Result(this, result);
       }
       
       /// <summary>
       /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
       /// </summary>
-      /// <param name="context">The System.CommandLine Invocation context used to retrieve values.</param>
-      public Task<int> InvokeAsync(InvocationContext context)
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public int Invoke(InvocationContext invocationContext)
       {
-         var result = GetResult(context);
+         var result = GetResult(invocationContext);
          DemoHandlers.Handlers.Voyager(result.Console, result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
-         return Task.FromResult(context.ExitCode);
+         return invocationContext.ExitCode;
+      }
+      
+      /// <summary>
+      /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
+      /// </summary>
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public Task<int> InvokeAsync(InvocationContext invocationContext)
+      {
+         var result = GetResult(invocationContext);
+         DemoHandlers.Handlers.Voyager(result.Console, result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         return Task.FromResult(invocationContext.ExitCode);
       }
       
       public Argument<string> GreetingArgument {get; set;}

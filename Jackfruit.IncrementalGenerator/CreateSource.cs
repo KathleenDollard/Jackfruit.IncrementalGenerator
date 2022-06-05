@@ -7,6 +7,7 @@ using System.Net;
 using System.CommandLine.Invocation;
 using System.Reflection;
 using System.CommandLine;
+using System.CommandLine.Parsing;
 
 namespace Jackfruit.IncrementalGenerator
 {
@@ -23,7 +24,7 @@ namespace Jackfruit.IncrementalGenerator
         private const string commandResult = "CommandResult";
         private const string commandResultVar = "commandResult";
         private const string bindingContext = "bindingContext";
-        private const string invocationContext = "invocationContext"; 
+        private const string invocationContext = "invocationContext";
 
         private static string CommandClassName(CommandDef commandDef) => commandDef.Name;
         private static string CommandPropertyName(CommandDef commandDef) => commandDef.Name;
@@ -164,7 +165,8 @@ namespace Jackfruit.IncrementalGenerator
                         .Base(commandDef.Name),
                 CreateMethod(ancestors, myMembers, commandDef),
                 ResultClass(ancestorMembers, myMembers, commandDef),
-                GetResultMethod(commandDef),
+                GetResultMethodFromInvocationContext(commandDef),
+                GetResultMethodFromCommandResult(commandDef),
                 InvokeHandlerMethod(commandDef),
                 InvokeAsyncHandlerMethod(commandDef)
             };
@@ -250,17 +252,17 @@ namespace Jackfruit.IncrementalGenerator
                     .Public()
                     .Override()
                     .Parameters(
-                        Parameter(invocationContext, "InvocationContext")
-                            .XmlDescription("The System.CommandLine InvocationContext used to retrieve values for validation and it will hold any errors."))
+                        Parameter(commandResultVar, "CommandResult")
+                            .XmlDescription("The System.CommandLine CommandResult used to retrieve values for validation and it will hold any errors."))
                     .Statements(
                         // TODO: Fix invoke to take base in langugae neutral way
-                        SimpleCall(Invoke("base", "Validate", Symbol(invocationContext))),
-                        AssignWithDeclare(result, Invoke("", getResultName, Symbol(invocationContext))),
+                        SimpleCall(Invoke("base", "Validate", Symbol(commandResultVar))),
+                        AssignWithDeclare(result, Invoke("", getResultName, Symbol(commandResultVar))),
                         AssignWithDeclare("err", Invoke("string", "Join",
                                     Symbol("Environment.NewLine"),
                                     Invoke("", validatorDef.MethodName, arguments))),
                         If(Not(Invoke("string", "IsNullOrWhiteSpace", Symbol("err"))),
-                                Assign($"{invocationContext}.ParseResult.CommandResult.ErrorMessage", Symbol("err"))));
+                                Assign($"{commandResultVar}.ErrorMessage", Symbol("err"))));
 
         }
 
@@ -335,18 +337,82 @@ namespace Jackfruit.IncrementalGenerator
                 Class("Result")
                     .XmlDescription($"The result class for the {CommandClassName(commandDef)} command.")
                     .Public()
-                    .Members(
-                        Constructor("Result")
-                            .Internal()
-                            .Parameters(
-                                    Parameter(command, CommandClassName(commandDef)),
-                                    Parameter(name: invocationContext, "InvocationContext"))
-                            .Statements(ResultConstructorStatements(ancestorMembers, myMembers, commandDef)));
+                    .Members(ResultConstructors(ancestorMembers,myMembers,commandDef));
             resultClass.Members.AddRange(ancestorMembers
                     .Select(x => Property(x.Name, x.TypeName).Public()));
             resultClass.Members.AddRange(myMembers
                     .Select(x => Property(x.Name, x.TypeName).Public()));
             return resultClass;
+
+            static ParameterModel[] ResultConstructorParameters(CommandDef commandDef)
+            {
+                var parameters = new List<ParameterModel>
+                {
+                    Parameter(command, CommandClassName(commandDef)),
+                    Parameter(name: commandResultVar, "CommandResult")
+                };
+                if (commandDef.Parent is not null)
+                {
+                    parameters.Add(Parameter(parentResult, $"{CommandClassName(commandDef.Parent)}.Result"));
+                }
+                return parameters.ToArray();
+            }
+
+            static ConstructorModel[] ResultConstructors(
+                IEnumerable<MemberDef> ancestorMembers,
+                IEnumerable<MemberDef> myMembers,
+                CommandDef commandDef)
+            {
+                var constructors = new List<MemberDef>();
+                if (commandDef.Parent is not null)
+                {
+                    return new ConstructorModel[]
+                    {
+                    Constructor("Result")
+                         .Internal()
+                         .Parameters(
+                                 Parameter(command, CommandClassName(commandDef)),
+                                 Parameter(name: invocationContext, "InvocationContext"))
+                         .This(Symbol(command), Symbol($"{invocationContext}.ParseResult.CommandResult"), Invoke($"{command}.Parent", "GetResult", Symbol(invocationContext)))
+                         .Statements(ServiceConstructorStatements(myMembers, commandDef)),
+                    Constructor("Result")
+                        .Internal()
+                        .Parameters(
+                                Parameter(command, CommandClassName(commandDef)),
+                                Parameter(name: result, "CommandResult"))
+                        .This(Symbol(command), Symbol(result), Invoke($"{command}.Parent", "GetResult", Symbol(result))),
+                    Constructor("Result")
+                        .Private()
+                        .Parameters(ResultConstructorParameters(commandDef))
+                        .Statements(ResultConstructorStatements(ancestorMembers, myMembers, commandDef))
+                    };
+                }
+                else
+                {
+                    return new ConstructorModel[]
+                    {
+                    Constructor("Result")
+                         .Internal()
+                         .Parameters(
+                                 Parameter(command, CommandClassName(commandDef)),
+                                 Parameter(name: invocationContext, "InvocationContext"))
+                         .This(Symbol(command), Symbol($"{invocationContext}.ParseResult.CommandResult"))
+                         .Statements(ServiceConstructorStatements(myMembers, commandDef)),
+                    Constructor("Result")
+                        .Internal()
+                        .Parameters(ResultConstructorParameters(commandDef))
+                        .Statements(ResultConstructorStatements(ancestorMembers, myMembers, commandDef))
+                    };
+                }
+            }
+
+            static IEnumerable<IStatement> ServiceConstructorStatements(
+                    IEnumerable<MemberDef> myMembers,
+                    CommandDef commandDef)
+                => myMembers
+                    .OfType<ServiceDef>()
+                    .Select(service =>
+                        Assign(service.Name, Invoke(null, $"GetService<{service.TypeName}>", Symbol(invocationContext))));
 
             static IStatement[] ResultConstructorStatements(
                     IEnumerable<MemberDef> ancestorOptionsAndArguments,
@@ -354,43 +420,86 @@ namespace Jackfruit.IncrementalGenerator
                     CommandDef commandDef)
             {
                 List<IStatement> statements = new();
-                if (ancestorOptionsAndArguments.Any())
-                {
-                    statements.Add(AssignWithDeclare(parentResult, Invoke($"{command}.Parent", "GetResult", Symbol(invocationContext))));
-                }
                 foreach (var member in ancestorOptionsAndArguments)
                 {
                     statements.Add(Assign(member.Name, Symbol($"parentResult.{member.Name}")));
                 }
-                foreach (var member in myMembers)
+                foreach (var member in myMembers.Where(x=>x is not ServiceDef))
                 {
-                    if (member is ServiceDef service)
-                    {
-                        if (service.TypeName is not null)
-                        {
-                            statements.Add(Assign(member.Name, Invoke(null, $"GetService<{service.TypeName}>", Symbol(invocationContext))));
-                        }
-                    }
-                    else
-                    {
-                        statements.Add(Assign(member.Name, Invoke(null, "GetValueForHandlerParameter", Symbol($"command.{MemberPropertyName(member)}"), Symbol(invocationContext))));
-                    }
+
+                    statements.Add(Assign(member.Name, Invoke(null, "GetValueForSymbol", Symbol($"command.{MemberPropertyName(member)}"), Symbol(commandResultVar))));
                 }
                 return statements.ToArray();
             }
 
+
+            //internal Result(Voyager command, CommandResult result)
+            //{
+            //    Greeting = parentResult.Greeting;
+            //    Kirk = parentResult.Kirk;
+            //    Spock = parentResult.Spock;
+            //    Uhura = parentResult.Uhura;
+            //    Picard = parentResult.Picard;
+
+            //    Janeway = GetValueForSymbol(command.JanewayOption, result);
+            //    Chakotay = GetValueForSymbol(command.ChakotayOption, result);
+            //    Torres = GetValueForSymbol(command.TorresOption, result);
+            //    Tuvok = GetValueForSymbol(command.TuvokOption, result);
+            //    SevenOfNine = GetValueForSymbol(command.SevenOfNineOption, result);
+            //}
+
+            //internal Result(Voyager command, InvocationContext invocationContext)
+            //    : this(command, invocationContext.ParseResult.CommandResult)
+            //{
+            //    Console = GetService<System.CommandLine.IConsole>(invocationContext);
+            //}
+
+
+            //private Result(Voyager command, CommandResult result, NextGeneration.Result parentResult)
+            //{
+            //    Greeting = parentResult.Greeting;
+            //    Kirk = parentResult.Kirk;
+            //    Spock = parentResult.Spock;
+            //    Uhura = parentResult.Uhura;
+            //    Picard = parentResult.Picard;
+
+            //    Janeway = GetValueForSymbol(command.JanewayOption, result);
+            //    Chakotay = GetValueForSymbol(command.ChakotayOption, result);
+            //    Torres = GetValueForSymbol(command.TorresOption, result);
+            //    Tuvok = GetValueForSymbol(command.TuvokOption, result);
+            //    SevenOfNine = GetValueForSymbol(command.SevenOfNineOption, result);
+            //}
+
+            //internal Result(Voyager command, InvocationContext invocationContext)
+            //    : this(command, invocationContext.ParseResult.CommandResult, command.Parent.GetResult(invocationContext))
+            //{
+            //    Console = GetService<System.CommandLine.IConsole>(invocationContext);
+            //}
+
+            //internal Result(Voyager command, CommandResult result)
+            //    : this(command, result, command.Parent.GetResult(result))
+            //{ }
         }
 
-        private static MethodModel GetResultMethod(CommandDef commandDef)
-            => Method(getResultName, "Result")
-                .XmlDescription($"Get an instance of the Result class for the {CommandClassName(commandDef)} command.")
-                .Public()
-                .Override()
-                .Parameters(
-                    Parameter(invocationContext, "InvocationContext")
-                        .XmlDescription("The System.CommandLine InvocationContext used to retrieve values."))
-                .Statements(
-                    Return(New("Result", This, Symbol(invocationContext))));
+        private static MethodModel GetResultMethodFromInvocationContext(CommandDef commandDef)
+            => GetResultMethod(
+                $"Get an instance of the Result class for the {CommandClassName(commandDef)} command.",
+                invocationContext, "InvocationContext", "The System.CommandLine InvocationContext used to retrieve values.");
 
+        private static MethodModel GetResultMethodFromCommandResult(CommandDef commandDef)
+            => GetResultMethod(
+                $"Get an instance of the Result class for the {CommandClassName(commandDef)} command that will not include any services.",
+                result, "CommandResult", "The System.CommandLine CommandResult used to retrieve values.");
+
+        private static MethodModel GetResultMethod(string desc, string varName, NamedItemModel typeName, string paramDesc)
+            => Method(getResultName, "Result")
+                    .XmlDescription(desc)
+                    .Public()
+                    .Override()
+                    .Parameters(
+                        Parameter(varName, typeName)
+                        .XmlDescription(paramDesc))
+                    .Statements(
+                        Return(New("Result", This, Symbol(varName))));
     }
 }

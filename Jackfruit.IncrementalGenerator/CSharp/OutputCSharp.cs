@@ -161,7 +161,7 @@ namespace Jackfruit.IncrementalGenerator
             {
                 BaseOrThis.None => "",
                 BaseOrThis.Base => $" : base({string.Join(", ", model.BaseOrThisArguments.Select(x => Expression(x)))})",
-                BaseOrThis.This => $" : base({string.Join(", ", model.BaseOrThisArguments.Select(x => Expression(x)))})",
+                BaseOrThis.This => $" : this({string.Join(", ", model.BaseOrThisArguments.Select(x => Expression(x)))})",
                 _ => ""
             };
 

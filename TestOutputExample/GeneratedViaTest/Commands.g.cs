@@ -36,9 +36,13 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(Franchise command, InvocationContext invocationContext)
+         internal Result(Franchise command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult)
          {
-            Greeting = GetValueForHandlerParameter(command.GreetingArgument, invocationContext);
+         }
+         
+         internal Result(Franchise command, CommandResult commandResult)
+         {
+            Greeting = GetValueForSymbol(command.GreetingArgument, commandResult);
          }
          
          public string Greeting {get; set;}
@@ -51,6 +55,15 @@ namespace DemoHandlers
       public override Result GetResult(InvocationContext invocationContext)
       {
          return new Result(this, invocationContext);
+      }
+      
+      /// <summary>
+      /// Get an instance of the Result class for the Franchise command that will not include any services.
+      /// </summary>
+      /// <param name="result">The System.CommandLine CommandResult used to retrieve values.</param>
+      public override Result GetResult(CommandResult result)
+      {
+         return new Result(this, result);
       }
       
       /// <summary>
@@ -78,15 +91,15 @@ namespace DemoHandlers
       /// <summary>
       /// The validate method invoked by System.CommandLine.
       /// </summary>
-      /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve values for validation and it will hold any errors.</param>
-      public override void Validate(InvocationContext invocationContext)
+      /// <param name="commandResult">The System.CommandLine CommandResult used to retrieve values for validation and it will hold any errors.</param>
+      public override void Validate(CommandResult commandResult)
       {
-         base.Validate(invocationContext);
-         var result = GetResult(invocationContext);
+         base.Validate(commandResult);
+         var result = GetResult(commandResult);
          var err = string.Join(Environment.NewLine, DemoHandlers.Validators.FranchiseValidate(result.Greeting));
          if (!(string.IsNullOrWhiteSpace(err)))
          {
-            invocationContext.ParseResult.CommandResult.ErrorMessage = err;
+            commandResult.ErrorMessage = err;
          }
       }
       
@@ -127,13 +140,20 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(StarTrek command, InvocationContext invocationContext)
+         internal Result(StarTrek command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult, command.Parent.GetResult(invocationContext))
          {
-            var parentResult = command.Parent.GetResult(invocationContext);
+         }
+         
+         internal Result(StarTrek command, CommandResult result) : this(command, result, command.Parent.GetResult(result))
+         {
+         }
+         
+         private Result(StarTrek command, CommandResult commandResult, Franchise.Result parentResult)
+         {
             Greeting = parentResult.Greeting;
-            Kirk = GetValueForHandlerParameter(command.KirkOption, invocationContext);
-            Spock = GetValueForHandlerParameter(command.SpockOption, invocationContext);
-            Uhura = GetValueForHandlerParameter(command.UhuraOption, invocationContext);
+            Kirk = GetValueForSymbol(command.KirkOption, commandResult);
+            Spock = GetValueForSymbol(command.SpockOption, commandResult);
+            Uhura = GetValueForSymbol(command.UhuraOption, commandResult);
          }
          
          public string Greeting {get; set;}
@@ -149,6 +169,15 @@ namespace DemoHandlers
       public override Result GetResult(InvocationContext invocationContext)
       {
          return new Result(this, invocationContext);
+      }
+      
+      /// <summary>
+      /// Get an instance of the Result class for the StarTrek command that will not include any services.
+      /// </summary>
+      /// <param name="result">The System.CommandLine CommandResult used to retrieve values.</param>
+      public override Result GetResult(CommandResult result)
+      {
+         return new Result(this, result);
       }
       
       /// <summary>
@@ -209,14 +238,21 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(NextGeneration command, InvocationContext invocationContext)
+         internal Result(NextGeneration command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult, command.Parent.GetResult(invocationContext))
          {
-            var parentResult = command.Parent.GetResult(invocationContext);
+         }
+         
+         internal Result(NextGeneration command, CommandResult result) : this(command, result, command.Parent.GetResult(result))
+         {
+         }
+         
+         private Result(NextGeneration command, CommandResult commandResult, StarTrek.Result parentResult)
+         {
             Greeting = parentResult.Greeting;
             Kirk = parentResult.Kirk;
             Spock = parentResult.Spock;
             Uhura = parentResult.Uhura;
-            Picard = GetValueForHandlerParameter(command.PicardOption, invocationContext);
+            Picard = GetValueForSymbol(command.PicardOption, commandResult);
          }
          
          public string Greeting {get; set;}
@@ -233,6 +269,15 @@ namespace DemoHandlers
       public override Result GetResult(InvocationContext invocationContext)
       {
          return new Result(this, invocationContext);
+      }
+      
+      /// <summary>
+      /// Get an instance of the Result class for the NextGeneration command that will not include any services.
+      /// </summary>
+      /// <param name="result">The System.CommandLine CommandResult used to retrieve values.</param>
+      public override Result GetResult(CommandResult result)
+      {
+         return new Result(this, result);
       }
       
       /// <summary>
@@ -294,19 +339,26 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(DeepSpaceNine command, InvocationContext invocationContext)
+         internal Result(DeepSpaceNine command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult, command.Parent.GetResult(invocationContext))
          {
-            var parentResult = command.Parent.GetResult(invocationContext);
+         }
+         
+         internal Result(DeepSpaceNine command, CommandResult result) : this(command, result, command.Parent.GetResult(result))
+         {
+         }
+         
+         private Result(DeepSpaceNine command, CommandResult commandResult, NextGeneration.Result parentResult)
+         {
             Greeting = parentResult.Greeting;
             Kirk = parentResult.Kirk;
             Spock = parentResult.Spock;
             Uhura = parentResult.Uhura;
             Picard = parentResult.Picard;
-            Sisko = GetValueForHandlerParameter(command.SiskoOption, invocationContext);
-            Odo = GetValueForHandlerParameter(command.OdoOption, invocationContext);
-            Dax = GetValueForHandlerParameter(command.DaxOption, invocationContext);
-            Worf = GetValueForHandlerParameter(command.WorfOption, invocationContext);
-            OBrien = GetValueForHandlerParameter(command.OBrienOption, invocationContext);
+            Sisko = GetValueForSymbol(command.SiskoOption, commandResult);
+            Odo = GetValueForSymbol(command.OdoOption, commandResult);
+            Dax = GetValueForSymbol(command.DaxOption, commandResult);
+            Worf = GetValueForSymbol(command.WorfOption, commandResult);
+            OBrien = GetValueForSymbol(command.OBrienOption, commandResult);
          }
          
          public string Greeting {get; set;}
@@ -328,6 +380,15 @@ namespace DemoHandlers
       public override Result GetResult(InvocationContext invocationContext)
       {
          return new Result(this, invocationContext);
+      }
+      
+      /// <summary>
+      /// Get an instance of the Result class for the DeepSpaceNine command that will not include any services.
+      /// </summary>
+      /// <param name="result">The System.CommandLine CommandResult used to retrieve values.</param>
+      public override Result GetResult(CommandResult result)
+      {
+         return new Result(this, result);
       }
       
       /// <summary>
@@ -391,20 +452,27 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(Voyager command, InvocationContext invocationContext)
+         internal Result(Voyager command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult, command.Parent.GetResult(invocationContext))
          {
-            var parentResult = command.Parent.GetResult(invocationContext);
+            Console = GetService<System.CommandLine.IConsole>(invocationContext);
+         }
+         
+         internal Result(Voyager command, CommandResult result) : this(command, result, command.Parent.GetResult(result))
+         {
+         }
+         
+         private Result(Voyager command, CommandResult commandResult, NextGeneration.Result parentResult)
+         {
             Greeting = parentResult.Greeting;
             Kirk = parentResult.Kirk;
             Spock = parentResult.Spock;
             Uhura = parentResult.Uhura;
             Picard = parentResult.Picard;
-            Console = GetService<System.CommandLine.IConsole>(invocationContext);
-            Janeway = GetValueForHandlerParameter(command.JanewayOption, invocationContext);
-            Chakotay = GetValueForHandlerParameter(command.ChakotayOption, invocationContext);
-            Torres = GetValueForHandlerParameter(command.TorresOption, invocationContext);
-            Tuvok = GetValueForHandlerParameter(command.TuvokOption, invocationContext);
-            SevenOfNine = GetValueForHandlerParameter(command.SevenOfNineOption, invocationContext);
+            Janeway = GetValueForSymbol(command.JanewayOption, commandResult);
+            Chakotay = GetValueForSymbol(command.ChakotayOption, commandResult);
+            Torres = GetValueForSymbol(command.TorresOption, commandResult);
+            Tuvok = GetValueForSymbol(command.TuvokOption, commandResult);
+            SevenOfNine = GetValueForSymbol(command.SevenOfNineOption, commandResult);
          }
          
          public string Greeting {get; set;}
@@ -427,6 +495,15 @@ namespace DemoHandlers
       public override Result GetResult(InvocationContext invocationContext)
       {
          return new Result(this, invocationContext);
+      }
+      
+      /// <summary>
+      /// Get an instance of the Result class for the Voyager command that will not include any services.
+      /// </summary>
+      /// <param name="result">The System.CommandLine CommandResult used to retrieve values.</param>
+      public override Result GetResult(CommandResult result)
+      {
+         return new Result(this, result);
       }
       
       /// <summary>

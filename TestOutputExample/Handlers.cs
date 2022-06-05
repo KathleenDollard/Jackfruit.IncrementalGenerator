@@ -52,7 +52,6 @@ namespace DemoHandlers
         }
         public static void Voyager(IConsole console, string greetingArg, bool janeway, bool chakotay, bool torres, bool tuvok, bool sevenOfNine)
         {
-            Console.WriteLine(console is null ? "Console is null" : $"Console is {console}");
             if (janeway) { Greet(greetingArg, "Kathryn Janeway"); }
             if (chakotay) { Greet(greetingArg, "Chakotay"); }
             if (torres)

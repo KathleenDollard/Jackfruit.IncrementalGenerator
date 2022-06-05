@@ -21,10 +21,10 @@ namespace Jackfruit.Internal
 
         protected TParent Parent { get; }
 
-        public override void Validate(InvocationContext invocationContext)
+        public override void Validate(CommandResult commandResult)
         {
-            base.Validate(invocationContext);
-            Parent.Validate(invocationContext);
+            base.Validate(commandResult);
+            Parent.Validate(commandResult);
         }
     }
 
@@ -35,12 +35,13 @@ namespace Jackfruit.Internal
             : base(name, description) { }
 
         public abstract TResult GetResult(InvocationContext invocationContext);
+        public abstract TResult GetResult(CommandResult result);
 
         //public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
 
-        public override void Validate(InvocationContext invocationContext)
+        public override void Validate(CommandResult commandResult)
         {
-            base.Validate(invocationContext);
+            base.Validate(commandResult);
         }
     }
 
@@ -51,7 +52,7 @@ namespace Jackfruit.Internal
         //public void AddCommands(params Delegate[] method) { }
         public void AddCommand<TAttachTo>(Delegate method) { }
         //public void AddCommands<TAttachTo>(params Delegate[] method) { }
-        public virtual void Validate(InvocationContext invocationContext) { }
+        public virtual void Validate(CommandResult commandResult) { }
         public void AddValidator(Delegate action, params object[] values) { }
 
         protected GeneratedCommandBase(string name, string? description = null)
@@ -173,29 +174,38 @@ namespace Jackfruit.Internal
             set => SystemCommandLineCommand.Handler = value;
         }
 
-        // @jon: When will this be an IValueSource?
-        protected static T? GetValueForHandlerParameter<T>(
-            IValueDescriptor<T> symbol,
-            InvocationContext context)
-        {
-            if (symbol is IValueSource valueSource &&
-                valueSource.TryGetValue(symbol, context.BindingContext, out var boundValue) &&
-                boundValue is T value)
-            {
-                return value;
-            }
-            else
-            {
-                return symbol switch
+        //protected static T? GetValueForHandlerParameter<T>(
+        //    IValueDescriptor<T> symbol,
+        //    InvocationContext context)
+        //{
+            // @jon: Can you explain this code from SCL Handler partial? When will this be an IValueSource?
+            //if (symbol is IValueSource valueSource &&
+            //    valueSource.TryGetValue(symbol, context.BindingContext, out var boundValue) &&
+            //    boundValue is T value)
+            //{
+            //    return value;
+            //}
+            //else
+            //{
+            //    return symbol switch
+            //    {
+            //        Argument<T> argument => context.ParseResult.CommandResult.GetValueForArgument(argument),
+            //        Option<T> option => context.ParseResult.CommandResult.GetValueForOption(option),
+            //        _ => throw new ArgumentOutOfRangeException()
+            //    };
+            //}
+        //}
+
+        protected static T? GetValueForSymbol<T>(IValueDescriptor<T> symbol, CommandResult result)
+            =>symbol switch
                 {
-                    Argument<T> argument => context.ParseResult.CommandResult.GetValueForArgument(argument),
-                    Option<T> option => context.ParseResult.CommandResult.GetValueForOption(option),
+                    Argument<T> argument => result.GetValueForArgument(argument),
+                    Option<T> option =>     result.GetValueForOption(option),
                     _ => throw new ArgumentOutOfRangeException()
                 };
-            }
-        }
 
-        protected static T? GetService<T>(InvocationContext invocationContext)
+
+    protected static T? GetService<T>(InvocationContext invocationContext)
                where T : class
         {
             var typeT = typeof(T);
