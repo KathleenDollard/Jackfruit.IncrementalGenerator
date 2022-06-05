@@ -7,14 +7,14 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 {
     public class InvocationModel : ExpressionBase
     {
-        public InvocationModel(NamedItemModel instance, NamedItemModel methodToCall, ExpressionBase[] args)
+        public InvocationModel(NamedItemModel? instance, NamedItemModel methodToCall, ExpressionBase[] args)
         {
             Instance = instance;
             MethodName = methodToCall;
             Arguments = args;
         }
 
-        public NamedItemModel Instance { get; set; }
+        public NamedItemModel? Instance { get; set; }
         public NamedItemModel MethodName { get; set; }
         public bool ShouldAwait { get; set; }
         public IEnumerable<ExpressionBase> Arguments { get; set; } = Enumerable.Empty<ExpressionBase>();
@@ -117,7 +117,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
     public static class ExpressionHelpers
     {
-        public static InvocationModel Invoke(NamedItemModel instance, NamedItemModel methodToCall, params ExpressionBase[] args)
+        public static InvocationModel Invoke(NamedItemModel? instance, NamedItemModel methodToCall, params ExpressionBase[] args)
             => new(instance, methodToCall, args);
 
         public static InstantiationModel New(NamedItemModel typeName, params ExpressionBase[] args)

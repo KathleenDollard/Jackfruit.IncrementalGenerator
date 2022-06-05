@@ -21,10 +21,10 @@ namespace Jackfruit.Internal
 
         protected TParent Parent { get; }
 
-        public override void Validate(CommandResult commandResult)
+        public override void Validate(InvocationContext invocationContext)
         {
-            base.Validate(commandResult);
-            Parent.Validate(commandResult);
+            base.Validate(invocationContext);
+            Parent.Validate(invocationContext);
         }
     }
 
@@ -34,13 +34,13 @@ namespace Jackfruit.Internal
         protected GeneratedCommandBase(string name, string? description = null)
             : base(name, description) { }
 
-        public abstract TResult GetResult(CommandResult commandResult,BindingContext? bindingContext);
+        public abstract TResult GetResult(InvocationContext invocationContext);
 
         //public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
 
-        public override void Validate(CommandResult commandResult)
+        public override void Validate(InvocationContext invocationContext)
         {
-            base.Validate(commandResult);
+            base.Validate(invocationContext);
         }
     }
 
@@ -51,7 +51,7 @@ namespace Jackfruit.Internal
         //public void AddCommands(params Delegate[] method) { }
         public void AddCommand<TAttachTo>(Delegate method) { }
         //public void AddCommands<TAttachTo>(params Delegate[] method) { }
-        public virtual void Validate(CommandResult commandResult) { }
+        public virtual void Validate(InvocationContext invocationContext) { }
         public void AddValidator(Delegate action, params object[] values) { }
 
         protected GeneratedCommandBase(string name, string? description = null)
@@ -173,9 +173,10 @@ namespace Jackfruit.Internal
             set => SystemCommandLineCommand.Handler = value;
         }
 
+        // @jon: When will this be an IValueSource?
         protected static T? GetValueForHandlerParameter<T>(
-        IValueDescriptor<T> symbol,
-        InvocationContext context)
+            IValueDescriptor<T> symbol,
+            InvocationContext context)
         {
             if (symbol is IValueSource valueSource &&
                 valueSource.TryGetValue(symbol, context.BindingContext, out var boundValue) &&
@@ -185,10 +186,32 @@ namespace Jackfruit.Internal
             }
             else
             {
-                return context.ParseResult.GetValueFor(symbol);
+                return symbol switch
+                {
+                    Argument<T> argument => context.ParseResult.CommandResult.GetValueForArgument(argument),
+                    Option<T> option => context.ParseResult.CommandResult.GetValueForOption(option),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
             }
         }
 
+        protected static T? GetService<T>(InvocationContext invocationContext)
+               where T : class
+        {
+            var typeT = typeof(T);
+            return typeT.IsAssignableFrom(typeof(IConsole))
+                ? (T)invocationContext.Console
+                : GetService<T>(invocationContext);
+        
+            static T? GetService<T>(InvocationContext invocationContext)
+                where T : class 
+            {
+                var service = invocationContext.BindingContext.GetService(typeof(T)); 
+                return service is null
+                    ? null
+                    : (T)service;
+            }
+        }
     }
 
     public class EmptyCommand : GeneratedCommandBase
