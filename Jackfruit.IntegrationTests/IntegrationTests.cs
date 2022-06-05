@@ -77,7 +77,7 @@ namespace Jackfruit.Tests
             Assert.NotNull(exeProcess);
             if (exeProcess is not null)
             {
-                exeProcess.WaitForExit();
+                exeProcess.WaitForExit(10000);
 
                 var output = exeProcess.StandardOutput.ReadToEnd();
                 var error = exeProcess.StandardError.ReadToEnd();

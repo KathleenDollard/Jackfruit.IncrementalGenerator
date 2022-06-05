@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.CommandLine.Binding;
 using System.CommandLine.Completions;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
@@ -33,9 +34,10 @@ namespace Jackfruit.Internal
         protected GeneratedCommandBase(string name, string? description = null)
             : base(name, description) { }
 
-        public abstract TResult GetResult(CommandResult commandResult);
+        public abstract TResult GetResult(InvocationContext invocationContext);
+        public abstract TResult GetResult(CommandResult result);
 
-        public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
+        //public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
 
         public override void Validate(CommandResult commandResult)
         {
@@ -172,8 +174,54 @@ namespace Jackfruit.Internal
             set => SystemCommandLineCommand.Handler = value;
         }
 
+        //protected static T? GetValueForHandlerParameter<T>(
+        //    IValueDescriptor<T> symbol,
+        //    InvocationContext context)
+        //{
+            // @jon: Can you explain this code from SCL Handler partial? When will this be an IValueSource?
+            //if (symbol is IValueSource valueSource &&
+            //    valueSource.TryGetValue(symbol, context.BindingContext, out var boundValue) &&
+            //    boundValue is T value)
+            //{
+            //    return value;
+            //}
+            //else
+            //{
+            //    return symbol switch
+            //    {
+            //        Argument<T> argument => context.ParseResult.CommandResult.GetValueForArgument(argument),
+            //        Option<T> option => context.ParseResult.CommandResult.GetValueForOption(option),
+            //        _ => throw new ArgumentOutOfRangeException()
+            //    };
+            //}
+        //}
+
+        protected static T? GetValueForSymbol<T>(IValueDescriptor<T> symbol, CommandResult result)
+            =>symbol switch
+                {
+                    Argument<T> argument => result.GetValueForArgument(argument),
+                    Option<T> option =>     result.GetValueForOption(option),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
 
 
+    protected static T? GetService<T>(InvocationContext invocationContext)
+               where T : class
+        {
+            var typeT = typeof(T);
+            return typeT.IsAssignableFrom(typeof(IConsole))
+                ? (T)invocationContext.Console
+                : GetService<T>(invocationContext);
+        
+            static T? GetService<T>(InvocationContext invocationContext)
+                where T : class 
+            {
+                var service = invocationContext.BindingContext.GetService(typeof(T)); 
+                return service is null
+                    ? null
+                    : (T)service;
+            }
+        }
     }
 
     public class EmptyCommand : GeneratedCommandBase

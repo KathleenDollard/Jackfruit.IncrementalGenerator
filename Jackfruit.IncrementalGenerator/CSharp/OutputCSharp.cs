@@ -51,6 +51,7 @@ namespace Jackfruit.IncrementalGenerator
                 GenericNamedItemModel generic => $"{generic.Name}<{string.Join(", ", generic.GenericTypes.Select(x => NamedItem(x)))}>",
                 VoidNamedItemModel => "void",
                 ArrayNamedItemModel array => $"{array.Name}[]",
+                null => "",
                 _ => namedItem.Name
             };
 
@@ -160,7 +161,7 @@ namespace Jackfruit.IncrementalGenerator
             {
                 BaseOrThis.None => "",
                 BaseOrThis.Base => $" : base({string.Join(", ", model.BaseOrThisArguments.Select(x => Expression(x)))})",
-                BaseOrThis.This => $" : base({string.Join(", ", model.BaseOrThisArguments.Select(x => Expression(x)))})",
+                BaseOrThis.This => $" : this({string.Join(", ", model.BaseOrThisArguments.Select(x => Expression(x)))})",
                 _ => ""
             };
 
@@ -368,6 +369,8 @@ namespace Jackfruit.IncrementalGenerator
         public override string Instantiate(NamedItemModel typeName, IEnumerable<ExpressionBase> arguments)
             => $"new {NamedItem(typeName)}({string.Join(", ", arguments.Select(x => Expression(x)))})";
 
+        public override string TypeOf(NamedItemModel typeName)
+            => $"typeof({NamedItem(typeName)})";
 
         public override string Compare(ExpressionBase left, Operator op, ExpressionBase right)
             => $"{Expression(left)} {Operator(op)} {Expression(right)}";

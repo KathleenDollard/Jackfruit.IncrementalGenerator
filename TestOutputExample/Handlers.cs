@@ -1,4 +1,5 @@
 ﻿using Jackfruit;
+using System.CommandLine;
 
 namespace DemoHandlers
 {
@@ -49,7 +50,7 @@ namespace DemoHandlers
                 Greet(greetingArg, "Miles O'Brien");
             }
         }
-        public static void Voyager(string greetingArg, bool janeway, bool chakotay, bool torres, bool tuvok, bool sevenOfNine)
+        public static void Voyager(IConsole console, string greetingArg, bool janeway, bool chakotay, bool torres, bool tuvok, bool sevenOfNine)
         {
             if (janeway) { Greet(greetingArg, "Kathryn Janeway"); }
             if (chakotay) { Greet(greetingArg, "Chakotay"); }
