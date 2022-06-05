@@ -174,9 +174,8 @@ namespace Jackfruit.Internal
         }
 
         protected static T? GetValueForHandlerParameter<T>(
-            IValueDescriptor<T> symbol,
-            BindingContext bindingContext,
-            )
+        IValueDescriptor<T> symbol,
+        InvocationContext context)
         {
             if (symbol is IValueSource valueSource &&
                 valueSource.TryGetValue(symbol, context.BindingContext, out var boundValue) &&
