@@ -208,6 +208,7 @@ namespace Jackfruit.Internal
     protected static T? GetService<T>(InvocationContext invocationContext)
                where T : class
         {
+            // ServeProvider
             var typeT = typeof(T);
             return typeT.IsAssignableFrom(typeof(IConsole))
                 ? (T)invocationContext.Console

@@ -31,7 +31,7 @@ namespace Jackfruit.IncrementalGenerator
     // use same name for context to avoid closure
 
 
-     [Generator]
+    [Generator]
     public class Generator : IIncrementalGenerator
     {
         private const string cliClassCode = @"
@@ -55,7 +55,7 @@ namespace Jackfruit
 ";
         public void Initialize(IncrementalGeneratorInitializationContext initContext)
         {
- 
+
             // *** Cli approach
             // To be a partial, this must be in the same namespace and assembly as the generated part
             initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource($"{Helpers.Cli}.partial.g.cs", cliClassCode));
@@ -70,22 +70,25 @@ namespace Jackfruit
                 // TODO: Copy WhereNotNull to kill !
                 .Where(static m => m is not null)!;
 
-            // Generate classes for each command. This code creates the System.CommandLine tree and includes the handler
-            // It also collects the classes together, then adds the root so we know the namespace and can name the file we output
-            var commandscliCodeFileModel = cliCommandDefs
-                .Select((x, _) => CreateSource.GetCommandCodeFile(x));
-
-            var cliPartialCodeFileModel = cliCommandDefs
-                .Collect()
-                .Select((x, _) => CreateSource.GetCliPartialCodeFile(x));
-
-            initContext.RegisterSourceOutput(cliPartialCodeFileModel,
+            initContext.RegisterSourceOutput(
+                cliCommandDefs
+                    .Collect()
+                    .Select((x, _) => CreateSource.GetCliPartialCodeFile(x)),
                 static (context, codeFileModel) => OutputGenerated(codeFileModel, context, Helpers.Cli));
 
-            // And finally, we output files/sources
-            initContext.RegisterSourceOutput(commandscliCodeFileModel,
-                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel.Name));
+
+            initContext.RegisterSourceOutput(
+                cliCommandDefs
+                    .Select((x, _) => CreateSource.GetCommandCodeFile(x)),
+                static (context, codeFileModel) =>
+                    {
+                        if (codeFileModel is not null)
+                        {
+                            OutputGenerated(codeFileModel, context, codeFileModel.Name);
+                        }
+                    });
         }
+
 
         // currently public because used by CommandDef generator that is used by testing
         // We may merge generators or put that generator in this assembly
@@ -117,7 +120,7 @@ namespace Jackfruit
 
         private static void OutputGenerated(CodeFileModel? codeFileModel, SourceProductionContext context, string hintName)
         {
-            if(codeFileModel == null)
+            if (codeFileModel == null)
             { return; }
             var writer = new StringBuilderWriter(3);
             var language = new LanguageCSharp(writer);
