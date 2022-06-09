@@ -29,7 +29,7 @@ namespace Jackfruit.Tests
             var (compilation, inputDiagnostics) = TestHelpers.GetCompilation<Generator>(syntaxTrees);
             Assert.NotNull(compilation);
             // TODO: Figure out how to get the text from the span and compare with "Cli"
-            var trouble = inputDiagnostics.Where(x => x.Id != "CS0103");
+            var trouble = inputDiagnostics.Where(x => (x.Severity == DiagnosticSeverity.Warning || x.Severity == DiagnosticSeverity.Error) && x.Id != "CS0103");
             Assert.Empty(trouble);
             return compilation;
         }

@@ -27,6 +27,7 @@ internal class Program
         //                 DefineCommand(Handlers.DeepSpaceNine),
         //                 DefineCommand(Handlers.Voyager)
         //             ))));
+        #endregion
 
         #region 2
         //We may be able to do this. Cli.Create would return the base class of the user's Jackfruit command class
@@ -38,6 +39,7 @@ internal class Program
         //var franchise = root as Franchise;
         //franchise.GreetingArgument.SetDefaultValue("Hello");
         //root.Run(args);
+        #endregion
 
         #region Other questions and comments
         // This is the successor to Dragonfruit. 
@@ -53,6 +55,7 @@ internal class Program
         // * We have a lot of things named result, but how to prefix this?
         //
         // Is there a better name for the entry point than "Cli"
+        #endregion
 
     }
 
