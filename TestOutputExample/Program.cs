@@ -57,12 +57,14 @@ internal class Program
     }
 
 }
-  namespace DemoHandlers
-{
-    public partial class Franchise
-    {
-        public Delegate Handler2 => Handlers.Franchise;
-        public 
-    }
-}
+
+// Tried working on a partial class approach with BJoeris, didn't find joy
+//  namespace DemoHandlers
+//{
+//    public partial class Franchise
+//    {
+//        public Delegate Handler2 => Handlers.Franchise;
+//        public 
+//    }
+//}
 
