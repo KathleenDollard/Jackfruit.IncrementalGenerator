@@ -178,45 +178,45 @@ namespace Jackfruit.Internal
         //    IValueDescriptor<T> symbol,
         //    InvocationContext context)
         //{
-            // @jon: Can you explain this code from SCL Handler partial? When will this be an IValueSource?
-            //if (symbol is IValueSource valueSource &&
-            //    valueSource.TryGetValue(symbol, context.BindingContext, out var boundValue) &&
-            //    boundValue is T value)
-            //{
-            //    return value;
-            //}
-            //else
-            //{
-            //    return symbol switch
-            //    {
-            //        Argument<T> argument => context.ParseResult.CommandResult.GetValueForArgument(argument),
-            //        Option<T> option => context.ParseResult.CommandResult.GetValueForOption(option),
-            //        _ => throw new ArgumentOutOfRangeException()
-            //    };
-            //}
+        // @jon: Can you explain this code from SCL Handler partial? When will this be an IValueSource?
+        //if (symbol is IValueSource valueSource &&
+        //    valueSource.TryGetValue(symbol, context.BindingContext, out var boundValue) &&
+        //    boundValue is T value)
+        //{
+        //    return value;
+        //}
+        //else
+        //{
+        //    return symbol switch
+        //    {
+        //        Argument<T> argument => context.ParseResult.CommandResult.GetValueForArgument(argument),
+        //        Option<T> option => context.ParseResult.CommandResult.GetValueForOption(option),
+        //        _ => throw new ArgumentOutOfRangeException()
+        //    };
+        //}
         //}
 
         protected static T? GetValueForSymbol<T>(IValueDescriptor<T> symbol, CommandResult result)
-            =>symbol switch
-                {
-                    Argument<T> argument => result.GetValueForArgument(argument),
-                    Option<T> option =>     result.GetValueForOption(option),
-                    _ => throw new ArgumentOutOfRangeException()
-                };
+            => symbol switch
+            {
+                Argument<T> argument => result.GetValueForArgument(argument),
+                Option<T> option => result.GetValueForOption(option),
+                _ => throw new ArgumentOutOfRangeException()
+            };
 
 
-    protected static T? GetService<T>(InvocationContext invocationContext)
-               where T : class
+        protected static T? GetService<T>(InvocationContext invocationContext)
+                   where T : class
         {
             var typeT = typeof(T);
             return typeT.IsAssignableFrom(typeof(IConsole))
                 ? (T)invocationContext.Console
                 : GetService<T>(invocationContext);
-        
+
             static T? GetService<T>(InvocationContext invocationContext)
-                where T : class 
+                where T : class
             {
-                var service = invocationContext.BindingContext.GetService(typeof(T)); 
+                var service = invocationContext.BindingContext.GetService(typeof(T));
                 return service is null
                     ? null
                     : (T)service;
