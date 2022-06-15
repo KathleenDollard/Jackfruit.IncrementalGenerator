@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 
-namespace Jackfruit.Models
+namespace Jackfruit.Common
 {
     public abstract record CommandDefBase
     { }
@@ -59,11 +59,11 @@ namespace Jackfruit.Models
         }
 
         public string Id { get; }
-        public string Name { get; internal set; }
+        public string Name { get; set; }
         public string UniqueId { get; }
         public string Namespace { get; }
         public CommandDef? Parent { get; }
-        public ValidatorDef? Validator { get; internal set; }
+        public ValidatorDef? Validator { get; set; }
         public string? Description { get; }
         public string[] Aliases { get; }
         //Options, args, and services in order of handler parameters

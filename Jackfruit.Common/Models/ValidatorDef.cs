@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace Jackfruit.Models
+namespace Jackfruit.Common
 {
     public record ValidatorDef
     {

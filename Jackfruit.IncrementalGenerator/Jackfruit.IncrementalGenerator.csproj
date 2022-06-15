@@ -17,10 +17,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="CliRootExtractAndBuild.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
 	
@@ -32,10 +28,14 @@
 
 	<ItemGroup Condition="'$(CreatePackage)' == 'true'">
 		<PackageReference Include="Jackfruit.Runtime" Version="0.0.1-alphaG" />
+		<PackageReference Include="Jackfruit.CodeOutput" Version="0.0.1-alphaA" />
+		<PackageReference Include="Jackfruit.Common" Version="0.0.1-alphaA" />
 	</ItemGroup>
 	
 	<ItemGroup Condition="'$(CreatePackage)' != 'true'">
 		<ProjectReference Include="../Jackfruit.Runtime/Jackfruit.Runtime.csproj" />
+		<ProjectReference Include="../Jackfruit.CodeOutput/Jackfruit.CodeOutput.csproj" />
+		<ProjectReference Include="../Jackfruit.Common/Jackfruit.Common.csproj" />
 	</ItemGroup>
 
 </Project>

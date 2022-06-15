@@ -1,8 +1,5 @@
-﻿using Jackfruit.IncrementalGenerator.CodeModels;
-using System.Linq;
-using System.Reflection;
-
-namespace Jackfruit.Models
+﻿
+namespace Jackfruit.Common
 {
     public abstract record MemberDef
     {

@@ -1,9 +1,5 @@
-﻿using System.Text;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using Jackfruit.Models;
-using System.Collections.Immutable;
-using Jackfruit.IncrementalGenerator;
+﻿using Microsoft.CodeAnalysis;
+using Jackfruit.Common;
 using Jackfruit.IncrementalGenerator.Output;
 using Jackfruit.IncrementalGenerator.CodeModels;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -31,7 +27,7 @@ namespace Jackfruit.IncrementalGenerator
     // use same name for context to avoid closure
 
 
-     [Generator]
+    [Generator]
     public class Generator : IIncrementalGenerator
     {
         private const string cliClassCode = @"
@@ -58,7 +54,7 @@ namespace Jackfruit
  
             // *** Cli approach
             // To be a partial, this must be in the same namespace and assembly as the generated part
-            initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource($"{Helpers.Cli}.partial.g.cs", cliClassCode));
+            initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource($"{CommonHelpers.Cli}.partial.g.cs", cliClassCode));
 
             // Gather invocations from the dummy static methods for creating the console app
             // and adding subcommands. Then find the specified delegate and turn into a CommandDef
@@ -79,7 +75,7 @@ namespace Jackfruit
                 .Select((x, _) => CreateSource.GetCliPartialCodeFile(x));
 
             initContext.RegisterSourceOutput(cliPartialCodeFileModel,
-                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, Helpers.Cli));
+                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, CommonHelpers.Cli));
 
             // And finally, we output files/sources
             initContext.RegisterSourceOutput(commandscliCodeFileModel,
@@ -103,10 +99,10 @@ namespace Jackfruit
                 var name = GetName(invocation.Expression);
                 return name == null
                     ? false
-                    : name == Helpers.AddCommandName && argCount == 1
+                    : name == CommonHelpers.AddCommandName && argCount == 1
                         ? true
-                        : name == Helpers.CreateName
-                            ? argCount == 1 && GetCaller(invocation.Expression) == Helpers.Cli
+                        : name == CommonHelpers.CreateName
+                            ? argCount == 1 && GetCaller(invocation.Expression) == CommonHelpers.Cli
                             : false;
             }
             return false;

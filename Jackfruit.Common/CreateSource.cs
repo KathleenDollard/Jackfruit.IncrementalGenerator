@@ -1,15 +1,9 @@
 ﻿using Jackfruit.IncrementalGenerator.CodeModels;
-using Jackfruit.Models;
 using static Jackfruit.IncrementalGenerator.CodeModels.StatementHelpers;
 using static Jackfruit.IncrementalGenerator.CodeModels.ExpressionHelpers;
 using static Jackfruit.IncrementalGenerator.CodeModels.StructureHelpers;
-using System.Net;
-using System.CommandLine.Invocation;
-using System.Reflection;
-using System.CommandLine;
-using System.CommandLine.Parsing;
 
-namespace Jackfruit.IncrementalGenerator
+namespace Jackfruit.Common
 {
     public static class CreateSource
     {
@@ -31,20 +25,20 @@ namespace Jackfruit.IncrementalGenerator
         private static string CommandFullClassName(IEnumerable<CommandDef> ancestors, CommandDef? parent, CommandDef commandDef)
         {
             // TODO: **** When it is clear we will not nest these types, probably remove this method and replace with direct call
-            //if (commandDef.Name == Helpers.CliRootName)
-            //{ return Helpers.CliRootName; }
+            //if (commandDef.Name == CommonHelpers.CliRootName)
+            //{ return CommonHelpers.CliRootName; }
             //var ancestorList =
             //        parent is null
             //        ? ancestors
             //        : new List<CommandDef> { parent }.Union(ancestors);
             //ancestorList = ancestorList
             //        .Reverse()
-            //        .Where(a => a.Name != Helpers.CliRootName);
+            //        .Where(a => a.Name != CommonHelpers.CliRootName);
             //var parentNames =
             //    ancestorList.Any()
             //        ? string.Join(".", ancestorList.Select(a => CommandClassName(a))) + "."
             //        : "";
-            //return Helpers.GetStyle(commandDef) == Helpers.Cli
+            //return CommonHelpers.GetStyle(commandDef) == CommonHelpers.Cli
             //    ? $"{parentNames}{CommandClassName(commandDef)}"
             //    : $"Commands.{parentNames}{CommandClassName(commandDef)}";
             return CommandClassName(commandDef);
@@ -72,17 +66,17 @@ namespace Jackfruit.IncrementalGenerator
         {
             var roots = rootCommandDefs
                     .OfType<CommandDef>().ToList()
-                    .Where(x => Helpers.GetStyle(x) == Helpers.Cli);
+                    .Where(x => CommonHelpers.GetStyle(x) == CommonHelpers.Cli);
             return !roots.Any()
                 ? null
-                : new CodeFileModel(Helpers.Cli)
+                : new CodeFileModel(CommonHelpers.Cli)
                     .Usings(roots.Select(x => new UsingModel(x.Namespace)).Distinct().ToArray())
                     .Namespace("Jackfruit",
-                        Class(Helpers.Cli)
+                        Class(CommonHelpers.Cli)
                             .Public()
                             .Partial()
                             .Members(
-                                Constructor(Helpers.Cli)
+                                Constructor(CommonHelpers.Cli)
                                     .Static()
                                     .Statements(
                                         roots.Select(x => Assign(x.Name, Invoke(x.Name, create)))))

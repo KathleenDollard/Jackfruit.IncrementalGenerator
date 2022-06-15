@@ -1,5 +1,5 @@
-﻿using Jackfruit.Models;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
+using Jackfruit.Common;
 using Microsoft.CodeAnalysis.Operations;
 using System.Xml.Linq;
 using static Jackfruit.IncrementalGenerator.RoslynHelpers;
@@ -9,21 +9,21 @@ namespace Jackfruit.IncrementalGenerator
 {
     public static class Helpers
     {
-        internal const string CliRootName = "CliRoot";
-        internal const string AddCommandName = "AddCommand";
-        internal const string CreateName = "Create";
-        internal const string CliRoot = "CliRoot";
-        internal const string Cli = "Cli";
-        internal static string[] CreateSources = new string[] { CliRoot, Cli };
-        internal const string NestedCommandsClassName = "Commands";
-        internal static readonly string[] names = { AddCommandName };
-        internal const string TriggerStyle = "TriggerStyle";
-        internal static string GetStyle(CommandDef commandDef)
-            => commandDef.GenerationStyleTags.TryGetValue(Helpers.TriggerStyle, out var style)
-                 ? style.ToString()
-                 : string.Empty;
-        internal static string MethodFullName(IMethodSymbol method)
-            => $"{method.ContainingType.ToDisplayString()}.{method.Name}";
+        //internal const string CliRootName = "CliRoot";
+        //internal const string AddCommandName = "AddCommand";
+        //internal const string CreateName = "Create";
+        //internal const string CliRoot = "CliRoot";
+        //internal const string Cli = "Cli";
+        //internal static string[] CreateSources = new string[] { CliRoot, Cli };
+        //internal const string NestedCommandsClassName = "Commands";
+        //internal static readonly string[] names = { AddCommandName };
+        //internal const string TriggerStyle = "TriggerStyle";
+        //internal static string GetStyle(CommandDef commandDef)
+        //    => commandDef.GenerationStyleTags.TryGetValue(Helpers.TriggerStyle, out var style)
+        //         ? style.ToString()
+        //         : string.Empty;
+        //internal static string MethodFullName(IMethodSymbol method)
+        //    => $"{method.ContainingType.ToDisplayString()}.{method.Name}";
 
 
 
@@ -117,7 +117,7 @@ namespace Jackfruit.IncrementalGenerator
                 members.Add(match);
                 // Normal type mismatch exception expected to be adequate if types do not match
             }
-            var methodName = Helpers.MethodFullName(validatorSymbol);
+            var methodName = CommonHelpers.MethodFullName(validatorSymbol);
             return new ValidatorDef(methodName, details.Namespace, members);
 
             static MemberDef? LookupMember(string name, IEnumerable<MemberDef> members)

@@ -1,5 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using Jackfruit.Models;
+using Jackfruit.Common;
 using Jackfruit.IncrementalGenerator;
 using Jackfruit.IncrementalGenerator.Output;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
