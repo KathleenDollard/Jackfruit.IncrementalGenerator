@@ -67,8 +67,7 @@ namespace Jackfruit
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => IsCliCreateInvocation(s),
                     transform: static (ctx, cancellationToken) => CliExtractAndBuild.GetCommandDef(ctx, cancellationToken))
-                // TODO: Copy WhereNotNull to kill !
-                .Where(static m => m is not null)!;
+                .WhereNotNull();
 
             // Generate classes for each command. This code creates the System.CommandLine tree and includes the handler
             // It also collects the classes together, then adds the root so we know the namespace and can name the file we output
