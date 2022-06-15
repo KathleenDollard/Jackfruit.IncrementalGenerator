@@ -1,15 +1,20 @@
 # Jackfruit.IncrementalGenerator
 
-Please try this demo (temporary directions):
+Please try this demo (temporary directions) to check out this approach to try this System.CommandLine *flavor*:
 
-* Clone the repo (at this time "Obtain" means clone, build, pack, push local)
-* Working in Visual Studio, ignore NU1202
-* Obtain the `IncrementalGenerator.Runtime` NuGet package. Build and place it package in a local source. 
-* Obtain the `IncrementalGenerator Nuget` package. Build and place it package in a local source. 
-* Create a new Console project
-* Add the package `IncrementalGenerator` (the one you just built-you will need to add the local feed)
-* Copy the file `DemoHandlers.cs` from the `Example` project. Warning: there are a few floating around, use that one first.
-* Place this code in your sub main:
+1. Obtain a copy of the source and build (VS or CLI)
+1. Play with the 3 user files that are in TestExample - Program, Handlers and Validators
+1. If you make any changes, run the integration tests to try out (you might break them, which is ok)
+
+## If you would like to try creating your own flavor (temp directions):
+
+1. Fork the repo.
+1. Copy and rename  the `Jackfruit.IncrementalGenerator` project
+1. Create you flavor along with tests
+
+As you find issues in the supporting projects, please file issues or PRs. Thanks for your patience. This process will get easier, for now I just wanted to make it possible to build flavors without starting from scratch.
+
+## The current flavor in the rep:
 
 ```c#
 using Jackfruit;
