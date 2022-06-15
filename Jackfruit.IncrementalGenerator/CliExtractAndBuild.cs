@@ -1,4 +1,4 @@
-﻿using Jackfruit.Models;
+﻿using Jackfruit.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
@@ -131,7 +131,7 @@ namespace Jackfruit.IncrementalGenerator
             { return null; }
 
 
-            var commandDef = Helpers.BuildCommandDef(path, parent, Helpers.MethodFullName(handlerSymbol), commandDetails, Helpers.Cli);
+            var commandDef = Helpers.BuildCommandDef(path, parent, CommonHelpers.MethodFullName(handlerSymbol), commandDetails, CommonHelpers.Cli);
             if (commandDef is null)
             { return null; }
 

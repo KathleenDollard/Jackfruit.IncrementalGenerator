@@ -29,6 +29,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestOutputExample", "TestOutputExample\TestOutputExample.csproj", "{104E63F6-E426-4310-B490-79601B118CC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jackfruit.CodeOutput", "Jackfruit.CodeOutput\Jackfruit.CodeOutput.csproj", "{478D17C2-25EC-40EB-88AB-E72B34858C98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jackfruit.Common", "Jackfruit.Common\Jackfruit.Common.csproj", "{1BFC4D35-AB6A-4827-AE00-31E8E470AF14}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +59,14 @@ Global
 		{104E63F6-E426-4310-B490-79601B118CC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{104E63F6-E426-4310-B490-79601B118CC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{104E63F6-E426-4310-B490-79601B118CC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{478D17C2-25EC-40EB-88AB-E72B34858C98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{478D17C2-25EC-40EB-88AB-E72B34858C98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{478D17C2-25EC-40EB-88AB-E72B34858C98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{478D17C2-25EC-40EB-88AB-E72B34858C98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BFC4D35-AB6A-4827-AE00-31E8E470AF14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BFC4D35-AB6A-4827-AE00-31E8E470AF14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BFC4D35-AB6A-4827-AE00-31E8E470AF14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BFC4D35-AB6A-4827-AE00-31E8E470AF14}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
