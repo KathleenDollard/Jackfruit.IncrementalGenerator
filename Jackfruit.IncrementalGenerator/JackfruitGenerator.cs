@@ -18,6 +18,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Jackfruit.IncrementalGenerator
 {
+    
     // Perf
     // Does the predicate need a cancellation token?
     // Assume commandDef does because of GetOperation
@@ -79,7 +80,7 @@ namespace Jackfruit
 
             // And finally, we output files/sources
             initContext.RegisterSourceOutput(commandscliCodeFileModel,
-                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel.Name));
+                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel?.Name ?? ""));
         }
 
         // currently public because used by CommandDef generator that is used by testing
