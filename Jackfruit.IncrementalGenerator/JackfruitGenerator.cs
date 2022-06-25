@@ -32,21 +32,19 @@ namespace Jackfruit.IncrementalGenerator
     public class Generator : IIncrementalGenerator
     {
         private const string cliClassCode = @"
+using Jackfruit.Internal;
+
 namespace Jackfruit
 {
     /// <summary>
-    /// This is the entry point for the Jackfruit generator. At present it 'jumps namespaces' 
-    /// after first use, moving from Jackfruit to the namespace of your root handler. After 
-    /// generation, it will include a static property to access your root by name.
+    /// This is the main class for the Jackfruit generator. After you call the 
+    /// Create command, the returned RootCommand will contain your CLI. If you 
+    /// need multiple root commands in your application differentiate them with &gt;T&lt;
     /// </summary>
-    public partial class Cli
+    public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
     {
-        /// <summary>
-        /// This method builds a tree that defines your CLI.  
-        /// </summary>
-        /// <param name=""cliRoot"">A CliNode pointing to your root handler.</param>
-        public static void Create(CliNode cliRoot)
-        { }
+        public new static RootCommand Create(CommandNode cliRoot)
+            => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create( cliRoot);
     }
 }
 ";
@@ -57,29 +55,38 @@ namespace Jackfruit
             // To be a partial, this must be in the same namespace and assembly as the generated part
             initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource($"{CommonHelpers.Cli}.partial.g.cs", cliClassCode));
 
-            // Gather invocations from the dummy static methods for creating the console app
-            // and adding subcommands. Then find the specified delegate and turn into a CommandDef
-            // TODO: Pipe locations through so any later diagnostics work
-            var cliCommandDefs = initContext.SyntaxProvider
+            // Build command defs and return as a tree for each rootcommand node
+            var commandDefNodes = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => IsCliCreateInvocation(s),
                     transform: static (ctx, cancellationToken) => BuildModel.GetCommandDef(ctx, cancellationToken))
                 .WhereNotNull();
 
+            // Flatten per rootcommand node
+            var commandDefCollection = commandDefNodes
+                .Select((node, cancellationToken) => BuildModel.FlattenWithRoot(node, cancellationToken));
+
+            var roots = commandDefCollection
+                .Select((t, _) => t.Name);
+
+            var commands = commandDefCollection
+                .SelectMany((t, _) => t.CommandDefs);
+
+
             // Generate classes for each command. This code creates the System.CommandLine tree and includes the handler
             // It also collects the classes together, then adds the root so we know the namespace and can name the file we output
-            var commandscliCodeFileModel = cliCommandDefs
+            var commandsCodeFileModel = commands
                 .Select((x, _) => CreateSource.GetCommandCodeFile(x));
 
-            var cliPartialCodeFileModel = cliCommandDefs
+            var rootCommandCodeFileModel = roots
                 .Collect()
-                .Select((x, _) => CreateSource.GetCliPartialCodeFile(x));
+                .Select((x, _) => CreateSource.GetRootCommandPartialCodeFile(x));
 
-            initContext.RegisterSourceOutput(cliPartialCodeFileModel,
+            initContext.RegisterSourceOutput(commandsCodeFileModel,
                 static (context, codeFileModel) => OutputGenerated(codeFileModel, context, CommonHelpers.Cli));
 
             // And finally, we output files/sources
-            initContext.RegisterSourceOutput(commandscliCodeFileModel,
+            initContext.RegisterSourceOutput(rootCommandCodeFileModel,
                 static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel?.Name ?? ""));
         }
 

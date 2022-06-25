@@ -26,7 +26,7 @@ namespace Jackfruit.Common
                 Name == other.Name;
 
         public override int GetHashCode()
-        => (Id, Description, TypeName, Name).GetHashCode();
+            => (Id, Description, TypeName, Name).GetHashCode();
     }
     public record OptionDef : MemberDef
     {
@@ -54,8 +54,19 @@ namespace Jackfruit.Common
                 ArgDisplayName == other.ArgDisplayName &&
                 Required == other.Required &&
                 Aliases.SequenceEqual(other.Aliases);
+
         public override int GetHashCode()
-            => base.GetHashCode() ^ (ArgDisplayName, Required, string.Join(",", Aliases)).GetHashCode();
+        {
+            var hash = 13;
+            unchecked
+            {
+                hash += base.GetHashCode();
+                hash += (ArgDisplayName, Required).GetHashCode();
+                foreach (var sub in Aliases)
+                { hash += sub.GetHashCode(); }
+            }
+            return hash;
+        }
     }
     public record ArgumentDef : MemberDef
     {
@@ -76,7 +87,15 @@ namespace Jackfruit.Common
             => base.Equals(other) &&
                 Required == other.Required;
         public override int GetHashCode()
-            => base.GetHashCode() ^ Required.GetHashCode();
+        {
+            var hash = 17;
+            unchecked
+            {
+                hash += base.GetHashCode();
+                hash += Required.GetHashCode();
+            }
+            return hash;
+        }
     }
     public record ServiceDef : MemberDef
     {
@@ -87,8 +106,6 @@ namespace Jackfruit.Common
             string? typeName)
             : base(id, name, description, typeName)
         { }
-
-        // @sharwell for a record, do I need to add Equality if there is nothing in this class (just base)
     }
 
     public record UnknownMemberDef : MemberDef

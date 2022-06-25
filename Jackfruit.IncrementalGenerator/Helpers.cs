@@ -28,7 +28,7 @@ namespace Jackfruit.IncrementalGenerator
 
 
         internal static CommandDef? BuildCommandDef(string[] path,
-                                                    CommandDef? parent,
+                                                    string? parent,
                                                     string methodName,
                                                     CommandDetails? commandDetails,
                                                     string triggerStyle)
@@ -76,7 +76,7 @@ namespace Jackfruit.IncrementalGenerator
                                             commandDetails.Detail.Aliases,
                                             members,
                                             methodName,
-                                            new CommandDef[] { },
+                                            new string[] { },
                                             commandDetails.Detail.TypeName ?? "Unknown");
             commandDef.GenerationStyleTags.Add("TriggerStyle", triggerStyle);
             return commandDef;

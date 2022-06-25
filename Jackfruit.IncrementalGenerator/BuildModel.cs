@@ -8,7 +8,24 @@ namespace Jackfruit.IncrementalGenerator
 {
     public static class BuildModel
     {
-        public static CommandDef? GetCommandDef(GeneratorSyntaxContext context, CancellationToken cancellationToken)
+        public static (string Name, IEnumerable<CommandDef> CommandDefs) FlattenWithRoot(
+            CommandDefNode? commandDefNode, CancellationToken cancellationToken)
+        {
+            if (commandDefNode is null)
+            { throw new ArgumentNullException(nameof(commandDefNode)); }
+            List<CommandDef> commandDefs = GetChildren(commandDefNode);
+            return new(commandDefNode.CommandDef.Name, commandDefs);
+
+            static List<CommandDef> GetChildren(CommandDefNode node)
+            {
+                var meAndMyChildren = new List<CommandDef> { node.CommandDef };
+                foreach (var child in node.SubCommandNodes)
+                { meAndMyChildren.AddRange(GetChildren(child)); }
+                return meAndMyChildren;
+            }
+        }
+
+        public static CommandDefNode? GetCommandDef(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         {
             if (context.SemanticModel.GetOperation(context.Node, cancellationToken) is not IInvocationOperation cliCreateInvocation)
             {
@@ -28,7 +45,7 @@ namespace Jackfruit.IncrementalGenerator
             return objectCreationOps is null
                 ? null
                 : objectCreationOps.Any()
-                    ? GetCommandDef(path, null, objectCreationOps.First(), cancellationToken)
+                    ? GetCommandDefNode(path, null, objectCreationOps.First(), cancellationToken)
                     : null;
         }
 
@@ -116,7 +133,7 @@ namespace Jackfruit.IncrementalGenerator
                         _ => null
                     };
 
-        private static CommandDef? GetCommandDef(string[] path, CommandDef? parent, IObjectCreationOperation objectCreationOp, CancellationToken cancellationToken)
+        private static CommandDefNode? GetCommandDefNode(string[] path, CommandDefNode? parentNode, IObjectCreationOperation objectCreationOp, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -131,19 +148,23 @@ namespace Jackfruit.IncrementalGenerator
             { return null; }
 
 
-            var commandDef = Helpers.BuildCommandDef(path, parent, CommonHelpers.MethodFullName(handlerSymbol), commandDetails, CommonHelpers.Cli);
+            var commandDef = Helpers.BuildCommandDef(path, parentNode?.CommandDef.Name, CommonHelpers.MethodFullName(handlerSymbol), commandDetails, CommonHelpers.Cli);
             if (commandDef is null)
             { return null; }
+
 
             var validatorDef = Helpers.GetValidatorDef(validateSymbol, commandDef);
             commandDef.Validator = validatorDef;
             var newPath = path.Union(new string[] { handlerSymbol.Name }).ToArray();
-            var subCommands = subCommandsOps
-                    .Select(x => GetCommandDef(newPath, commandDef, x, cancellationToken))
+
+            var commandDefNode = new CommandDefNode(commandDef);
+            var subCommandNodes = subCommandsOps
+                    .Select(x => GetCommandDefNode(newPath, commandDefNode, x, cancellationToken))
                     .Where(x => x is not null)
                     .ToList();
-            commandDef.SubCommands = subCommands!;
-            return commandDef;
+            commandDefNode.AddSubCommandNodes(subCommandNodes!);
+
+            return commandDefNode;
         }
     }
 }
