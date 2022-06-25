@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace Jackfruit.IncrementalGenerator
 {
-    public static class CliExtractAndBuild
+    public static class BuildModel
     {
         public static CommandDef? GetCommandDef(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         {

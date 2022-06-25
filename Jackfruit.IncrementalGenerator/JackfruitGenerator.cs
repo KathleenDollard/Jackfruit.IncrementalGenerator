@@ -63,7 +63,7 @@ namespace Jackfruit
             var cliCommandDefs = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => IsCliCreateInvocation(s),
-                    transform: static (ctx, cancellationToken) => CliExtractAndBuild.GetCommandDef(ctx, cancellationToken))
+                    transform: static (ctx, cancellationToken) => BuildModel.GetCommandDef(ctx, cancellationToken))
                 .WhereNotNull();
 
             // Generate classes for each command. This code creates the System.CommandLine tree and includes the handler

@@ -26,7 +26,7 @@ public partial class Cli
             IncrementalValuesProvider<CommandDef> commandDefs = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => Generator.IsCliCreateInvocation(s),
-                    transform: static (ctx, cancellationToken) => CliExtractAndBuild.GetCommandDef(ctx, cancellationToken))
+                    transform: static (ctx, cancellationToken) => BuildModel.GetCommandDef(ctx, cancellationToken))
                 .Where(static m => m is not null)!;
 
             initContext.RegisterSourceOutput(commandDefs,

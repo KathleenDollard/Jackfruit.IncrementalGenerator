@@ -9,6 +9,18 @@ namespace Jackfruit.Common
     public record EmptyCommandDef : CommandDefBase
     { }
 
+    public record CommandDefNode
+    {
+        public CommandDefNode(CommandDef commandDef)
+        {
+            CommandDef = commandDef;
+        }
+        public CommandDef CommandDef { get; }
+        public List<CommandDefNode> SubCommandNodes { get; } = new();
+        public void AddSubCommands(CommandDefNode subCommandNode)
+            => SubCommandNodes.Add(subCommandNode);
+    }
+
 
     public record CommandDef : CommandDefBase
     {
