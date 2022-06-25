@@ -13,13 +13,7 @@ namespace Jackfruit.Internal
         where TSelf : GeneratedCommandBase<TSelf, TResult>
         where TParent : GeneratedCommandBase
     {
-        protected GeneratedCommandBase(string name, TParent parent, string? description = null)
-            : base(name, description)
-        {
-            this.Parent = parent;
-        }
-
-        protected TParent Parent { get; }
+        protected TParent Parent { get; set; }
 
         public override void Validate(CommandResult commandResult)
         {
@@ -31,8 +25,7 @@ namespace Jackfruit.Internal
     public abstract class GeneratedCommandBase<TSelf, TResult> : GeneratedCommandBase
         where TSelf : GeneratedCommandBase
     {
-        protected GeneratedCommandBase(string name, string? description = null)
-            : base(name, description) { }
+
 
         public abstract TResult GetResult(InvocationContext invocationContext);
         public abstract TResult GetResult(CommandResult result);
@@ -45,8 +38,28 @@ namespace Jackfruit.Internal
         }
     }
 
+
+    public abstract class RootCommand<T, TResult> : GeneratedCommandBase<T, TResult>
+        where T : RootCommand<T, TResult>, new()
+    {
+        public static RootCommand<T, TResult> Create(CommandNode cliRoot)
+        { return new T(); }
+
+        public int Run(string[] args)
+        {
+            return SystemCommandLineCommand.Invoke(args);
+        }
+
+    }
+
+
     public abstract class GeneratedCommandBase
     {
+        public GeneratedCommandBase()
+        {
+            SystemCommandLineCommand = new Command("");
+        }
+
         // no op: for generation
         public void AddCommand(Delegate method) { }
         //public void AddCommands(params Delegate[] method) { }
@@ -54,11 +67,6 @@ namespace Jackfruit.Internal
         //public void AddCommands<TAttachTo>(params Delegate[] method) { }
         public virtual void Validate(CommandResult commandResult) { }
         public void AddValidator(Delegate action, params object[] values) { }
-
-        protected GeneratedCommandBase(string name, string? description = null)
-        {
-            SystemCommandLineCommand = new Command(name, description);
-        }
 
         protected void AddMessageOnFail(List<string> messages, string? newMessage)
         {
@@ -73,7 +81,7 @@ namespace Jackfruit.Internal
             { messages.AddRange(newMessages); }
         }
 
-        protected Command SystemCommandLineCommand { get; }
+        protected internal Command SystemCommandLineCommand { get; }
 
         /// <summary>
         /// Adds a subcommand to the command.
@@ -82,12 +90,6 @@ namespace Jackfruit.Internal
         /// <remarks>Commands can be nested to an arbitrary depth.</remarks>
         protected void AddCommandToScl(GeneratedCommandBase command)
             => SystemCommandLineCommand.AddCommand(command.SystemCommandLineCommand);
-
-
-        public int Run(string[] args)
-        {
-            return SystemCommandLineCommand.Invoke(args);
-        }
 
         //*** Put SCL wrappers below. Avoiding regions to avoid antagonizing region haters
         /// <summary>
@@ -98,9 +100,11 @@ namespace Jackfruit.Internal
         /// <inheritdoc/>
         public string Name
         {
-            get => SystemCommandLineCommand.Name;
-            set => SystemCommandLineCommand.Name = value;
+            get { return SystemCommandLineCommand.Name; }
+            set { SystemCommandLineCommand.Name = value; }
         }
+
+        public string? Description => SystemCommandLineCommand.Description;
 
         /// <summary>
         /// Determines whether the specified alias has already been defined.
@@ -225,10 +229,6 @@ namespace Jackfruit.Internal
     }
 
     public class EmptyCommand : GeneratedCommandBase
-    {
-        public EmptyCommand() : base("<EmptyCommand>", null)
-        {
-        }
-    }
+    { }
 }
 

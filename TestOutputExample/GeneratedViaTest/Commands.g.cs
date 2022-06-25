@@ -1,32 +1,25 @@
 // This file is created by a generator.
-using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
-using System.CommandLine.Binding;
-using System.Threading.Tasks;
 using Jackfruit.Internal;
-using Jackfruit;
 
 namespace DemoHandlers
 {
-   /// <summary>
-   /// The wrapper class for the Franchise command.
-   /// </summary>
-   public partial class Franchise : GeneratedCommandBase<Franchise, Franchise.Result>, ICommandHandler
-   {
-      private Franchise() : base("Franchise")
+    /// <summary>
+    /// The wrapper class for the Franchise command.
+    /// </summary>
+    public partial class RootCommand :  ICommandHandler
+   {      
+      internal static RootCommand Build()
       {
-      }
-      
-      internal static Franchise Create()
-      {
-         var command = new Franchise();
+         var command = new RootCommand();
+         command.Name = "Franchise";
          command.GreetingArgument = new Argument<string>("greetingArg");
          command.Add(command.GreetingArgument);
-         command.StarTrek = StarTrek.Create(command);
+         command.StarTrek = StarTrek.Build(command);
          command.AddCommandToScl(command.StarTrek);
-         command.SystemCommandLineCommand.AddValidator(command.Validate);
+         command.AddValidator(command.Validate);
          command.Handler = command;
          return command;
       }
@@ -36,11 +29,11 @@ namespace DemoHandlers
       /// </summary>
       public class Result
       {
-         internal Result(Franchise command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult)
+         internal Result(RootCommand command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult)
          {
          }
          
-         internal Result(Franchise command, CommandResult commandResult)
+         internal Result(RootCommand command, CommandResult commandResult)
          {
             Greeting = GetValueForSymbol(command.GreetingArgument, commandResult);
          }
@@ -110,15 +103,13 @@ namespace DemoHandlers
    /// <summary>
    /// The wrapper class for the StarTrek command.
    /// </summary>
-   public partial class StarTrek : GeneratedCommandBase<StarTrek, StarTrek.Result, Franchise>, ICommandHandler
+   public partial class StarTrek : GeneratedCommandBase<StarTrek, StarTrek.Result, RootCommand>, ICommandHandler
    {
-      private StarTrek(Franchise parent) : base("StarTrek", parent)
+      internal static StarTrek Build(RootCommand parent)
       {
-      }
-      
-      internal static StarTrek Create(Franchise parent)
-      {
-         var command = new StarTrek(parent);
+         var command = new StarTrek();
+         command.Parent = parent;
+         command.Name = "StarTrek";
          command.KirkOption = new Option<bool>("--Kirk");
          command.KirkOption.Description = "Whether to greet Captain Kirk";
          command.Add(command.KirkOption);
@@ -128,9 +119,9 @@ namespace DemoHandlers
          command.UhuraOption = new Option<bool>("--Uhura");
          command.UhuraOption.Description = "Whether to greet Lieutenant Uhura";
          command.Add(command.UhuraOption);
-         command.NextGeneration = NextGeneration.Create(command);
+         command.NextGeneration = NextGeneration.Build(command);
          command.AddCommandToScl(command.NextGeneration);
-         command.SystemCommandLineCommand.AddValidator(command.Validate);
+         command.AddValidator(command.Validate);
          command.Handler = command;
          return command;
       }
@@ -148,7 +139,7 @@ namespace DemoHandlers
          {
          }
          
-         private Result(StarTrek command, CommandResult commandResult, Franchise.Result parentResult)
+         private Result(StarTrek command, CommandResult commandResult, RootCommand.Result parentResult)
          {
             Greeting = parentResult.Greeting;
             Kirk = GetValueForSymbol(command.KirkOption, commandResult);
@@ -212,23 +203,21 @@ namespace DemoHandlers
    /// The wrapper class for the NextGeneration command.
    /// </summary>
    public partial class NextGeneration : GeneratedCommandBase<NextGeneration, NextGeneration.Result, StarTrek>, ICommandHandler
-   {
-      private NextGeneration(StarTrek parent) : base("NextGeneration", parent)
+   {     
+      internal static NextGeneration Build(StarTrek parent)
       {
-      }
-      
-      internal static NextGeneration Create(StarTrek parent)
-      {
-         var command = new NextGeneration(parent);
+         var command = new NextGeneration();
+         command.Parent = parent;
+         command.Name = "NextGeneration";
          command.PicardOption = new Option<bool>("--Picard");
          command.PicardOption.Description = "This is the description for Picard";
          command.PicardOption.AddAlias("-p");
          command.Add(command.PicardOption);
-         command.DeepSpaceNine = DeepSpaceNine.Create(command);
+         command.DeepSpaceNine = DeepSpaceNine.Build(command);
          command.AddCommandToScl(command.DeepSpaceNine);
-         command.Voyager = Voyager.Create(command);
+         command.Voyager = Voyager.Build(command);
          command.AddCommandToScl(command.Voyager);
-         command.SystemCommandLineCommand.AddValidator(command.Validate);
+         command.AddValidator(command.Validate);
          command.Handler = command;
          return command;
       }
@@ -311,14 +300,12 @@ namespace DemoHandlers
    /// The wrapper class for the DeepSpaceNine command.
    /// </summary>
    public partial class DeepSpaceNine : GeneratedCommandBase<DeepSpaceNine, DeepSpaceNine.Result, NextGeneration>, ICommandHandler
-   {
-      private DeepSpaceNine(NextGeneration parent) : base("DeepSpaceNine", parent)
+   {     
+      internal static DeepSpaceNine Build(NextGeneration parent)
       {
-      }
-      
-      internal static DeepSpaceNine Create(NextGeneration parent)
-      {
-         var command = new DeepSpaceNine(parent);
+         var command = new DeepSpaceNine();
+         command.Parent = parent;
+         command.Name = "DeepSpaceNine";
          command.SiskoOption = new Option<bool>("--Sisko");
          command.Add(command.SiskoOption);
          command.OdoOption = new Option<bool>("--Odo");
@@ -329,7 +316,7 @@ namespace DemoHandlers
          command.Add(command.WorfOption);
          command.OBrienOption = new Option<bool>("--OBrien");
          command.Add(command.OBrienOption);
-         command.SystemCommandLineCommand.AddValidator(command.Validate);
+         command.AddValidator(command.Validate);
          command.Handler = command;
          return command;
       }
@@ -424,14 +411,12 @@ namespace DemoHandlers
    /// The wrapper class for the Voyager command.
    /// </summary>
    public partial class Voyager : GeneratedCommandBase<Voyager, Voyager.Result, NextGeneration>, ICommandHandler
-   {
-      private Voyager(NextGeneration parent) : base("Voyager", parent)
+   {   
+      internal static Voyager Build(NextGeneration parent)
       {
-      }
-      
-      internal static Voyager Create(NextGeneration parent)
-      {
-         var command = new Voyager(parent);
+         var command = new Voyager();
+         command.Parent = parent;
+         command.Name = "Voyager";
          command.JanewayOption = new Option<bool>("--Janeway");
          command.Add(command.JanewayOption);
          command.ChakotayOption = new Option<bool>("--Chakotay");
@@ -442,7 +427,7 @@ namespace DemoHandlers
          command.Add(command.TuvokOption);
          command.SevenOfNineOption = new Option<bool>("--SevenOfNine");
          command.Add(command.SevenOfNineOption);
-         command.SystemCommandLineCommand.AddValidator(command.Validate);
+         command.AddValidator(command.Validate);
          command.Handler = command;
          return command;
       }
