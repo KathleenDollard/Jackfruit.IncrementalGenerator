@@ -3,6 +3,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;
+using System.Threading.Tasks;
 
 namespace Jackfruit.DemoHandlersSubCommands
 {
@@ -35,28 +36,24 @@ namespace Jackfruit.DemoHandlersSubCommands
         /// <summary>
         /// The result class for the StarTrek command.
         /// </summary>
-        public class Result
+        public class Result : RootCommand.Result
         {
-            internal Result(StarTrek command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult, command.Parent.GetResult(invocationContext))
+            internal Result(StarTrek command, InvocationContext invocationContext)
+                : this(command, invocationContext.ParseResult.CommandResult)
             {
             }
 
-            internal Result(StarTrek command, CommandResult result) : this(command, result, command.Parent.GetResult(result))
+            private protected Result(StarTrek command, CommandResult commandResult)
+                : base(command.Parent, commandResult)
             {
-            }
-
-            private Result(StarTrek command, CommandResult commandResult, RootCommand.Result parentResult)
-            {
-                Greeting = parentResult.Greeting;
                 Kirk = GetValueForSymbol(command.KirkOption, commandResult);
                 Spock = GetValueForSymbol(command.SpockOption, commandResult);
                 Uhura = GetValueForSymbol(command.UhuraOption, commandResult);
             }
 
-            public string Greeting { get; set; }
-            public bool Kirk { get; set; }
-            public bool Spock { get; set; }
-            public bool Uhura { get; set; }
+            public bool Kirk { get;  }
+            public bool Spock { get;  }
+            public bool Uhura { get;  }
         }
 
         /// <summary>
@@ -66,15 +63,6 @@ namespace Jackfruit.DemoHandlersSubCommands
         public override Result GetResult(InvocationContext invocationContext)
         {
             return new Result(this, invocationContext);
-        }
-
-        /// <summary>
-        /// Get an instance of the Result class for the StarTrek command that will not include any services.
-        /// </summary>
-        /// <param name="result">The System.CommandLine CommandResult used to retrieve values.</param>
-        public override Result GetResult(CommandResult result)
-        {
-            return new Result(this, result);
         }
 
         /// <summary>

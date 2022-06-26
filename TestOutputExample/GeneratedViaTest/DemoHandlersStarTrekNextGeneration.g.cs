@@ -3,6 +3,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;
+using System.Threading.Tasks;
 
 namespace Jackfruit.DemoHandlersSubCommands
 {
@@ -32,30 +33,20 @@ namespace Jackfruit.DemoHandlersSubCommands
         /// <summary>
         /// The result class for the NextGeneration command.
         /// </summary>
-        public class Result
+        public class Result : StarTrek.Result
         {
-            internal Result(NextGeneration command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult, command.Parent.GetResult(invocationContext))
+            internal Result(NextGeneration command, InvocationContext invocationContext)
+                : this(command, invocationContext.ParseResult.CommandResult)
             {
             }
 
-            internal Result(NextGeneration command, CommandResult result) : this(command, result, command.Parent.GetResult(result))
+            private protected Result(NextGeneration command, CommandResult commandResult)
+                : base(command.Parent, commandResult)
             {
-            }
-
-            private Result(NextGeneration command, CommandResult commandResult, StarTrek.Result parentResult)
-            {
-                Greeting = parentResult.Greeting;
-                Kirk = parentResult.Kirk;
-                Spock = parentResult.Spock;
-                Uhura = parentResult.Uhura;
                 Picard = GetValueForSymbol(command.PicardOption, commandResult);
             }
 
-            public string Greeting { get; set; }
-            public bool Kirk { get; set; }
-            public bool Spock { get; set; }
-            public bool Uhura { get; set; }
-            public bool Picard { get; set; }
+            public bool Picard { get; }
         }
 
         /// <summary>
@@ -65,15 +56,6 @@ namespace Jackfruit.DemoHandlersSubCommands
         public override Result GetResult(InvocationContext invocationContext)
         {
             return new Result(this, invocationContext);
-        }
-
-        /// <summary>
-        /// Get an instance of the Result class for the NextGeneration command that will not include any services.
-        /// </summary>
-        /// <param name="result">The System.CommandLine CommandResult used to retrieve values.</param>
-        public override Result GetResult(CommandResult result)
-        {
-            return new Result(this, result);
         }
 
         /// <summary>

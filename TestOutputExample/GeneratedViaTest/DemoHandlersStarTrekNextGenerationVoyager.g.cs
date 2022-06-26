@@ -1,4 +1,5 @@
 ﻿// This file is created by a generator.
+using System.Threading.Tasks;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
@@ -34,24 +35,17 @@ namespace Jackfruit.DemoHandlersSubCommands
         /// <summary>
         /// The result class for the Voyager command.
         /// </summary>
-        public class Result
+        public class Result : NextGeneration.Result
         {
-            internal Result(Voyager command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult, command.Parent.GetResult(invocationContext))
+            internal Result(Voyager command, InvocationContext invocationContext)
+                : this(command, invocationContext.ParseResult.CommandResult)
             {
                 Console = GetService<System.CommandLine.IConsole>(invocationContext);
             }
 
-            internal Result(Voyager command, CommandResult result) : this(command, result, command.Parent.GetResult(result))
+            private protected Result(Voyager command, CommandResult commandResult)
+                : base(command.Parent, commandResult)
             {
-            }
-
-            private Result(Voyager command, CommandResult commandResult, NextGeneration.Result parentResult)
-            {
-                Greeting = parentResult.Greeting;
-                Kirk = parentResult.Kirk;
-                Spock = parentResult.Spock;
-                Uhura = parentResult.Uhura;
-                Picard = parentResult.Picard;
                 Janeway = GetValueForSymbol(command.JanewayOption, commandResult);
                 Chakotay = GetValueForSymbol(command.ChakotayOption, commandResult);
                 Torres = GetValueForSymbol(command.TorresOption, commandResult);
@@ -59,17 +53,12 @@ namespace Jackfruit.DemoHandlersSubCommands
                 SevenOfNine = GetValueForSymbol(command.SevenOfNineOption, commandResult);
             }
 
-            public string Greeting { get; set; }
-            public bool Kirk { get; set; }
-            public bool Spock { get; set; }
-            public bool Uhura { get; set; }
-            public bool Picard { get; set; }
-            public System.CommandLine.IConsole Console { get; set; }
-            public bool Janeway { get; set; }
-            public bool Chakotay { get; set; }
-            public bool Torres { get; set; }
-            public bool Tuvok { get; set; }
-            public bool SevenOfNine { get; set; }
+            public System.CommandLine.IConsole Console { get;  }
+            public bool Janeway { get;  }
+            public bool Chakotay { get;  }
+            public bool Torres { get;  }
+            public bool Tuvok { get;  }
+            public bool SevenOfNine { get;  }
         }
 
         /// <summary>
@@ -79,15 +68,6 @@ namespace Jackfruit.DemoHandlersSubCommands
         public override Result GetResult(InvocationContext invocationContext)
         {
             return new Result(this, invocationContext);
-        }
-
-        /// <summary>
-        /// Get an instance of the Result class for the Voyager command that will not include any services.
-        /// </summary>
-        /// <param name="result">The System.CommandLine CommandResult used to retrieve values.</param>
-        public override Result GetResult(CommandResult result)
-        {
-            return new Result(this, result);
         }
 
         /// <summary>

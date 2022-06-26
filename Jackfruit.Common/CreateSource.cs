@@ -7,7 +7,6 @@ namespace Jackfruit.Common
 {
     public static class CreateSource
     {
-        private const string libName = "Jackfruit";
         private const string create = "Create";
         private const string command = "command";
         private const string result = "result";
@@ -22,27 +21,6 @@ namespace Jackfruit.Common
 
         private static string CommandClassName(CommandDef commandDef) => commandDef.Name;
         private static string CommandPropertyName(CommandDef commandDef) => commandDef.Name;
-        private static string CommandFullClassName(IEnumerable<CommandDef> ancestors, CommandDef? parent, CommandDef commandDef)
-        {
-            // TODO: **** When it is clear we will not nest these types, probably remove this method and replace with direct call
-            //if (commandDef.Name == CommonHelpers.CliRootName)
-            //{ return CommonHelpers.CliRootName; }
-            //var ancestorList =
-            //        parent is null
-            //        ? ancestors
-            //        : new List<CommandDef> { parent }.Union(ancestors);
-            //ancestorList = ancestorList
-            //        .Reverse()
-            //        .Where(a => a.Name != CommonHelpers.CliRootName);
-            //var parentNames =
-            //    ancestorList.Any()
-            //        ? string.Join(".", ancestorList.Select(a => CommandClassName(a))) + "."
-            //        : "";
-            //return CommonHelpers.GetStyle(commandDef) == CommonHelpers.Cli
-            //    ? $"{parentNames}{CommandClassName(commandDef)}"
-            //    : $"Commands.{parentNames}{CommandClassName(commandDef)}";
-            return CommandClassName(commandDef);
-        }
         private static string MemberPropertyName(MemberDef memberDef)
             => memberDef switch
             {
@@ -62,79 +40,68 @@ namespace Jackfruit.Common
         private static NamedItemModel GeneratedCommandBase(string self)
            => new GenericNamedItemModel("GeneratedCommandBase", self, $"{self}.{resultName}");
 
-        public static CodeFileModel? GetCliPartialCodeFile(IEnumerable<CommandDefBase> rootCommandDefs)
+        public static CodeFileModel? GetRootCommandPartialCodeFile(CommandDef rootCommandDef)
         {
-            var roots = rootCommandDefs
-                    .OfType<CommandDef>().ToList()
-                    .Where(x => CommonHelpers.GetStyle(x) == CommonHelpers.Cli);
-            return !roots.Any()
+            // TODO: Work this out for the generic version, particularly the name
+            return rootCommandDef is null
                 ? null
-                : new CodeFileModel(CommonHelpers.Cli)
-                    .Usings(roots.Select(x => new UsingModel(x.Namespace)).Distinct().ToArray())
+                : new CodeFileModel($"{CommonHelpers.RootCommand}.g.cs")
+                    .Usings(new UsingModel(rootCommandDef.Namespace))
                     .Namespace("Jackfruit",
-                        Class(CommonHelpers.Cli)
+                        Class(CommonHelpers.RootCommand)
                             .Public()
                             .Partial()
+                            .InheritedFrom(new GenericNamedItemModel(CommonHelpers.RootCommand, $"{CommonHelpers.RootCommand}.Result"))
                             .Members(
-                                Constructor(CommonHelpers.Cli)
+                                Method("Create", CommonHelpers.RootCommand)
                                     .Static()
+                                    .NewSlot()
+                                    .Parameters(
+                                        Parameter("rootNode", "CommandNode"))
                                     .Statements(
-                                        roots.Select(x => Assign(x.Name, Invoke(x.Name, create)))))
-                            .Members(roots.Select(x => Property(x.Name, x.Name).Public().Static())));
+                                        Return(Invoke("RootCommand<RootCommand, RootCommand.Result>",
+                                             "Create",
+                                             "rootNode")))));
         }
 
-        public static CodeFileModel? GetCommandCodeFile(CommandDefBase rootCommandDef)
-            => rootCommandDef is not CommandDef commandDef
-                ? null
-                : CodeFile("Commands")
-                    .Usings("System",
-                            "System.CommandLine",
-                            "System.CommandLine.Invocation",
-                            "System.CommandLine.Parsing",
-                            "System.CommandLine.Binding",
-                            "System.Threading.Tasks",
-                            "Jackfruit.Internal",
-                            libName)
-                    .Namespace(commandDef.Namespace,
-                        CommandClass(Enumerable.Empty<CommandDef>(),
-                                     Enumerable.Empty<MemberDef>(),
-                                     null,
-                                     commandDef).ToArray());
-
-        private static IEnumerable<ClassModel> CommandClass(IEnumerable<CommandDef> ancestors,
-                                               IEnumerable<MemberDef> ancestorMembers,
-                                               CommandDef? parent,
-                                               CommandDef commandDef)
+        public static CodeFileModel? GetCommandCodeFile(CommandDefBase commandDefBase)
         {
-            var commandClasses = new List<ClassModel>();
-            // TODO: Consider moving Ancestors and ancestor members to CommandDef. These would be null until the tree is built.
-            var ancestorsAndSelf = ancestors.ToList();
-            if (parent is not null)
-            { ancestorsAndSelf.Insert(0, parent); }
-            // TODO: have a force option
-            var myMembers = NonAncestorMembers(ancestorMembers, commandDef);
-            var newAncestorMembers = ancestorMembers.Union(myMembers).ToList();
-
-            string className = CommandClassName(commandDef);
-            commandClasses.Add(
-                Class(className)
-                    .XmlDescription($"The wrapper class for the {className} command.")
-                    .Public()
-                    .Partial()
-                    .ImplementedInterfaces(
-                        string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
-                            ? Array.Empty<NamedItemModel>()
-                            : new NamedItemModel[] { "ICommandHandler" })
-                    .InheritedFrom(parent is null
+            if (commandDefBase is not CommandDef commandDef)
+            { return null; }
+            var usings = new UsingModel[]
+            {
+                "System",
+                "System.Threading.Tasks",
+                "System.CommandLine",
+                "System.CommandLine.Invocation",
+                "System.CommandLine.Parsing",
+                "Jackfruit.Internal",
+            };
+            // TODO: This needs to be unique within the project, like fully qualified for non root and including generic for root
+            var isRoot = commandDef.Parent is null;
+            // TODO: The rootcommand name should include any generic - might move this to the commandDef
+            var className = isRoot ? "RootCommand" : CommandClassName(commandDef);
+            var fileName = isRoot ? "RootCommand" : commandDef.Name;
+            var nspace = isRoot ? "Jackfruit" : commandDef.Namespace;
+            var xmlDescription = isRoot ? "" : $"The wrapper class for the {className} command.";
+            var baseClass = isRoot
+                ? null
+                : string.IsNullOrWhiteSpace(commandDef.Parent)
                         ? GeneratedCommandBase(className)
-                        : GeneratedCommandBase(className, CommandClassName(parent)))
-                    .Members(CommonClassMembers(ancestorsAndSelf, ancestorMembers, NonAncestorMembers(ancestorMembers, commandDef), commandDef)));
+                        : GeneratedCommandBase(className, commandDef.Parent!);
 
-            commandClasses.AddRange(
-                    commandDef.SubCommands
-                                .OfType<CommandDef>()
-                                .SelectMany(cmd => CommandClass(ancestorsAndSelf, newAncestorMembers, commandDef, cmd)));
-            return commandClasses;
+            return CodeFile(fileName)
+                .Usings(usings)
+                .Namespace(nspace,
+                    Class(className)
+                        .Public().Partial()
+                        .XmlDescription(xmlDescription)
+                        .ImplementedInterfaces(
+                            string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
+                                ? Array.Empty<NamedItemModel>()
+                                : new NamedItemModel[] { "ICommandHandler" })
+                        .InheritedFrom(baseClass)
+                        .Members(CommonClassMembers(ancestorsAndSelf, ancestorMembers, NonAncestorMembers(ancestorMembers, commandDef), commandDef)));
 
             static IEnumerable<MemberDef> NonAncestorMembers(IEnumerable<MemberDef> ancestorMembers, CommandDef commandDef)
                 => commandDef.Members
@@ -152,7 +119,7 @@ namespace Jackfruit.Common
                 ancestors.Any()
                     ? Constructor(CommandClassName(commandDef))
                         .Private()
-                        .Parameters(Parameter("parent", CommandFullClassName(ancestors.Skip(1), null, ancestors.First())))
+                        .Parameters(Parameter("parent", CommandClassName( ancestors.First())))
                         .Base(commandDef.Name, Symbol("parent"))
                     : Constructor(CommandClassName(commandDef))
                         .Private()
@@ -175,7 +142,7 @@ namespace Jackfruit.Common
 
             members.AddRange(commandDef.SubCommands
                 .OfType<CommandDef>()
-                .Select(c => Property(CommandPropertyName(c), CommandFullClassName(ancestors, commandDef, c)).Public()));
+                .Select(c => Property(CommandPropertyName(c), CommandClassName(c)).Public()));
 
             return members;
         }
@@ -270,12 +237,12 @@ namespace Jackfruit.Common
                         );
             if (ancestors.Any())
             {
-                method.Parameters.Add(Parameter("parent", CommandFullClassName(ancestors.Skip(1), null, ancestors.First())));
-                method.Statements.Add(AssignWithDeclare(commandVar, New(CommandFullClassName(ancestors, null, commandDef), Symbol("parent"))));
+                method.Parameters.Add(Parameter("parent", CommandClassName(ancestors.First())));
+                method.Statements.Add(AssignWithDeclare(commandVar, New(CommandClassName(commandDef), Symbol("parent"))));
             }
             else
             {
-                method.Statements.Add(AssignWithDeclare(commandVar, New(CommandFullClassName(ancestors, null, commandDef))));
+                method.Statements.Add(AssignWithDeclare(commandVar, New(CommandClassName(commandDef))));
             }
             foreach (var member in myMembers)
             {
@@ -312,7 +279,7 @@ namespace Jackfruit.Common
                 if (subCommandDef is CommandDef subCommand)
                 {
                     var toAdd = $"{commandVar}.{CommandPropertyName(subCommand)}";
-                    method.Statements.Add(Assign(toAdd, Invoke(CommandFullClassName(ancestors, commandDef, subCommand), "Create", Symbol(commandVar))));
+                    method.Statements.Add(Assign(toAdd, Invoke(CommandClassName(subCommand), "Create", Symbol(commandVar))));
                     method.Statements.Add(SimpleCall(Invoke(commandVar, "AddCommandToScl", Symbol(toAdd))));
                 }
             }
@@ -331,7 +298,7 @@ namespace Jackfruit.Common
                 Class("Result")
                     .XmlDescription($"The result class for the {CommandClassName(commandDef)} command.")
                     .Public()
-                    .Members(ResultConstructors(ancestorMembers,myMembers,commandDef));
+                    .Members(ResultConstructors(ancestorMembers, myMembers, commandDef));
             resultClass.Members.AddRange(ancestorMembers
                     .Select(x => Property(x.Name, x.TypeName).Public()));
             resultClass.Members.AddRange(myMembers
@@ -347,7 +314,7 @@ namespace Jackfruit.Common
                 };
                 if (commandDef.Parent is not null)
                 {
-                    parameters.Add(Parameter(parentResult, $"{CommandClassName(commandDef.Parent)}.Result"));
+                    parameters.Add(Parameter(parentResult, $"{CreateSource.CommandClassName(commandDef.Parent)}.Result"));
                 }
                 return parameters.ToArray();
             }
@@ -418,7 +385,7 @@ namespace Jackfruit.Common
                 {
                     statements.Add(Assign(member.Name, Symbol($"parentResult.{member.Name}")));
                 }
-                foreach (var member in myMembers.Where(x=>x is not ServiceDef))
+                foreach (var member in myMembers.Where(x => x is not ServiceDef))
                 {
 
                     statements.Add(Assign(member.Name, Invoke(null, "GetValueForSymbol", Symbol($"command.{MemberPropertyName(member)}"), Symbol(commandResultVar))));

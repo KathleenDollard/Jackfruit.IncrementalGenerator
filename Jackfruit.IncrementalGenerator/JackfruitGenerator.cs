@@ -53,7 +53,7 @@ namespace Jackfruit
  
             // *** Cli approach
             // To be a partial, this must be in the same namespace and assembly as the generated part
-            initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource($"{CommonHelpers.Cli}.partial.g.cs", cliClassCode));
+            initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource($"{CommonHelpers.RootCommand}.partial.g.cs", cliClassCode));
 
             // Build command defs and return as a tree for each rootcommand node
             var commandDefNodes = initContext.SyntaxProvider
@@ -67,7 +67,7 @@ namespace Jackfruit
                 .Select((node, cancellationToken) => BuildModel.FlattenWithRoot(node, cancellationToken));
 
             var roots = commandDefCollection
-                .Select((t, _) => t.Name);
+                .Select((t, _) => t.RootCommandDef);
 
             var commands = commandDefCollection
                 .SelectMany((t, _) => t.CommandDefs);
@@ -79,11 +79,10 @@ namespace Jackfruit
                 .Select((x, _) => CreateSource.GetCommandCodeFile(x));
 
             var rootCommandCodeFileModel = roots
-                .Collect()
                 .Select((x, _) => CreateSource.GetRootCommandPartialCodeFile(x));
 
             initContext.RegisterSourceOutput(commandsCodeFileModel,
-                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, CommonHelpers.Cli));
+                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, CommonHelpers.RootCommand));
 
             // And finally, we output files/sources
             initContext.RegisterSourceOutput(rootCommandCodeFileModel,
@@ -110,7 +109,7 @@ namespace Jackfruit
                     : name == CommonHelpers.AddCommandName && argCount == 1
                         ? true
                         : name == CommonHelpers.CreateName
-                            ? argCount == 1 && GetCaller(invocation.Expression) == CommonHelpers.Cli
+                            ? argCount == 1 && GetCaller(invocation.Expression) == CommonHelpers.RootCommand
                             : false;
             }
             return false;

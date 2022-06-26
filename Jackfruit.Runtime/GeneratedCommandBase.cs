@@ -28,7 +28,6 @@ namespace Jackfruit.Internal
 
 
         public abstract TResult GetResult(InvocationContext invocationContext);
-        public abstract TResult GetResult(CommandResult result);
 
         //public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
 

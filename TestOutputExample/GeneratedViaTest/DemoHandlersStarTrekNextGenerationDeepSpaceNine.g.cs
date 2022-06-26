@@ -3,6 +3,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;
+using System.Threading.Tasks;
 
 namespace Jackfruit.DemoHandlersSubCommands
 {
@@ -34,23 +35,16 @@ namespace Jackfruit.DemoHandlersSubCommands
         /// <summary>
         /// The result class for the DeepSpaceNine command.
         /// </summary>
-        public class Result
+        public class Result: NextGeneration.Result
         {
-            internal Result(DeepSpaceNine command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult, command.Parent.GetResult(invocationContext))
+            internal Result(DeepSpaceNine command, InvocationContext invocationContext) 
+                : this(command, invocationContext.ParseResult.CommandResult)
             {
             }
 
-            internal Result(DeepSpaceNine command, CommandResult result) : this(command, result, command.Parent.GetResult(result))
+            private protected Result(DeepSpaceNine command, CommandResult commandResult)
+                :base(command.Parent, commandResult)
             {
-            }
-
-            private Result(DeepSpaceNine command, CommandResult commandResult, NextGeneration.Result parentResult)
-            {
-                Greeting = parentResult.Greeting;
-                Kirk = parentResult.Kirk;
-                Spock = parentResult.Spock;
-                Uhura = parentResult.Uhura;
-                Picard = parentResult.Picard;
                 Sisko = GetValueForSymbol(command.SiskoOption, commandResult);
                 Odo = GetValueForSymbol(command.OdoOption, commandResult);
                 Dax = GetValueForSymbol(command.DaxOption, commandResult);
@@ -58,16 +52,11 @@ namespace Jackfruit.DemoHandlersSubCommands
                 OBrien = GetValueForSymbol(command.OBrienOption, commandResult);
             }
 
-            public string Greeting { get; set; }
-            public bool Kirk { get; set; }
-            public bool Spock { get; set; }
-            public bool Uhura { get; set; }
-            public bool Picard { get; set; }
-            public bool Sisko { get; set; }
-            public bool Odo { get; set; }
-            public bool Dax { get; set; }
-            public bool Worf { get; set; }
-            public bool OBrien { get; set; }
+            public bool Sisko { get;  }
+            public bool Odo { get;  }
+            public bool Dax { get;  }
+            public bool Worf { get;  }
+            public bool OBrien { get;  }
         }
 
         /// <summary>
@@ -77,15 +66,6 @@ namespace Jackfruit.DemoHandlersSubCommands
         public override Result GetResult(InvocationContext invocationContext)
         {
             return new Result(this, invocationContext);
-        }
-
-        /// <summary>
-        /// Get an instance of the Result class for the DeepSpaceNine command that will not include any services.
-        /// </summary>
-        /// <param name="result">The System.CommandLine CommandResult used to retrieve values.</param>
-        public override Result GetResult(CommandResult result)
-        {
-            return new Result(this, result);
         }
 
         /// <summary>

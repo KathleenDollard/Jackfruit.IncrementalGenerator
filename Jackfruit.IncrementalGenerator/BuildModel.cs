@@ -8,13 +8,13 @@ namespace Jackfruit.IncrementalGenerator
 {
     public static class BuildModel
     {
-        public static (string Name, IEnumerable<CommandDef> CommandDefs) FlattenWithRoot(
+        public static (CommandDef RootCommandDef, IEnumerable<CommandDef> CommandDefs) FlattenWithRoot(
             CommandDefNode? commandDefNode, CancellationToken cancellationToken)
         {
             if (commandDefNode is null)
             { throw new ArgumentNullException(nameof(commandDefNode)); }
             List<CommandDef> commandDefs = GetChildren(commandDefNode);
-            return new(commandDefNode.CommandDef.Name, commandDefs);
+            return new(commandDefNode.CommandDef, commandDefs);
 
             static List<CommandDef> GetChildren(CommandDefNode node)
             {
@@ -148,7 +148,7 @@ namespace Jackfruit.IncrementalGenerator
             { return null; }
 
 
-            var commandDef = Helpers.BuildCommandDef(path, parentNode?.CommandDef.Name, CommonHelpers.MethodFullName(handlerSymbol), commandDetails, CommonHelpers.Cli);
+            var commandDef = Helpers.BuildCommandDef(path, parentNode?.CommandDef.Name, CommonHelpers.MethodFullName(handlerSymbol), commandDetails, CommonHelpers.RootCommand);
             if (commandDef is null)
             { return null; }
 
@@ -162,6 +162,9 @@ namespace Jackfruit.IncrementalGenerator
                     .Select(x => GetCommandDefNode(newPath, commandDefNode, x, cancellationToken))
                     .Where(x => x is not null)
                     .ToList();
+            commandDef.SubCommandNames = subCommandNodes
+                    .Where(n=>n is not null)
+                    .Select(n => n!.CommandDef.Name);
             commandDefNode.AddSubCommandNodes(subCommandNodes!);
 
             return commandDefNode;

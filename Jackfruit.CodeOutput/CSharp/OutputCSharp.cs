@@ -16,6 +16,7 @@ namespace Jackfruit.IncrementalGenerator
         public override string PrivateProtectedKeyword => "private protected";
 
         public override string StaticKeyword => "static";
+        public override string NewSlotKeyword => "new";
         public override string OverrideKeyword => "override";
         public override string AsyncKeyword => "async";
         public override string PartialKeyword => "partial";
@@ -97,10 +98,10 @@ namespace Jackfruit.IncrementalGenerator
 
         public override IEnumerable<string> ClassOpen(ClassModel model)
         {
-            var keywords = $"{OptionalKeyword(model.IsStatic, StaticKeyword)}" +
-                $"{OptionalKeyword(model.IsAsync, AsyncKeyword)}" +
-                $"{OptionalKeyword(model.IsSealed, SealedKeyword)}" +
-                $"{OptionalKeyword(model.IsPartial, PartialKeyword)}";
+            var keywords = OptionalKeyword(model.IsStatic, StaticKeyword) +
+                           OptionalKeyword(model.IsAsync, AsyncKeyword) +
+                           OptionalKeyword(model.IsSealed, SealedKeyword) +
+                           OptionalKeyword(model.IsPartial, PartialKeyword);
 
             var baseAndInterfacesList = model.ImplementedInterfaces.Select(x => NamedItem(x));
             baseAndInterfacesList =
@@ -128,10 +129,11 @@ namespace Jackfruit.IncrementalGenerator
 
         public override IEnumerable<string> MethodOpen(MethodModel model)
         {
-            var keywords = $"{OptionalKeyword(model.IsStatic, StaticKeyword)}" +
-                $"{OptionalKeyword(model.IsOverride, OverrideKeyword)}" +
-                $"{OptionalKeyword(model.IsAsync, AsyncKeyword)}" +
-                $"{OptionalKeyword(model.IsPartial, PartialKeyword)}";
+            var keywords = OptionalKeyword(model.IsStatic, StaticKeyword) +
+                           OptionalKeyword(model.IsNewSlot, NewSlotKeyword) +
+                           OptionalKeyword(model.IsOverride, OverrideKeyword) +
+                           OptionalKeyword(model.IsAsync, AsyncKeyword) +
+                           OptionalKeyword(model.IsPartial, PartialKeyword);
             return new List<string>
                 {
                     $"{Scope(model.Scope)} {keywords}{NamedItem(model.ReturnType)} {NamedItem(model.Name)}({Parameters(model.Parameters)})",
@@ -160,20 +162,23 @@ namespace Jackfruit.IncrementalGenerator
             => model.BaseOrThis switch
             {
                 BaseOrThis.None => "",
-                BaseOrThis.Base => $" : base({string.Join(", ", model.BaseOrThisArguments.Select(x => Expression(x)))})",
-                BaseOrThis.This => $" : this({string.Join(", ", model.BaseOrThisArguments.Select(x => Expression(x)))})",
+                BaseOrThis.Base => $": base({string.Join(", ", model.BaseOrThisArguments.Select(x => Expression(x)))})",
+                BaseOrThis.This => $": this({string.Join(", ", model.BaseOrThisArguments.Select(x => Expression(x)))})",
                 _ => ""
             };
 
         public override IEnumerable<string> ConstructorOpen(ConstructorModel model)
         {
             var keywords = $"{OptionalKeyword(model.IsStatic, StaticKeyword)}";
-            return new List<string>
+            var ret = new List<string>
                 {
-                    $"{Scope(model.Scope)} {keywords}{NamedItem(model.ClassName)}({string.Join(",",Parameters(model.Parameters))}){BaseOrThisCall(model)}",
-                    "{"
+                    $"{Scope(model.Scope)} {keywords}{NamedItem(model.ClassName)}({string.Join(",",Parameters(model.Parameters))})",
                 };
-
+            var baseOrThiscall = BaseOrThisCall(model);
+            if(string.IsNullOrWhiteSpace(baseOrThiscall))
+            { ret.Add(baseOrThiscall); }
+            ret.Add("{");
+            return ret;
         }
 
         public override IEnumerable<string> ConstructorClose(ConstructorModel model)
@@ -371,6 +376,9 @@ namespace Jackfruit.IncrementalGenerator
 
         public override string TypeOf(NamedItemModel typeName)
             => $"typeof({NamedItem(typeName)})";
+
+        public override string Cast(NamedItemModel typeName,ExpressionBase expression)
+            => $"({NamedItem(typeName)}){Expression(expression)}";
 
         public override string Compare(ExpressionBase left, Operator op, ExpressionBase right)
             => $"{Expression(left)} {Operator(op)} {Expression(right)}";

@@ -1,13 +1,14 @@
-﻿using System.CommandLine.Invocation;
+﻿// This file is created by a generator.
+using System;
+using System.Threading.Tasks;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using Jackfruit.Internal;
 using Jackfruit.DemoHandlersSubCommands;
 
 namespace Jackfruit
 {
-    /// <summary>
-    /// The wrapper class for the Franchise command.
-    /// </summary>
     public partial class RootCommand : ICommandHandler
     {
         internal static RootCommand Build()
@@ -47,15 +48,6 @@ namespace Jackfruit
         public override Result GetResult(InvocationContext invocationContext)
         {
             return new Result(this, invocationContext);
-        }
-
-        /// <summary>
-        /// Get an instance of the Result class for the Franchise command that will not include any services.
-        /// </summary>
-        /// <param name="result">The System.CommandLine CommandResult used to retrieve values.</param>
-        public override Result GetResult(CommandResult result)
-        {
-            return new Result(this, result);
         }
 
         /// <summary>
