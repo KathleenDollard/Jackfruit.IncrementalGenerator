@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "Example": {
+    "TestOutputExample": {
       "commandName": "Project",
-      "commandLineArgs": "StarTrek --Uhura"
+      "commandLineArgs": "StarTrek -h"
     }
   }
 }

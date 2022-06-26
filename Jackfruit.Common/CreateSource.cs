@@ -39,6 +39,15 @@ namespace Jackfruit.Common
             => new GenericNamedItemModel("GeneratedCommandBase", self, $"{self}.{resultName}", parent);
         private static NamedItemModel GeneratedCommandBase(string self)
            => new GenericNamedItemModel("GeneratedCommandBase", self, $"{self}.{resultName}");
+        private static UsingModel[] usings = new UsingModel[]
+            {
+                "System",
+                "System.Threading.Tasks",
+                "System.CommandLine",
+                "System.CommandLine.Invocation",
+                "System.CommandLine.Parsing",
+                "Jackfruit.Internal",
+            };
 
         public static CodeFileModel? GetRootCommandPartialCodeFile(CommandDef rootCommandDef)
         {
@@ -68,45 +77,52 @@ namespace Jackfruit.Common
         {
             if (commandDefBase is not CommandDef commandDef)
             { return null; }
-            var usings = new UsingModel[]
-            {
-                "System",
-                "System.Threading.Tasks",
-                "System.CommandLine",
-                "System.CommandLine.Invocation",
-                "System.CommandLine.Parsing",
-                "Jackfruit.Internal",
-            };
-            // TODO: This needs to be unique within the project, like fully qualified for non root and including generic for root
+
             var isRoot = commandDef.Parent is null;
+            return commandDef.Parent is null
+                ? GetRootCommandCode(commandDef)
+                : GetNonRootCommandCode(commandDef);
+        }
+
+        private static CodeFileModel? GetRootCommandCode(CommandDef commandDef)
+        {
+            // TODO: This needs to include the generic to be unique
+            var fileName = "RootCommand";
             // TODO: The rootcommand name should include any generic - might move this to the commandDef
-            var className = isRoot ? "RootCommand" : CommandClassName(commandDef);
-            var fileName = isRoot ? "RootCommand" : commandDef.Name;
-            var nspace = isRoot ? "Jackfruit" : commandDef.Namespace;
-            var xmlDescription = isRoot ? "" : $"The wrapper class for the {className} command.";
-            var baseClass = isRoot
-                ? null
-                : string.IsNullOrWhiteSpace(commandDef.Parent)
-                        ? GeneratedCommandBase(className)
-                        : GeneratedCommandBase(className, commandDef.Parent!);
+            var className = "RootCommand";
 
             return CodeFile(fileName)
                 .Usings(usings)
-                .Namespace(nspace,
+                .Namespace((string?)"Jackfruit",
                     Class(className)
                         .Public().Partial()
-                        .XmlDescription(xmlDescription)
                         .ImplementedInterfaces(
                             string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
                                 ? Array.Empty<NamedItemModel>()
                                 : new NamedItemModel[] { "ICommandHandler" })
-                        .InheritedFrom(baseClass)
-                        .Members(CommonClassMembers(ancestorsAndSelf, ancestorMembers, NonAncestorMembers(ancestorMembers, commandDef), commandDef)));
+                        .Members(RootConstructor(commandDef))
+                        .Members(CommonClassMembers(commandDef)));
+        }
 
-            static IEnumerable<MemberDef> NonAncestorMembers(IEnumerable<MemberDef> ancestorMembers, CommandDef commandDef)
-                => commandDef.Members
-                    .Where(m => !ancestorMembers.Any(a => a.Name.Equals(m.Name)))
-                    .ToList();
+        public static CodeFileModel? GetNonRootCommandCode(CommandDef commandDef)
+        {
+            // TODO: This needs to be unique within the project, like fully qualified
+            var fileName = commandDef.Name;
+            var className = CommandClassName(commandDef);
+
+            return CodeFile(fileName)
+                .Usings(usings)
+                .Namespace((string?)commandDef.Namespace,
+                    Class(className)
+                        .Public().Partial()
+                        .XmlDescription((string?)$"The wrapper class for the {className} command.")
+                        .ImplementedInterfaces(
+                            string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
+                                ? Array.Empty<NamedItemModel>()
+                                : new NamedItemModel[] { "ICommandHandler" })
+                        .InheritedFrom((NamedItemModel?)GeneratedCommandBase(className, commandDef.Parent!))
+                        .Members(BuildMethod(commandDef))
+                        .Members(CommonClassMembers(commandDef)));
         }
 
         private static IEnumerable<IMember> CommonClassMembers(IEnumerable<CommandDef> ancestors,

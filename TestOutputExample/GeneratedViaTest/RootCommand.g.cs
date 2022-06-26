@@ -11,17 +11,15 @@ namespace Jackfruit
 {
     public partial class RootCommand : ICommandHandler
     {
-        internal static RootCommand Build()
+        public RootCommand()
         {
-            var command = new RootCommand();
-            command.Name = "Franchise";
-            command.GreetingArgument = new Argument<string>("greetingArg");
-            command.Add(command.GreetingArgument);
-            command.StarTrek = StarTrek.Build(command);
-            command.AddCommandToScl(command.StarTrek);
-            command.AddValidator(command.Validate);
-            command.Handler = command;
-            return command;
+            Name = "Franchise";
+            GreetingArgument = new Argument<string>("greetingArg");
+            Add(GreetingArgument);
+            StarTrek = StarTrek.Build(this);
+            AddCommandToScl(StarTrek);
+            AddValidator(Validate);
+            Handler = this;
         }
 
         /// <summary>
@@ -76,14 +74,14 @@ namespace Jackfruit
         /// The validate method invoked by System.CommandLine.
         /// </summary>
         /// <param name="commandResult">The System.CommandLine CommandResult used to retrieve values for validation and it will hold any errors.</param>
-        public override void Validate(CommandResult commandResult)
+        public override void Validate(InvocationContext invocationContext)
         {
-            base.Validate(commandResult);
-            var result = GetResult(commandResult);
+            base.Validate(invocationContext);
+            var result = GetResult(invocationContext);
             var err = string.Join(Environment.NewLine, DemoHandlers.Validators.FranchiseValidate(result.Greeting));
             if (!(string.IsNullOrWhiteSpace(err)))
             {
-                commandResult.ErrorMessage = err;
+                invocationContext.ParseResult.CommandResult.ErrorMessage = err;
             }
         }
 

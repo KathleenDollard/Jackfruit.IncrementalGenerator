@@ -15,10 +15,10 @@ namespace Jackfruit.Internal
     {
         protected TParent Parent { get; set; }
 
-        public override void Validate(CommandResult commandResult)
+        public override void Validate(InvocationContext invocationContext)
         {
-            base.Validate(commandResult);
-            Parent.Validate(commandResult);
+            base.Validate(invocationContext);
+            Parent.Validate(invocationContext);
         }
     }
 
@@ -31,9 +31,9 @@ namespace Jackfruit.Internal
 
         //public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
 
-        public override void Validate(CommandResult commandResult)
+        public override void Validate(InvocationContext invocationContext)
         {
-            base.Validate(commandResult);
+            base.Validate(invocationContext);
         }
     }
 
@@ -51,12 +51,23 @@ namespace Jackfruit.Internal
 
     }
 
-
     public abstract class GeneratedCommandBase
     {
-        public GeneratedCommandBase()
+        public string? Name { get; protected set; }
+        private Command? _sytemCommandLineCommand = null;
+        public Command SystemCommandLineCommand
         {
-            SystemCommandLineCommand = new Command("");
+            get
+            {
+                if (_sytemCommandLineCommand is null)
+                {
+                    _sytemCommandLineCommand =
+                        string.IsNullOrWhiteSpace(Name)
+                            ? new RootCommand()
+                            : new Command(Name!);
+                }
+                return _sytemCommandLineCommand;
+            }
         }
 
         // no op: for generation
@@ -64,7 +75,7 @@ namespace Jackfruit.Internal
         //public void AddCommands(params Delegate[] method) { }
         public void AddCommand<TAttachTo>(Delegate method) { }
         //public void AddCommands<TAttachTo>(params Delegate[] method) { }
-        public virtual void Validate(CommandResult commandResult) { }
+        public virtual void Validate(InvocationContext invocationContext) { }
         public void AddValidator(Delegate action, params object[] values) { }
 
         protected void AddMessageOnFail(List<string> messages, string? newMessage)
@@ -80,8 +91,6 @@ namespace Jackfruit.Internal
             { messages.AddRange(newMessages); }
         }
 
-        protected internal Command SystemCommandLineCommand { get; }
-
         /// <summary>
         /// Adds a subcommand to the command.
         /// </summary>
@@ -95,13 +104,6 @@ namespace Jackfruit.Internal
         /// Gets the set of strings that can be used on the command line to specify the symbol.
         /// </summary>
         public IReadOnlyCollection<string> Aliases => SystemCommandLineCommand.Aliases;
-
-        /// <inheritdoc/>
-        public string Name
-        {
-            get { return SystemCommandLineCommand.Name; }
-            set { SystemCommandLineCommand.Name = value; }
-        }
 
         public string? Description => SystemCommandLineCommand.Description;
 
