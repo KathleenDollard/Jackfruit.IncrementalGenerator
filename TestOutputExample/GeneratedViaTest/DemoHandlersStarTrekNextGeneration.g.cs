@@ -47,13 +47,11 @@ namespace Jackfruit.DemoHandlersSubCommands
             /// Get an instance of the Result class for the NextGeneration command.
             /// </summary>
             /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve values.</param>
-            public static Result GetResult(NextGeneration command, InvocationContext invocationContext)
+            internal static Result GetResult(NextGeneration command, InvocationContext invocationContext)
             {
                 return new Result(command, invocationContext.ParseResult.CommandResult);
             }
         }
-
-
 
         /// <summary>
         /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.

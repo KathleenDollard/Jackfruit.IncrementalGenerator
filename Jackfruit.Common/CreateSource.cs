@@ -130,8 +130,6 @@ namespace Jackfruit.Common
             List<IMember> members = new()
             {
                 ResultClass(commandDef),
-                GetResultMethodFromInvocationContext(commandDef),
-                GetResultMethodFromCommandResult(commandDef),
                 InvokeHandlerMethod(commandDef),
                 InvokeAsyncHandlerMethod(commandDef)
             };
@@ -179,7 +177,8 @@ namespace Jackfruit.Common
 
         private static AssignWithDeclareModel GetResultFromInvocationContext()
         {
-            return AssignWithDeclare(result, Invoke("", getResultName, Symbol(invocationContext)));
+            return AssignWithDeclare(result, 
+                Invoke("Result", getResultName, This, Symbol(invocationContext)));
         }
 
         private static MethodModel InvokeHandlerMethod(CommandDef commandDef)
@@ -311,12 +310,21 @@ namespace Jackfruit.Common
                     .XmlDescription($"The result class for the {CommandClassName(commandDef)} command.")
                     .Public()
                     .Members(
+                        GetResultMethod(commandDef),
                         ResultCommandResultConstructor(commandDef));
 
             if (commandDef.Parent is null)
             { resultClass.Members.Add(ResultInvocationConstructor(commandDef)); }
 
             return resultClass;
+
+            static MethodModel GetResultMethod(CommandDef commandDef) 
+                => Method("GetResult", "Result")
+                    .Internal().Static()
+                    .Parameters(
+                        Parameter("InvocationContext","invocationContext"))
+                    .Statements(
+                        Return(New("Result.GetResult", This, Symbol("invocationContext"))));
 
             static ConstructorModel ResultInvocationConstructor(CommandDef commandDef)
                 => Constructor("Result")
@@ -358,16 +366,6 @@ namespace Jackfruit.Common
                 return statements.ToArray();
             }
         }
-
-        private static MethodModel GetResultMethodFromInvocationContext(CommandDef commandDef)
-            => GetResultMethod(
-                $"Get an instance of the Result class for the {CommandClassName(commandDef)} command.",
-                invocationContext, "InvocationContext", "The System.CommandLine InvocationContext used to retrieve values.");
-
-        private static MethodModel GetResultMethodFromCommandResult(CommandDef commandDef)
-            => GetResultMethod(
-                $"Get an instance of the Result class for the {CommandClassName(commandDef)} command that will not include any services.",
-                result, "CommandResult", "The System.CommandLine CommandResult used to retrieve values.");
 
         private static MethodModel GetResultMethod(string desc, string varName, NamedItemModel typeName, string paramDesc)
             => Method(getResultName, "Result")

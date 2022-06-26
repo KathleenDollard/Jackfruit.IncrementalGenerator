@@ -38,15 +38,15 @@ namespace Jackfruit
             }
 
             public string Greeting { get; set; }
-        }
 
-        /// <summary>
-        /// Get an instance of the Result class for the Franchise command.
-        /// </summary>
-        /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve values.</param>
-        public override Result GetResult(InvocationContext invocationContext)
-        {
-            return new Result(this, invocationContext);
+            /// <summary>
+            /// Get an instance of the Result class for the NextGeneration command.
+            /// </summary>
+            /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve values.</param>
+            internal static Result GetResult(RootCommand command, InvocationContext invocationContext)
+            {
+                return new Result(command, invocationContext.ParseResult.CommandResult);
+            }
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Jackfruit
         /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
         public int Invoke(InvocationContext invocationContext)
         {
-            var result = GetResult(invocationContext);
+            var result = Result.GetResult(this,invocationContext);
             DemoHandlers.Handlers.Franchise(result.Greeting);
             return invocationContext.ExitCode;
         }
@@ -66,7 +66,7 @@ namespace Jackfruit
         /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
         public Task<int> InvokeAsync(InvocationContext invocationContext)
         {
-            var result = GetResult(invocationContext);
+            var result = Result.GetResult(this, invocationContext);
             DemoHandlers.Handlers.Franchise(result.Greeting);
             return Task.FromResult(invocationContext.ExitCode);
         }
@@ -78,7 +78,7 @@ namespace Jackfruit
         public override void Validate(InvocationContext invocationContext)
         {
             base.Validate(invocationContext);
-            var result = GetResult(invocationContext);
+            var result = Result.GetResult(this,invocationContext);
             var err = string.Join(Environment.NewLine, DemoHandlers.Validators.FranchiseValidate(result.Greeting));
             if (!(string.IsNullOrWhiteSpace(err)))
             {

@@ -40,9 +40,6 @@ namespace Jackfruit.Internal
 
         public int Run(string[] args) 
             => SystemCommandLineCommand.Invoke(args);
-
-        public abstract TResult GetResult(InvocationContext invocationContext);
-
     }
 
     public abstract class GeneratedCommandBase
