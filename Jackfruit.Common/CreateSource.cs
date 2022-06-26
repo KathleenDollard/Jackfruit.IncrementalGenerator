@@ -260,49 +260,57 @@ namespace Jackfruit.Common
             {
                 method.Statements.Add(AssignWithDeclare(commandVar, New(CommandClassName(commandDef))));
             }
+            BuildStatements(commandDef);
+            return method;
+        }
+
+        private static IEnumerable<IStatement> BuildStatements(CommandDef commandDef)
+        {
+            var statements = new List<IStatement>();
             foreach (var member in myMembers)
             {
                 switch (member)
                 {
                     case OptionDef opt:
                         var optPropertyName = $"{commandVar}.{MemberPropertyName(opt)}";
-                        method.Statements.Add(Assign(optPropertyName, New(Generic("Option", opt.TypeName), $"--{opt.Name}")));
+                        statements.Add(Assign(optPropertyName, New(Generic("Option", opt.TypeName), $"--{opt.Name}")));
                         if (!string.IsNullOrWhiteSpace(opt.Description))
-                        { method.Statements.Add(Assign($"{optPropertyName}.Description", opt.Description)); }
+                        { statements.Add(Assign($"{optPropertyName}.Description", opt.Description)); }
                         foreach (var alias in opt.Aliases)
                         {
-                            method.Statements.Add(SimpleCall(Invoke(optPropertyName, "AddAlias", alias)));
+                            statements.Add(SimpleCall(Invoke(optPropertyName, "AddAlias", alias)));
                         }
                         if (!string.IsNullOrWhiteSpace(opt.ArgDisplayName))
-                        { method.Statements.Add(Assign($"{optPropertyName}.ArgDisplayName", opt.ArgDisplayName)); }
+                        { statements.Add(Assign($"{optPropertyName}.ArgDisplayName", opt.ArgDisplayName)); }
                         if (opt.Required)
-                        { method.Statements.Add(Assign($"{optPropertyName}.Required", opt.Required)); }
-                        method.Statements.Add(SimpleCall(Invoke(commandVar, "Add", Symbol(optPropertyName))));
+                        { statements.Add(Assign($"{optPropertyName}.Required", opt.Required)); }
+                        statements.Add(SimpleCall(Invoke(commandVar, "Add", Symbol(optPropertyName))));
                         break;
                     case ArgumentDef arg:
                         var argPropertyName = $"{commandVar}.{MemberPropertyName(arg)}";
-                        method.Statements.Add(Assign(argPropertyName, New(Generic("Argument", arg.TypeName), arg.Id)));
+                        statements.Add(Assign(argPropertyName, New(Generic("Argument", arg.TypeName), arg.Id)));
                         if (arg.Required)
-                        { method.Statements.Add(Assign($"{argPropertyName}.Required", arg.Required)); }
-                        method.Statements.Add(SimpleCall(Invoke(commandVar, "Add", Symbol(argPropertyName))));
+                        { statements.Add(Assign($"{argPropertyName}.Required", arg.Required)); }
+                        statements.Add(SimpleCall(Invoke(commandVar, "Add", Symbol(argPropertyName))));
                         break;
                     default:
                         break;
                 }
             }
-            foreach (var subCommandDef in commandDef.SubCommands)
+            foreach (var subCommandDef in commandDef.SubCommandNames)
             {
                 if (subCommandDef is CommandDef subCommand)
                 {
                     var toAdd = $"{commandVar}.{CommandPropertyName(subCommand)}";
-                    method.Statements.Add(Assign(toAdd, Invoke(CommandClassName(subCommand), "Create", Symbol(commandVar))));
-                    method.Statements.Add(SimpleCall(Invoke(commandVar, "AddCommandToScl", Symbol(toAdd))));
+                    statements.Add(Assign(toAdd, Invoke(CommandClassName(subCommand), "Create", Symbol(commandVar))));
+                    statements.Add(SimpleCall(Invoke(commandVar, "AddCommandToScl", Symbol(toAdd))));
                 }
             }
-            method.Statements.Add(SimpleCall(Invoke("command.SystemCommandLineCommand", "AddValidator", Symbol("command.Validate"))));
-            method.Statements.Add(Assign($"{commandVar}.Handler", Symbol(commandVar)));
-            method.Statements.Add(Return(Symbol(commandVar)));
-            return method;
+            statements.Add(SimpleCall(Invoke("command.SystemCommandLineCommand", "AddValidator", Symbol("command.Validate"))));
+            statements.Add(Assign($"{commandVar}.Handler", Symbol(commandVar)));
+            statements.Add(Return(Symbol(commandVar)));
+
+            return statements;
         }
 
         private static ClassModel ResultClass(
