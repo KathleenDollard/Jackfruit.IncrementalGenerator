@@ -25,12 +25,6 @@ namespace Jackfruit.Internal
     public abstract class GeneratedCommandBase<TSelf, TResult> : GeneratedCommandBase
         where TSelf : GeneratedCommandBase
     {
-
-
-        public abstract TResult GetResult(InvocationContext invocationContext);
-
-        //public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
-
         public override void Validate(InvocationContext invocationContext)
         {
             base.Validate(invocationContext);
@@ -44,10 +38,10 @@ namespace Jackfruit.Internal
         public static RootCommand<T, TResult> Create(CommandNode cliRoot)
         { return new T(); }
 
-        public int Run(string[] args)
-        {
-            return SystemCommandLineCommand.Invoke(args);
-        }
+        public int Run(string[] args) 
+            => SystemCommandLineCommand.Invoke(args);
+
+        public abstract TResult GetResult(InvocationContext invocationContext);
 
     }
 

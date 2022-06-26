@@ -35,11 +35,6 @@ namespace Jackfruit.DemoHandlersSubCommands
         /// </summary>
         public class Result : StarTrek.Result
         {
-            internal Result(NextGeneration command, InvocationContext invocationContext)
-                : this(command, invocationContext.ParseResult.CommandResult)
-            {
-            }
-
             private protected Result(NextGeneration command, CommandResult commandResult)
                 : base(command.Parent, commandResult)
             {
@@ -47,16 +42,18 @@ namespace Jackfruit.DemoHandlersSubCommands
             }
 
             public bool Picard { get; }
+
+            /// <summary>
+            /// Get an instance of the Result class for the NextGeneration command.
+            /// </summary>
+            /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve values.</param>
+            public static Result GetResult(NextGeneration command, InvocationContext invocationContext)
+            {
+                return new Result(command, invocationContext.ParseResult.CommandResult);
+            }
         }
 
-        /// <summary>
-        /// Get an instance of the Result class for the NextGeneration command.
-        /// </summary>
-        /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve values.</param>
-        public override Result GetResult(InvocationContext invocationContext)
-        {
-            return new Result(this, invocationContext);
-        }
+
 
         /// <summary>
         /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
@@ -64,7 +61,7 @@ namespace Jackfruit.DemoHandlersSubCommands
         /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
         public int Invoke(InvocationContext invocationContext)
         {
-            var result = GetResult(invocationContext);
+            var result = Result.GetResult(this, invocationContext);
             DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
             return invocationContext.ExitCode;
         }
@@ -75,7 +72,7 @@ namespace Jackfruit.DemoHandlersSubCommands
         /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
         public Task<int> InvokeAsync(InvocationContext invocationContext)
         {
-            var result = GetResult(invocationContext);
+            var result = Result.GetResult(this, invocationContext);
             DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
             return Task.FromResult(invocationContext.ExitCode);
         }

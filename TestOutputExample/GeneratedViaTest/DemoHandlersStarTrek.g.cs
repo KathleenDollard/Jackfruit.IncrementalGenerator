@@ -54,15 +54,15 @@ namespace Jackfruit.DemoHandlersSubCommands
             public bool Kirk { get;  }
             public bool Spock { get;  }
             public bool Uhura { get;  }
-        }
 
-        /// <summary>
-        /// Get an instance of the Result class for the StarTrek command.
-        /// </summary>
-        /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve values.</param>
-        public override Result GetResult(InvocationContext invocationContext)
-        {
-            return new Result(this, invocationContext);
+            /// <summary>
+            /// Get an instance of the Result class for the NextGeneration command.
+            /// </summary>
+            /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve values.</param>
+            public static Result GetResult(StarTrek command, InvocationContext invocationContext)
+            {
+                return new Result(command, invocationContext.ParseResult.CommandResult);
+            }
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Jackfruit.DemoHandlersSubCommands
         /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
         public int Invoke(InvocationContext invocationContext)
         {
-            var result = GetResult(invocationContext);
+            var result = Result.GetResult(this, invocationContext);
             DemoHandlers.Handlers.StarTrek(result.Greeting, result.Kirk, result.Spock, result.Uhura);
             return invocationContext.ExitCode;
         }
@@ -82,7 +82,7 @@ namespace Jackfruit.DemoHandlersSubCommands
         /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
         public Task<int> InvokeAsync(InvocationContext invocationContext)
         {
-            var result = GetResult(invocationContext);
+            var result = Result.GetResult(this, invocationContext);
             DemoHandlers.Handlers.StarTrek(result.Greeting, result.Kirk, result.Spock, result.Uhura);
             return Task.FromResult(invocationContext.ExitCode);
         }

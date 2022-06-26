@@ -27,7 +27,8 @@ namespace Jackfruit
         /// </summary>
         public class Result
         {
-            internal Result(RootCommand command, InvocationContext invocationContext) : this(command, invocationContext.ParseResult.CommandResult)
+            internal Result(RootCommand command, InvocationContext invocationContext)
+                : this(command, invocationContext.ParseResult.CommandResult)
             {
             }
 
