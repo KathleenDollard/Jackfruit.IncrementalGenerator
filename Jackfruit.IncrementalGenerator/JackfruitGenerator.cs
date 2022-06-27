@@ -81,12 +81,12 @@ namespace Jackfruit
             var rootCommandCodeFileModel = roots
                 .Select((x, _) => CreateSource.GetRootCommandPartialCodeFile(x));
 
-            initContext.RegisterSourceOutput(commandsCodeFileModel,
-                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, CommonHelpers.RootCommand));
-
             // And finally, we output files/sources
             initContext.RegisterSourceOutput(rootCommandCodeFileModel,
                 static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel?.Name ?? ""));
+
+            initContext.RegisterSourceOutput(commandsCodeFileModel,
+                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, CommonHelpers.RootCommand));
         }
 
         // currently public because used by CommandDef generator that is used by testing
@@ -103,14 +103,8 @@ namespace Jackfruit
                 int argCount = invocation.ArgumentList.Arguments.Count;
                 if (argCount == 0)
                 { return false; }
-                var name = GetName(invocation.Expression);
-                return name == null
-                    ? false
-                    : name == CommonHelpers.AddCommandName && argCount == 1
-                        ? true
-                        : name == CommonHelpers.CreateName
-                            ? argCount == 1 && GetCaller(invocation.Expression) == CommonHelpers.RootCommand
-                            : false;
+                var (className, methodName) = GetName(invocation.Expression);
+                return className == CommonHelpers.RootCommand && methodName == CommonHelpers.AddCommandName ;
             }
             return false;
 
@@ -127,16 +121,15 @@ namespace Jackfruit
             context.AddSource($"{hintName}.g.cs", writer.Output());
         }
 
-        internal static string? GetName(SyntaxNode expression)
+        internal static (string? className, string? methodName) GetName(SyntaxNode expression)
             => expression switch
             {
                 MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
-                    => memberAccess.Name is GenericNameSyntax genericName
-                        ? genericName.Identifier.ValueText
-                        : memberAccess.Name.ToString(),
-                IdentifierNameSyntax identifier
-                     => identifier.ToString(),
-                _ => null
+                    => (memberAccess.Expression.ToString(),
+                        memberAccess.Name is GenericNameSyntax genericName
+                            ? genericName.Identifier.ValueText
+                            : memberAccess.Name.ToString()),
+                _ => (null,null)
             };
 
         internal static string? GetCaller(SyntaxNode expression)

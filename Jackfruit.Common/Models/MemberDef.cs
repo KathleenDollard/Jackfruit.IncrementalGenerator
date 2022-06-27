@@ -3,17 +3,23 @@ namespace Jackfruit.Common
 {
     public abstract record MemberDef
     {
-        protected MemberDef(string id, string name, string description, string? typeName)
+        protected MemberDef(string id,
+                            string name,
+                            string description,
+                            string? typeName,
+                            bool isOnRoot)
         {
             Id = id;
             Name = name;
             Description = description;
             TypeName = typeName ?? "System.Boolean";
+            IsOnRoot = isOnRoot;
         }
 
         public string Id { get; }
         public string Description { get; }
         public string TypeName { get; }
+        public bool IsOnRoot { get; }
 
         public string Name { get; set; }
 
@@ -37,8 +43,9 @@ namespace Jackfruit.Common
             string? typeName,
             IEnumerable<string> aliases,
             string argDisplayName,
-            bool required)
-            : base(id, name, description, typeName)
+            bool required,
+            bool isOnRoot)
+            : base(id, name, description, typeName, isOnRoot)
         {
             ArgDisplayName = argDisplayName;
             Aliases = aliases;
@@ -75,8 +82,9 @@ namespace Jackfruit.Common
             string name,
             string description,
             string? typeName,
-            bool required)
-            : base(id, name, description, typeName)
+            bool required,
+            bool isOnRoot)
+            : base(id, name, description, typeName, isOnRoot)
         {
             Required = required;
         }
@@ -103,8 +111,9 @@ namespace Jackfruit.Common
             string id,
             string name,
             string description,
-            string? typeName)
-            : base(id, name, description, typeName)
+            string? typeName,
+            bool isOnRoot)
+            : base(id, name, description, typeName, isOnRoot)
         { }
     }
 
@@ -112,7 +121,7 @@ namespace Jackfruit.Common
     {
         public UnknownMemberDef(
             string id)
-            : base(id, id, "", "")
+            : base(id, id, "", "", false)
         { }
     }
 }

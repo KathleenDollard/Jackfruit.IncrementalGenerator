@@ -175,7 +175,7 @@ namespace Jackfruit.IncrementalGenerator
                     $"{Scope(model.Scope)} {keywords}{NamedItem(model.ClassName)}({string.Join(",",Parameters(model.Parameters))})",
                 };
             var baseOrThiscall = BaseOrThisCall(model);
-            if(string.IsNullOrWhiteSpace(baseOrThiscall))
+            if(!string.IsNullOrWhiteSpace(baseOrThiscall))
             { ret.Add(baseOrThiscall); }
             ret.Add("{");
             return ret;

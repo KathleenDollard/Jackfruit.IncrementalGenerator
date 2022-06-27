@@ -160,7 +160,8 @@ namespace Jackfruit.Tests
         //    TestOutputCompiles();
         //}
 
-        [Fact]
+        [Fact(Skip ="Not ready to overwrite")]
+
         public void Simple_uhura()
         {
             var output = RunGeneratedProject("StarTrek --Uhura");
@@ -168,14 +169,14 @@ namespace Jackfruit.Tests
         }
 
 
-        [Fact]
+        [Fact(Skip = "Not ready to overwrite")]
         public void Nested_janeway()
         {
             var output = RunGeneratedProject("StarTrek NextGeneration Voyager --Janeway");
             Assert.Equal($"Hello, Kathryn Janeway{Environment.NewLine}", output);
         }
 
-        [Fact]
+        [Fact(Skip = "Not ready to overwrite")]
         public void Alias_picard()
         {
             var output = RunGeneratedProject("StarTrek NextGeneration -p");

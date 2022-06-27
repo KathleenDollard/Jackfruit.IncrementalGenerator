@@ -11,19 +11,29 @@ namespace Jackfruit.Tests
     public class CommandDefGenerator : IIncrementalGenerator
     {
         private const string cliClassCode = @"
-using Jackfruit;
+using Jackfruit.Internal;
 
-public partial class Cli
+namespace Jackfruit
 {
-    public static void Create(CliNode cliRoot)
-    { }
+    /// <summary>
+    /// This is the main class for the Jackfruit generator. After you call the 
+    /// Create command, the returned RootCommand will contain your CLI. If you 
+    /// need multiple root commands in your application differentiate them with &gt;T&lt;
+    /// </summary>
+    public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
+    {
+        public new static RootCommand Create(CommandNode rootNode)
+        { 
+            return (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(rootNode);
+        }
+    }
 }";
         public void Initialize(IncrementalGeneratorInitializationContext initContext)
         {
             // To be a partial, this must be in the same namespace and assembly as the generated part
             initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource("Cli.partial.g.cs", cliClassCode));
 
-            IncrementalValuesProvider<CommandDef> commandDefs = initContext.SyntaxProvider
+            IncrementalValuesProvider<CommandDefNode> commandDefs = initContext.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => Generator.IsCliCreateInvocation(s),
                     transform: static (ctx, cancellationToken) => BuildModel.GetCommandDef(ctx, cancellationToken))
@@ -33,26 +43,28 @@ public partial class Cli
                 static (context, commandDef) => Generate(commandDef, context));
         }
 
-        public static void Generate(CommandDef commandDef, SourceProductionContext context)
+        public static void Generate(CommandDefNode commandDefNode, SourceProductionContext context)
         {
+            var commandDef = commandDefNode.CommandDef;
             var joinedPath = string.Join("", commandDef.Path);
 
             var writer = new StringBuilderWriter(3);
             writer.AddLine("/*");
-            OutputCommand(writer, commandDef);
+            OutputCommand(writer, commandDefNode);
             writer.AddLine("*/");
 
             context.AddSource($"{joinedPath}{commandDef.Name}.g.cs", writer.Output());
 
-            static void OutputCommand(IWriter writer, CommandDef commandDef)
+            static void OutputCommand(IWriter writer, CommandDefNode commandDefNode)
             {
+                var commandDef = commandDefNode.CommandDef;
                 var joinedPath = string.Join("", commandDef.Path);
                 var path = string.Join(".", commandDef.Path);
                 writer.AddLine($"//Key:         {joinedPath}");
                 writer.AddLine($"//Id:          {commandDef.Id}");
                 writer.AddLine($"//Handler:     {commandDef.HandlerMethodName}");
                 writer.AddLine($"//Path:        {path}");
-                writer.AddLine($"//Parent:      {commandDef.Parent?.Name}");
+                writer.AddLine($"//Parent:      {commandDef.Parent}");
                 if (commandDef.Validator is not null)
                 {
                     writer.AddLine("//Validator:");
@@ -77,9 +89,9 @@ public partial class Cli
                 writer.DecreaseIndent();
                 writer.AddLine($"//SubCommands:     ");
                 writer.IncreaseIndent();
-                foreach (var subCommandDef in commandDef.SubCommands)
+                foreach (var subCommandDef in commandDefNode.SubCommandNodes)
                 {
-                    if (subCommandDef is CommandDef subCommand)
+                    if (subCommandDef is CommandDefNode subCommand)
                     {
                         OutputCommand(writer, subCommand);
                     }

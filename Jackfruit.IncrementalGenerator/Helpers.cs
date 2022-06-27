@@ -9,37 +9,25 @@ namespace Jackfruit.IncrementalGenerator
 {
     public static class Helpers
     {
-        //internal const string CliRootName = "CliRoot";
-        //internal const string AddCommandName = "AddCommand";
-        //internal const string CreateName = "Create";
-        //internal const string CliRoot = "CliRoot";
-        //internal const string Cli = "Cli";
-        //internal static string[] CreateSources = new string[] { CliRoot, Cli };
-        //internal const string NestedCommandsClassName = "Commands";
-        //internal static readonly string[] names = { AddCommandName };
-        //internal const string TriggerStyle = "TriggerStyle";
-        //internal static string GetStyle(CommandDef commandDef)
-        //    => commandDef.GenerationStyleTags.TryGetValue(Helpers.TriggerStyle, out var style)
-        //         ? style.ToString()
-        //         : string.Empty;
-        //internal static string MethodFullName(IMethodSymbol method)
-        //    => $"{method.ContainingType.ToDisplayString()}.{method.Name}";
-
-
-
         internal static CommandDef? BuildCommandDef(string[] path,
                                                     string? parent,
                                                     string methodName,
                                                     CommandDetails? commandDetails,
+                                                    IEnumerable<MemberDef> ancestorMembers,
                                                     string triggerStyle)
         {
             var members = new List<MemberDef>();
             if (commandDetails == null)
             { return null; }
+
             foreach (var memberPair in commandDetails.MemberDetails)
             {
                 if (memberPair.Key == CommandKey) { continue; }
                 var memberDetail = memberPair.Value;
+
+                if (ancestorMembers.Any(m=>m.Name == memberDetail.Name))
+                { continue; }
+
                 members.Add(
                         memberDetail.MemberKind switch
                         {
@@ -50,18 +38,21 @@ namespace Jackfruit.IncrementalGenerator
                                 memberDetail.TypeName,
                                 memberDetail.Aliases,
                                 memberDetail.ArgDisplayName,
-                                memberDetail.Required),
+                                memberDetail.Required,
+                                memberDetail.IsOnRoot),
                             MemberKind.Argument => new ArgumentDef(
                                 memberDetail.Id,
                                 memberDetail.Name,
                                 memberDetail.Description,
                                 memberDetail.TypeName,
-                                memberDetail.Required),
+                                memberDetail.Required,
+                                memberDetail.IsOnRoot),
                             MemberKind.Service => new ServiceDef(
                                 memberDetail.Id,
                                 memberDetail.Name,
                                 memberDetail.Description,
-                                memberDetail.TypeName),
+                                memberDetail.TypeName,
+                                memberDetail.IsOnRoot),
                             _ => throw new InvalidOperationException("Unexpected member kind")
                         });
 

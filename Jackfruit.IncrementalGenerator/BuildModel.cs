@@ -41,84 +41,77 @@ namespace Jackfruit.IncrementalGenerator
             //          * Create command and member defs
 
             string[] path = { };
-            var objectCreationOps = ObjectCreationFromArg(cliCreateInvocation.Arguments[0]);
-            return objectCreationOps is null
+            var invocationOps = InvocationFromArg(cliCreateInvocation.Arguments[0]);
+            return invocationOps is null
                 ? null
-                : objectCreationOps.Any()
-                    ? GetCommandDefNode(path, null, objectCreationOps.First(), cancellationToken)
+                : invocationOps.Any()
+                    ? GetCommandDefNode(path, null, Enumerable.Empty<MemberDef>(), invocationOps.First(), cancellationToken)
                     : null;
         }
 
-        private static IEnumerable<IObjectCreationOperation>? ObjectCreationFromArg(IArgumentOperation argOp)
+        private static IEnumerable<IInvocationOperation?>? InvocationFromArg(IArgumentOperation argOp)
         {
-            var parentCreate = argOp.Parent as IObjectCreationOperation;
-            var creationOps = argOp.Value switch
+            var parentCreate = argOp.Parent as IInvocationOperation;
+            var invocationOps = argOp.Value switch
             {
-                IObjectCreationOperation objectCreateOp => new List<IObjectCreationOperation> { objectCreateOp },
-                IConversionOperation conversionOp =>
-                    conversionOp.Operand switch
-                    {
-                        IObjectCreationOperation objectCreationOp => new List<IObjectCreationOperation> { objectCreationOp },
-                        _ => null
-                    },
+                IInvocationOperation invocationoOp => new List<IInvocationOperation> { invocationoOp },
                 IArrayCreationOperation arrayCreateOp =>
-                    arrayCreateOp.Initializer switch
-                    {
-                        IArrayInitializerOperation arrayInitOp =>
-                            arrayInitOp.ElementValues
-                            .Select(x => ObjectCreationFromInit(x))
-                            .Where(x => x is not null)!,
-                        _ => null
-                    },
+                      arrayCreateOp.Initializer switch
+                      {
+                          IArrayInitializerOperation arrayInitOp =>
+                              arrayInitOp.ElementValues
+                              .Select(x => InvocationFromInit(x))
+                              .Where(x => x is not null)!,
+                          _ => null
+                      },
+                // Other approaches, such as supporting vars would be here
                 _ => null
             };
 
-            return creationOps.Where(x => x is not null)!;
+            return invocationOps is null
+                ? Enumerable.Empty<IInvocationOperation>()
+                : invocationOps.Where(x => x is not null)!;
 
-            static IObjectCreationOperation? ObjectCreationFromInit(IOperation op)
+            static IInvocationOperation? InvocationFromInit(IOperation op)
                 => op switch
                 {
-                    IObjectCreationOperation createOp => createOp,
-                    IConversionOperation conversionOp =>
-                        conversionOp.Operand switch
-                        {
-                            IObjectCreationOperation createOp => createOp,
-                            _ => null
-                        },
+                    IInvocationOperation invocationoOp => invocationoOp,
                     _ => null
                 };
         }
 
         private static (IMethodSymbol? handlerMethodSymbol, IMethodSymbol? validatorMethodSymbol,
-                        IEnumerable<IObjectCreationOperation> subCommands) CliNodeNewParts(IObjectCreationOperation objectCreationOp)
+                        IEnumerable<IInvocationOperation> subCommands)
+            CliNodeNewParts(IInvocationOperation invocationOp)
         {
             // Change this to a collection switch when we get them. it will be beautiful!
-            if (!objectCreationOp.Arguments.Any())
-            { return (null, null, Enumerable.Empty<IObjectCreationOperation>()); }
-            var argCount = objectCreationOp.Arguments.Count();
-            var handler = MethodFromArg(objectCreationOp.Arguments[0]);
+            if (!invocationOp.Arguments.Any())
+            { return (null, null, Enumerable.Empty<IInvocationOperation>()); }
+            var argCount = invocationOp.Arguments.Count();
+            var handler = MethodFromArg(invocationOp.Arguments[0]);
             IMethodSymbol? validator = null;
-            IEnumerable<IObjectCreationOperation>? subCommands = null;
+            IEnumerable<IInvocationOperation>? subCommands = null;
 
             if (argCount > 1)
             {
                 var pos = 1;
-                var arg = objectCreationOp.Arguments[pos];
+                var arg = invocationOp.Arguments[pos];
                 // second arg could be a validator or a CliNode
-                validator = MethodFromArg(objectCreationOp.Arguments[pos]);
+                validator = MethodFromArg(invocationOp.Arguments[pos]);
                 if (validator is not null)
                 { pos++; }
 
-                IEnumerable<IArgumentOperation> temp = objectCreationOp.Arguments
+                IEnumerable<IArgumentOperation> temp = invocationOp.Arguments
                                     .Skip(pos);
                 // This SelectMany only to collapse paramarray
                 subCommands = temp
-                    .SelectMany(x => ObjectCreationFromArg(x))
+                    .SelectMany(x => InvocationFromArg(x))
                     .Where(x => x is not null)
+                    .Select(x=>x!)
                     .ToList();
 
             }
-            return (handler, validator, subCommands ?? Enumerable.Empty<IObjectCreationOperation>());
+            return (handler, validator, subCommands ?? Enumerable.Empty<IInvocationOperation>());
         }
 
         // TODO: Add Validation for handler and validator return types
@@ -133,13 +126,17 @@ namespace Jackfruit.IncrementalGenerator
                         _ => null
                     };
 
-        private static CommandDefNode? GetCommandDefNode(string[] path, CommandDefNode? parentNode, IObjectCreationOperation objectCreationOp, CancellationToken cancellationToken)
+        private static CommandDefNode? GetCommandDefNode(string[] path,
+                                                         CommandDefNode? parentNode, 
+                                                         IEnumerable<MemberDef> ancestorMembers,
+                                                         IInvocationOperation invocationOp,
+                                                         CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 return null;
             }
-            var (handlerSymbol, validateSymbol, subCommandsOps) = CliNodeNewParts(objectCreationOp);
+            var (handlerSymbol, validateSymbol, subCommandsOps) = CliNodeNewParts(invocationOp);
             if (handlerSymbol is null)
             { return null; }
 
@@ -147,8 +144,12 @@ namespace Jackfruit.IncrementalGenerator
             if (commandDetails is null)
             { return null; }
 
-
-            var commandDef = Helpers.BuildCommandDef(path, parentNode?.CommandDef.Name, CommonHelpers.MethodFullName(handlerSymbol), commandDetails, CommonHelpers.RootCommand);
+            var commandDef = Helpers.BuildCommandDef(path,
+                                                     parentNode?.CommandDef.Name,
+                                                     CommonHelpers.MethodFullName(handlerSymbol),
+                                                     commandDetails,
+                                                     ancestorMembers,
+                                                     CommonHelpers.RootCommand);
             if (commandDef is null)
             { return null; }
 
@@ -159,11 +160,11 @@ namespace Jackfruit.IncrementalGenerator
 
             var commandDefNode = new CommandDefNode(commandDef);
             var subCommandNodes = subCommandsOps
-                    .Select(x => GetCommandDefNode(newPath, commandDefNode, x, cancellationToken))
+                    .Select(x => GetCommandDefNode(newPath, commandDefNode, ancestorMembers, x, cancellationToken))
                     .Where(x => x is not null)
                     .ToList();
             commandDef.SubCommandNames = subCommandNodes
-                    .Where(n=>n is not null)
+                    .Where(n => n is not null)
                     .Select(n => n!.CommandDef.Name);
             commandDefNode.AddSubCommandNodes(subCommandNodes!);
 
