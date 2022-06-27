@@ -95,7 +95,7 @@ namespace Jackfruit
             //Name:           Picard
             //TypeName:       bool
             //Description:    This is the description for Picard
-            //Aliases:        
+            //Aliases:        -p
             //ArgDisplayName: 
             //Required:       False
       //SubCommands:     

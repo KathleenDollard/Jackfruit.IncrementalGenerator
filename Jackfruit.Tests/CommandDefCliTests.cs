@@ -13,6 +13,8 @@ namespace Jackfruit.Tests
         public  string methodWrapper (string method)
             => @$"
 using Jackfruit;
+using System.ComponentModel;
+
 public class MyClass
 {{
     {method}

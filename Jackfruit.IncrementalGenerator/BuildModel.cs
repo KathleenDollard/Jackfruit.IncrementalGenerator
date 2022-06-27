@@ -153,14 +153,13 @@ namespace Jackfruit.IncrementalGenerator
             if (commandDef is null)
             { return null; }
 
-
             var validatorDef = Helpers.GetValidatorDef(validateSymbol, commandDef);
             commandDef.Validator = validatorDef;
             var newPath = path.Union(new string[] { handlerSymbol.Name }).ToArray();
 
             var commandDefNode = new CommandDefNode(commandDef);
             var subCommandNodes = subCommandsOps
-                    .Select(x => GetCommandDefNode(newPath, commandDefNode, ancestorMembers, x, cancellationToken))
+                    .Select(x => GetCommandDefNode(newPath, commandDefNode, ancestorMembers.Union(commandDef.Members), x, cancellationToken))
                     .Where(x => x is not null)
                     .ToList();
             commandDef.SubCommandNames = subCommandNodes

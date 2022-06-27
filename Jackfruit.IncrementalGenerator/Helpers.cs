@@ -25,8 +25,7 @@ namespace Jackfruit.IncrementalGenerator
                 if (memberPair.Key == CommandKey) { continue; }
                 var memberDetail = memberPair.Value;
 
-                if (ancestorMembers.Any(m=>m.Name == memberDetail.Name))
-                { continue; }
+                var isOnRoot = ancestorMembers.Any(m => m.Name == memberDetail.Name);
 
                 members.Add(
                         memberDetail.MemberKind switch
@@ -39,20 +38,20 @@ namespace Jackfruit.IncrementalGenerator
                                 memberDetail.Aliases,
                                 memberDetail.ArgDisplayName,
                                 memberDetail.Required,
-                                memberDetail.IsOnRoot),
+                                isOnRoot),
                             MemberKind.Argument => new ArgumentDef(
                                 memberDetail.Id,
                                 memberDetail.Name,
                                 memberDetail.Description,
                                 memberDetail.TypeName,
                                 memberDetail.Required,
-                                memberDetail.IsOnRoot),
+                                isOnRoot),
                             MemberKind.Service => new ServiceDef(
                                 memberDetail.Id,
                                 memberDetail.Name,
                                 memberDetail.Description,
                                 memberDetail.TypeName,
-                                memberDetail.IsOnRoot),
+                                isOnRoot),
                             _ => throw new InvalidOperationException("Unexpected member kind")
                         });
 

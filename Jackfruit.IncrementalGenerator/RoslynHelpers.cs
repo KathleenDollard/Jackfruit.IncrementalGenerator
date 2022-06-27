@@ -98,7 +98,6 @@ namespace Jackfruit.IncrementalGenerator
                     }
                 }
             }
-            public bool IsOnRoot { get; set; }
         }
 
         public const string CommandKey = "__commandKey__";

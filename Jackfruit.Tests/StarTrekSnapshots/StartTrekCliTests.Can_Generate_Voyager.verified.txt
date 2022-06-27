@@ -42,6 +42,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;
+using Jackfruit.DemoHandlers;
 
 namespace Jackfruit
 {
@@ -49,21 +50,21 @@ namespace Jackfruit
    {
       public RootCommand()
       {
-         command.GreetingArgument = new Argument<string>("greetingArg");
-         command.Add(command.GreetingArgument);
-         command.JanewayOption = new Option<bool>("--Janeway");
-         command.Add(command.JanewayOption);
-         command.ChakotayOption = new Option<bool>("--Chakotay");
-         command.Add(command.ChakotayOption);
-         command.TorresOption = new Option<bool>("--Torres");
-         command.Add(command.TorresOption);
-         command.TuvokOption = new Option<bool>("--Tuvok");
-         command.Add(command.TuvokOption);
-         command.SevenOfNineOption = new Option<bool>("--SevenOfNine");
-         command.Add(command.SevenOfNineOption);
-         command.AddValidator(command.Validate);
-         command.Handler = command;
-         return command;
+         Name = "Voyager";
+         GreetingArgument = new Argument<string>("greetingArg");
+         Add(GreetingArgument);
+         JanewayOption = new Option<bool>("--Janeway");
+         Add(JanewayOption);
+         ChakotayOption = new Option<bool>("--Chakotay");
+         Add(ChakotayOption);
+         TorresOption = new Option<bool>("--Torres");
+         Add(TorresOption);
+         TuvokOption = new Option<bool>("--Tuvok");
+         Add(TuvokOption);
+         SevenOfNineOption = new Option<bool>("--SevenOfNine");
+         Add(SevenOfNineOption);
+         AddValidator(Validate);
+         Handler = this;
       }
       
       /// <summary>
@@ -71,13 +72,13 @@ namespace Jackfruit
       /// </summary>
       public class Result
       {
-         System.CommandLine.IConsole Console {get; set;}
-         string Greeting {get; set;}
-         bool Janeway {get; set;}
-         bool Chakotay {get; set;}
-         bool Torres {get; set;}
-         bool Tuvok {get; set;}
-         bool SevenOfNine {get; set;}
+         public System.CommandLine.IConsole Console {get; set;}
+         public string Greeting {get; set;}
+         public bool Janeway {get; set;}
+         public bool Chakotay {get; set;}
+         public bool Torres {get; set;}
+         public bool Tuvok {get; set;}
+         public bool SevenOfNine {get; set;}
          /// <summary>
          /// Get an instance of the Result class for the NextGeneration command.
          /// </summary>

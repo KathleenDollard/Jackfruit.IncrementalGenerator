@@ -19,6 +19,7 @@ namespace Jackfruit.Tests
         public const string StarTrek = @"
 using System.ComponentModel;
 using System.CommandLine;
+using Jackfruit;
 
 namespace DemoHandlers
 {

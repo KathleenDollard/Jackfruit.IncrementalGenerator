@@ -7,20 +7,18 @@ namespace Jackfruit.Common
 {
     public static class CreateSource
     {
-        private const string create = "Create";
         private const string command = "command";
         private const string result = "result";
-        private const string parentResult = "parentResult";
         private const string commandVar = "command";
         private const string resultName = "Result";
         private const string getResultName = "GetResult";
-        private const string commandResult = "CommandResult";
         private const string commandResultVar = "commandResult";
-        private const string bindingContext = "bindingContext";
         private const string invocationContext = "invocationContext";
 
-        private static string CommandClassName(CommandDef commandDef) 
-            => string.IsNullOrWhiteSpace(commandDef.Parent)
+        private static bool IsRoot(CommandDef commandDef)
+            => string.IsNullOrWhiteSpace(commandDef.Parent);
+        private static string CommandClassName(CommandDef commandDef)
+            => IsRoot(commandDef)
                     ? "RootCommand"
                     : commandDef.Name;
         private static string CommandPropertyName(CommandDef commandDef) => commandDef.Name;
@@ -38,6 +36,8 @@ namespace Jackfruit.Common
                 ArgumentDef argDef => "Argument",
                 _ => "Service"
             };
+
+
         private static NamedItemModel GeneratedCommandBase(string self, string parent)
             => new GenericNamedItemModel("GeneratedCommandBase", self, $"{self}.{resultName}", parent);
         private static NamedItemModel GeneratedCommandBase(string self)
@@ -96,13 +96,11 @@ namespace Jackfruit.Common
 
             return CodeFile(fileName)
                 .Usings(usings)
+                .Usings($"Jackfruit.{commandDef.Namespace}")
                 .Namespace("Jackfruit",
                     Class(className)
                         .Public().Partial()
-                        .ImplementedInterfaces(
-                            string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
-                                ? Array.Empty<NamedItemModel>()
-                                : new NamedItemModel[] { "ICommandHandler" })
+                        .ImplementedInterfaces("ICommandHandler")
                         .Members(RootConstructor(commandDef))
                         .Members(CommonClassMembers(commandDef)));
         }
@@ -140,7 +138,7 @@ namespace Jackfruit.Common
             if (commandDef.Validator is not null)
             { members.Add(ValidateMethod(commandDef.Validator)); }
 
-            members.AddRange(commandDef.Members
+            members.AddRange(commandDef.MyMembers
                 .Where(m => m is OptionDef || m is ArgumentDef)
                 .Select(m => Property(MemberPropertyName(m), Generic(MemberPropertyStyle(m), m.TypeName))
                                 .Public()));
@@ -232,20 +230,15 @@ namespace Jackfruit.Common
 
         }
 
-        private static ConstructorModel RootConstructor(CommandDef commandDef)
-        {
-            var method =
-                    Constructor("RootCommand")
-                    .Public();
-
-            method.Statements.AddRange(BuildStatements(commandDef).ToArray());
-            return method;
-        }
+        private static ConstructorModel RootConstructor(CommandDef commandDef) 
+            => Constructor("RootCommand")
+                .Public()
+                .Statements(BuildStatements(commandDef).ToArray());
 
         private static MethodModel BuildMethod(CommandDef commandDef)
         {
             var method =
-                    Method(create, CommandClassName(commandDef))
+                    Method("Build", CommandClassName(commandDef))
                         .Internal().Static();
 
             method.Parameters.Add(Parameter("parent", commandDef.Parent ?? ""));
@@ -258,12 +251,21 @@ namespace Jackfruit.Common
         private static IEnumerable<IStatement> BuildStatements(CommandDef commandDef)
         {
             var statements = new List<IStatement>();
-            foreach (var member in commandDef.Members)
+            var targetVar = IsRoot(commandDef)
+                ? ""
+                : commandVar;
+            var target = IsRoot(commandDef) ? "" :  $"{targetVar}.";
+            var thisOrCommand = IsRoot(commandDef)
+                ? (ExpressionBase)This
+                : Symbol(commandVar);
+            statements.Add(Assign($"{target}Name", commandDef.Name));
+
+            foreach (var member in commandDef.MyMembers)
             {
                 switch (member)
                 {
                     case OptionDef opt:
-                        var optPropertyName = $"{commandVar}.{MemberPropertyName(opt)}";
+                        var optPropertyName = $"{target}{MemberPropertyName(opt)}";
                         statements.Add(Assign(optPropertyName, New(Generic("Option", opt.TypeName), $"--{opt.Name}")));
                         if (!string.IsNullOrWhiteSpace(opt.Description))
                         { statements.Add(Assign($"{optPropertyName}.Description", opt.Description)); }
@@ -275,14 +277,14 @@ namespace Jackfruit.Common
                         { statements.Add(Assign($"{optPropertyName}.ArgDisplayName", opt.ArgDisplayName)); }
                         if (opt.Required)
                         { statements.Add(Assign($"{optPropertyName}.Required", opt.Required)); }
-                        statements.Add(SimpleCall(Invoke(commandVar, "Add", Symbol(optPropertyName))));
+                        statements.Add(SimpleCall(Invoke(targetVar, "Add", Symbol(optPropertyName))));
                         break;
                     case ArgumentDef arg:
-                        var argPropertyName = $"{commandVar}.{MemberPropertyName(arg)}";
+                        var argPropertyName = $"{target}{MemberPropertyName(arg)}";
                         statements.Add(Assign(argPropertyName, New(Generic("Argument", arg.TypeName), arg.Id)));
                         if (arg.Required)
                         { statements.Add(Assign($"{argPropertyName}.Required", arg.Required)); }
-                        statements.Add(SimpleCall(Invoke(commandVar, "Add", Symbol(argPropertyName))));
+                        statements.Add(SimpleCall(Invoke(targetVar, "Add", Symbol(argPropertyName))));
                         break;
                     default:
                         break;
@@ -290,35 +292,37 @@ namespace Jackfruit.Common
             }
             foreach (var subCommandName in commandDef.SubCommandNames)
             {
-                if (string.IsNullOrWhiteSpace(subCommandName))
+                if (!string.IsNullOrWhiteSpace(subCommandName))
                 {
-                    var toAdd = $"{commandVar}.{subCommandName}";
-                    statements.Add(Assign(toAdd, Invoke(subCommandName, "Create", Symbol(commandVar))));
-                    statements.Add(SimpleCall(Invoke(commandVar, "AddCommandToScl", Symbol(toAdd))));
+                    var toAdd = $"{target}{subCommandName}";
+                    statements.Add(Assign(toAdd, Invoke(subCommandName, "Build",thisOrCommand)));
+                    statements.Add(SimpleCall(Invoke(targetVar, "AddCommandToScl", Symbol(toAdd))));
                 }
             }
-            statements.Add(SimpleCall(Invoke("command", "AddValidator", Symbol("command.Validate"))));
-            statements.Add(Assign($"{commandVar}.Handler", Symbol(commandVar)));
-            statements.Add(Return(Symbol(commandVar)));
+            statements.Add(SimpleCall(Invoke(target.Replace(".", ""),
+                                             "AddValidator",
+                                             Symbol($"{target}Validate"))));
+            statements.Add(Assign($"{target}Handler", thisOrCommand));
+            if (!IsRoot(commandDef))
+            { statements.Add(Return(Symbol(commandVar))); }
 
             return statements;
         }
 
         private static ClassModel ResultClass(CommandDef commandDef)
         {
-            var myMembers = commandDef.Members.Where(m => !m.IsOnRoot);
             var resultClass =
                 Class("Result")
                     .XmlDescription($"The result class for the {commandDef.Name} command.")
                     .Public()
                     .Members(
-                        DataMembers(myMembers, commandDef).ToArray())
+                        DataMembers(commandDef).ToArray())
                     .Members(
                         GetResultMethod(commandDef),
-                        ResultCommandResultConstructor(myMembers, commandDef));
+                        ResultCommandResultConstructor( commandDef));
 
             if (commandDef.Parent is null)
-            { resultClass.Members.Add(ResultInvocationConstructor(myMembers, commandDef)); }
+            { resultClass.Members.Add(ResultInvocationConstructor( commandDef)); }
 
             return resultClass;
 
@@ -329,19 +333,19 @@ namespace Jackfruit.Common
                     .Parameters(
                         Parameter("command", commandDef.Name)
                             .XmlDescription("The command corresponding to the result"),
-                        Parameter("invocationContext","InvocationContext")
+                        Parameter("invocationContext", "InvocationContext")
                             .XmlDescription("The System.CommandLine InvocationContext used to retrieve."))
                     .Statements(
                         Return(New("Result", Symbol("command"), Symbol("invocationContext.ParseResult.CommandResult"))));
 
-            static ConstructorModel ResultInvocationConstructor(IEnumerable<MemberDef> myMembers,CommandDef commandDef)
+            static ConstructorModel ResultInvocationConstructor(CommandDef commandDef)
             {
                 var args = new List<ExpressionBase>
                 {
                     Symbol(command),
-                    Symbol($"{invocationContext}.ParseResult.CommandResult"),                    
+                    Symbol($"{invocationContext}.ParseResult.CommandResult"),
                 };
-                if (!string.IsNullOrWhiteSpace(commandDef.Parent))
+                if (!IsRoot(commandDef))
                 { args.Add(Invoke($"{command}.Parent", "GetResult", Symbol(invocationContext))); }
                 return Constructor("Result")
                                .PrivateProtected()
@@ -349,46 +353,46 @@ namespace Jackfruit.Common
                                        Parameter(command, CommandClassName(commandDef)),
                                        Parameter(name: invocationContext, "InvocationContext"))
                                .This(args.ToArray())
-                               .Statements(ServiceConstructorStatements(myMembers, commandDef));
+                               .Statements(ServiceConstructorStatements( commandDef));
             }
 
-            static ConstructorModel ResultCommandResultConstructor(IEnumerable<MemberDef> myMembers, CommandDef commandDef)
+            static ConstructorModel ResultCommandResultConstructor( CommandDef commandDef)
             {
                 var ctor = Constructor("Result")
                     .PrivateProtected()
                     .Parameters(
                         Parameter(command, CommandClassName(commandDef)),
                         Parameter(name: commandResultVar, "CommandResult"))
-                    .Statements(ResultConstructorStatements(myMembers, commandDef));
+                    .Statements(ResultConstructorStatements( commandDef));
                 if (commandDef.Parent is not null)
                 { ctor.Base(command, commandResultVar); }
                 return ctor;
             }
 
-            static IEnumerable<IStatement> ServiceConstructorStatements(
-                    IEnumerable<MemberDef> myMembers,
-                    CommandDef commandDef)
-                => myMembers
+            static IEnumerable<IStatement> ServiceConstructorStatements(   CommandDef commandDef)
+                => commandDef.MyMembers
                     .OfType<ServiceDef>()
                     .Select(service =>
                         Assign(service.Name, Invoke(null, $"GetService<{service.TypeName}>", Symbol(invocationContext))));
 
-            static IStatement[] ResultConstructorStatements(IEnumerable<MemberDef> myMembers, CommandDef commandDef)
+            static IStatement[] ResultConstructorStatements(CommandDef commandDef)
             {
                 List<IStatement> statements = new();
-                foreach (var member in myMembers.Where(x => x is not ServiceDef))
+                foreach (var member in commandDef.MyMembers.Where(x => x is not ServiceDef))
                 {
                     statements.Add(Assign(member.Name, Invoke(null, "GetValueForSymbol", Symbol($"command.{MemberPropertyName(member)}"), Symbol(commandResultVar))));
                 }
                 return statements.ToArray();
             }
 
-            static IMember[] DataMembers(IEnumerable<MemberDef> myMembers, CommandDef commandDef)
+            static IMember[] DataMembers(CommandDef commandDef)
             {
                 List<IMember> members = new();
-                foreach (var member in myMembers)
+                foreach (var member in commandDef.MyMembers)
                 {
-                    members.Add(Property(member.Name, member.TypeName));
+                    members.Add(
+                        Property(member.Name, member.TypeName)
+                            .Public());
                 }
                 return members.ToArray();
             }

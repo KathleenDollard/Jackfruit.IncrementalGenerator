@@ -51,6 +51,7 @@
             Description = description;
             Aliases = aliases;
             Members = members;
+            MyMembers= members.Where(m=>!m.IsOnRoot).ToList();
             HandlerMethodName = handlerMethodName;
             SubCommandNames = subCommandNames;
             Path = path;
@@ -67,6 +68,7 @@
         public string[] Aliases { get; }
         //Options, args, and services in order of handler parameters
         public IEnumerable<MemberDef> Members { get; }
+        public IEnumerable<MemberDef> MyMembers { get; }
         public string HandlerMethodName { get; }
         public IEnumerable<string> SubCommandNames { get; set; }
         public IEnumerable<string> Path { get; }
