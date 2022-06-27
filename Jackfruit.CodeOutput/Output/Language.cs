@@ -36,6 +36,7 @@ namespace Jackfruit.IncrementalGenerator
         public abstract string PrivateProtectedKeyword { get; }
 
         public abstract string StaticKeyword { get; }
+        public abstract string NewSlotKeyword { get; }
         public abstract string AsyncKeyword { get; }
         public abstract string OverrideKeyword { get; }
         public abstract string PartialKeyword { get; }
@@ -123,6 +124,7 @@ namespace Jackfruit.IncrementalGenerator
         public abstract string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments);
         public abstract string Instantiate(NamedItemModel typeName, IEnumerable<ExpressionBase> arguments);
         public abstract string TypeOf(NamedItemModel typeName);
+        public abstract string Cast(NamedItemModel typeName, ExpressionBase expression);
         public abstract string Compare(ExpressionBase left, Operator @operator, ExpressionBase right);
         public abstract string Not(ExpressionBase expression);
 
@@ -345,6 +347,7 @@ namespace Jackfruit.IncrementalGenerator
                 InvocationModel invocationModel => Invoke(invocationModel.Instance, invocationModel.MethodName, invocationModel.Arguments),
                 InstantiationModel instantiationModel => Instantiate(instantiationModel.TypeName, instantiationModel.Arguments),
                 TypeOfModel typeOfModel => TypeOf(typeOfModel.TypeName),
+                CastModel castModel => Cast(castModel.TypeName, castModel.Expression),
                 ComparisonModel comparisonModel => Compare(comparisonModel.Left, comparisonModel.Operator, comparisonModel.Right),
                 ListModel listModel => Instantiate("List<ExpressionBase>", listModel.Values ),
                 StringLiteralModel literalModel => $@"""{literalModel.Value}""",

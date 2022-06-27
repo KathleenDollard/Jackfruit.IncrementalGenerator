@@ -1,22 +1,3 @@
-﻿
-using Jackfruit.Internal;
-
-namespace Jackfruit
-{
-    /// <summary>
-    /// This is the main class for the Jackfruit generator. After you call the 
-    /// Create command, the returned RootCommand will contain your CLI. If you 
-    /// need multiple root commands in your application differentiate them with &gt;T&lt;
-    /// </summary>
-    public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
-    {
-        public new static RootCommand Create(CommandNode cliRoot)
-            => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create( cliRoot);
-    }
-}
-
-// *******************************
-
 // This file is created by a generator.
 using System;
 using System.Threading.Tasks;
@@ -24,38 +5,40 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;
-using Jackfruit_DemoHandlers;
 
-namespace Jackfruit
+namespace Jackfruit_DemoHandlers
 {
-   public partial class RootCommand : ICommandHandler
+   /// <summary>
+   /// The wrapper class for the Voyager command.
+   /// </summary>
+   public partial class Voyager : GeneratedCommandBase<Voyager, Voyager.Result, NextGeneration>, ICommandHandler
    {
-      public RootCommand()
+      internal static Voyager Build(NextGeneration parent)
       {
-         Name = "Voyager";
-         GreetingArgument = new Argument<string>("greetingArg");
-         Add(GreetingArgument);
-         JanewayOption = new Option<bool>("--Janeway");
-         Add(JanewayOption);
-         ChakotayOption = new Option<bool>("--Chakotay");
-         Add(ChakotayOption);
-         TorresOption = new Option<bool>("--Torres");
-         Add(TorresOption);
-         TuvokOption = new Option<bool>("--Tuvok");
-         Add(TuvokOption);
-         SevenOfNineOption = new Option<bool>("--SevenOfNine");
-         Add(SevenOfNineOption);
-         AddValidator(Validate);
-         Handler = this;
+         var command = new Voyager();
+         command.Name = "Voyager";
+         command.Parent = parent;
+         command.JanewayOption = new Option<bool>("--Janeway");
+         command.Add(command.JanewayOption);
+         command.ChakotayOption = new Option<bool>("--Chakotay");
+         command.Add(command.ChakotayOption);
+         command.TorresOption = new Option<bool>("--Torres");
+         command.Add(command.TorresOption);
+         command.TuvokOption = new Option<bool>("--Tuvok");
+         command.Add(command.TuvokOption);
+         command.SevenOfNineOption = new Option<bool>("--SevenOfNine");
+         command.Add(command.SevenOfNineOption);
+         command.AddValidator(command.Validate);
+         command.Handler = command;
+         return command;
       }
       
       /// <summary>
       /// The result class for the Voyager command.
       /// </summary>
-      public class Result
+      public class Result : NextGeneration.Result
       {
          public System.CommandLine.IConsole Console {get; set;}
-         public string Greeting {get; set;}
          public bool Janeway {get; set;}
          public bool Chakotay {get; set;}
          public bool Torres {get; set;}
@@ -66,25 +49,19 @@ namespace Jackfruit
          /// </summary>
          /// <param name="command">The command corresponding to the result</param>
          /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve.</param>
-         internal static Result GetResult(RootCommand command, InvocationContext invocationContext)
+         internal static Result GetResult(Voyager command, InvocationContext invocationContext)
          {
             return new Result(command, invocationContext.ParseResult.CommandResult);
          }
          
-         private protected Result(RootCommand command, CommandResult commandResult)
+         private protected Result(Voyager command, CommandResult commandResult)
+         : base(command.Parent, commandResult)
          {
-            Greeting = GetValueForSymbol(command.GreetingArgument, commandResult);
             Janeway = GetValueForSymbol(command.JanewayOption, commandResult);
             Chakotay = GetValueForSymbol(command.ChakotayOption, commandResult);
             Torres = GetValueForSymbol(command.TorresOption, commandResult);
             Tuvok = GetValueForSymbol(command.TuvokOption, commandResult);
             SevenOfNine = GetValueForSymbol(command.SevenOfNineOption, commandResult);
-         }
-         
-         private protected Result(RootCommand command, InvocationContext invocationContext)
-         : this(command, invocationContext.ParseResult.CommandResult)
-         {
-            Console = GetService<System.CommandLine.IConsole>(invocationContext);
          }
          
       }
@@ -111,7 +88,6 @@ namespace Jackfruit
          return Task.FromResult(invocationContext.ExitCode);
       }
       
-      public Argument<string> GreetingArgument {get; set;}
       public Option<bool> JanewayOption {get; set;}
       public Option<bool> ChakotayOption {get; set;}
       public Option<bool> TorresOption {get; set;}

@@ -1,22 +1,3 @@
-﻿
-using Jackfruit.Internal;
-
-namespace Jackfruit
-{
-    /// <summary>
-    /// This is the main class for the Jackfruit generator. After you call the 
-    /// Create command, the returned RootCommand will contain your CLI. If you 
-    /// need multiple root commands in your application differentiate them with &gt;T&lt;
-    /// </summary>
-    public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
-    {
-        public new static RootCommand Create(CommandNode cliRoot)
-            => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create( cliRoot);
-    }
-}
-
-// *******************************
-
 // This file is created by a generator.
 using System;
 using System.Threading.Tasks;
@@ -32,24 +13,21 @@ namespace Jackfruit
    {
       public RootCommand()
       {
-         Name = "NextGeneration";
+         Name = "Franchise";
          GreetingArgument = new Argument<string>("greetingArg");
          Add(GreetingArgument);
-         PicardOption = new Option<bool>("--Picard");
-         PicardOption.Description = "This is the description for Picard";
-         PicardOption.AddAlias("-p");
-         Add(PicardOption);
+         StarTrek = StarTrek.Build(this);
+         AddCommandToScl(StarTrek);
          AddValidator(Validate);
          Handler = this;
       }
       
       /// <summary>
-      /// The result class for the NextGeneration command.
+      /// The result class for the Franchise command.
       /// </summary>
       public class Result
       {
          public string Greeting {get; set;}
-         public bool Picard {get; set;}
          /// <summary>
          /// Get an instance of the Result class for the NextGeneration command.
          /// </summary>
@@ -63,7 +41,6 @@ namespace Jackfruit
          private protected Result(RootCommand command, CommandResult commandResult)
          {
             Greeting = GetValueForSymbol(command.GreetingArgument, commandResult);
-            Picard = GetValueForSymbol(command.PicardOption, commandResult);
          }
          
          private protected Result(RootCommand command, InvocationContext invocationContext)
@@ -80,7 +57,7 @@ namespace Jackfruit
       public int Invoke(InvocationContext invocationContext)
       {
          var result = Result.GetResult(this, invocationContext);
-         DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
+         DemoHandlers.Handlers.Franchise(result.Greeting);
          return invocationContext.ExitCode;
       }
       
@@ -91,12 +68,27 @@ namespace Jackfruit
       public Task<int> InvokeAsync(InvocationContext invocationContext)
       {
          var result = Result.GetResult(this, invocationContext);
-         DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
+         DemoHandlers.Handlers.Franchise(result.Greeting);
          return Task.FromResult(invocationContext.ExitCode);
       }
       
+      /// <summary>
+      /// The validate method invoked by System.CommandLine.
+      /// </summary>
+      /// <param name="invocationContext">The System.CommandLine CommandResult used to retrieve values for validation and it will hold any errors.</param>
+      public override void Validate(InvocationContext invocationContext)
+      {
+         base.Validate(invocationContext);
+         var result = Result.GetResult(this, invocationContext);
+         var err = string.Join(Environment.NewLine, DemoHandlers.Validators.FranchiseValidate(result.Greeting));
+         if (!(string.IsNullOrWhiteSpace(err)))
+         {
+            invocationContext.ParseResult.CommandResult.ErrorMessage = err;
+         }
+      }
+      
       public Argument<string> GreetingArgument {get; set;}
-      public Option<bool> PicardOption {get; set;}
+      public StarTrek StarTrek {get; set;}
    }
    
 }

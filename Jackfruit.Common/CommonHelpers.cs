@@ -5,11 +5,11 @@ namespace Jackfruit.Common
     public class CommonHelpers
     {
         public const string CliRootName = "CliRoot";
-        public const string AddCommandName = "AddCommand";
+        public const string RootCommand = "RootCommand";
         public const string CreateName = "Create";
+        public const string AddCommandName = "Create";
         public const string CliRoot = "CliRoot";
-        public const string Cli = "Cli";
-        public static string[] CreateSources = new string[] { CliRoot, Cli };
+        public static string[] CreateSources = new string[] { CliRoot, RootCommand };
         public const string NestedCommandsClassName = "Commands";
         public static readonly string[] names = { AddCommandName };
         public const string TriggerStyle = "TriggerStyle";

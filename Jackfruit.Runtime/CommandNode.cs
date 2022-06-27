@@ -1,11 +1,17 @@
 ﻿namespace Jackfruit
 {
-    public class CliNode
+    public class CommandNode
     {
         // I do not see a use case for exposing these
         internal Delegate Action { get; }
-        internal Delegate Validator { get; }
-        internal IEnumerable<CliNode> SubCommands { get; }
+        internal Delegate? Validator { get; }
+        internal IEnumerable<CommandNode> SubCommands { get; }
+
+        public static CommandNode Create(Delegate action, params CommandNode[] subCommands)
+        { return new CommandNode(action, subCommands); }
+
+        public static CommandNode Create(Delegate action, Delegate validator, params CommandNode[] subCommands)
+        { return new CommandNode(action,validator, subCommands); }
 
         /// <summary>
         /// Represents a single command in a CLI and contains the delegate that 
@@ -16,13 +22,11 @@
         /// This form is currently required for generation to work correctly (no lambdas).
         /// </param>
         /// <param name="subCommands">CliNodes for the subcommands of the command</param>
-        public CliNode(Delegate action, params CliNode[] subCommands)
-        {
-            Action = action;
-            SubCommands = subCommands;
-        }
+        public CommandNode(Delegate action, params CommandNode[] subCommands) 
+            : this (action, null, subCommands)
+        { }
 
-        public CliNode(Delegate action, Delegate validator, params CliNode[] subCommands)
+        public CommandNode(Delegate action, Delegate? validator, params CommandNode[] subCommands)
         {
             Action = action;
             Validator = validator;

@@ -9,37 +9,27 @@ namespace Jackfruit.IncrementalGenerator
 {
     public static class Helpers
     {
-        //internal const string CliRootName = "CliRoot";
-        //internal const string AddCommandName = "AddCommand";
-        //internal const string CreateName = "Create";
-        //internal const string CliRoot = "CliRoot";
-        //internal const string Cli = "Cli";
-        //internal static string[] CreateSources = new string[] { CliRoot, Cli };
-        //internal const string NestedCommandsClassName = "Commands";
-        //internal static readonly string[] names = { AddCommandName };
-        //internal const string TriggerStyle = "TriggerStyle";
-        //internal static string GetStyle(CommandDef commandDef)
-        //    => commandDef.GenerationStyleTags.TryGetValue(Helpers.TriggerStyle, out var style)
-        //         ? style.ToString()
-        //         : string.Empty;
-        //internal static string MethodFullName(IMethodSymbol method)
-        //    => $"{method.ContainingType.ToDisplayString()}.{method.Name}";
-
-
-
         internal static CommandDef? BuildCommandDef(string[] path,
-                                                    CommandDef? parent,
+                                                    CommandDefNode parent,
                                                     string methodName,
                                                     CommandDetails? commandDetails,
+                                                    IEnumerable<MemberDef> ancestorMembers,
                                                     string triggerStyle)
         {
+            var parentName = parent?.CommandDef.Name;
+            var isParentRoot = string.IsNullOrWhiteSpace(parent?.CommandDef.Parent);
+
             var members = new List<MemberDef>();
             if (commandDetails == null)
             { return null; }
+
             foreach (var memberPair in commandDetails.MemberDetails)
             {
                 if (memberPair.Key == CommandKey) { continue; }
                 var memberDetail = memberPair.Value;
+
+                var isOnRoot = ancestorMembers.Any(m => m.Name == memberDetail.Name);
+
                 members.Add(
                         memberDetail.MemberKind switch
                         {
@@ -50,18 +40,21 @@ namespace Jackfruit.IncrementalGenerator
                                 memberDetail.TypeName,
                                 memberDetail.Aliases,
                                 memberDetail.ArgDisplayName,
-                                memberDetail.Required),
+                                memberDetail.Required,
+                                isOnRoot),
                             MemberKind.Argument => new ArgumentDef(
                                 memberDetail.Id,
                                 memberDetail.Name,
                                 memberDetail.Description,
                                 memberDetail.TypeName,
-                                memberDetail.Required),
+                                memberDetail.Required,
+                                isOnRoot),
                             MemberKind.Service => new ServiceDef(
                                 memberDetail.Id,
                                 memberDetail.Name,
                                 memberDetail.Description,
-                                memberDetail.TypeName),
+                                memberDetail.TypeName,
+                                isOnRoot),
                             _ => throw new InvalidOperationException("Unexpected member kind")
                         });
 
@@ -71,12 +64,13 @@ namespace Jackfruit.IncrementalGenerator
                                             string.Join("_", path),
                                             commandDetails.Namespace,
                                             path,
-                                            parent,
+                                            parentName,
+                                            isParentRoot,
                                             commandDetails.Detail.Description,
                                             commandDetails.Detail.Aliases,
                                             members,
                                             methodName,
-                                            new CommandDef[] { },
+                                            new string[] { },
                                             commandDetails.Detail.TypeName ?? "Unknown");
             commandDef.GenerationStyleTags.Add("TriggerStyle", triggerStyle);
             return commandDef;

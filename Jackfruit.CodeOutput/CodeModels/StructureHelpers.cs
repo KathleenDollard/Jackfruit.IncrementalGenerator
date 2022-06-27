@@ -118,6 +118,13 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             return model;
         }
 
+
+        public static MethodModel NewSlot(this MethodModel model)
+        {
+            model.IsNewSlot = true;
+            return model;
+        }
+
         public static MethodModel Async(this MethodModel model)
         {
             model.IsAsync = true;
@@ -196,9 +203,12 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             return model;
         }
 
-        public static ClassModel InheritedFrom(this ClassModel model, NamedItemModel baseClassName)
+        public static ClassModel InheritedFrom(this ClassModel model, NamedItemModel? baseClassName)
         {
-            model.InheritedFrom = baseClassName;
+            if (baseClassName is not null)
+            {
+                model.InheritedFrom = baseClassName;
+            }
             return model;
         }
 

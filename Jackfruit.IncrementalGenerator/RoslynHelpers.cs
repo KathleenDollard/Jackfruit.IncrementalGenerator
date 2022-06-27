@@ -14,18 +14,18 @@ namespace Jackfruit.IncrementalGenerator
 
         public class CommandDetails
         {
-            public CommandDetails(string nspace, Detail detail, Dictionary<string, Detail> memberDetails)
+            public CommandDetails(string nspace, MemberDetail detail, Dictionary<string, MemberDetail> memberDetails)
             {
                 Namespace = nspace;
                 Detail = detail;
                 MemberDetails = memberDetails;
             }
             public string Namespace { get; }
-            public Detail Detail { get; }
-            public Dictionary<string, Detail> MemberDetails { get; }
+            public MemberDetail Detail { get; }
+            public Dictionary<string, MemberDetail> MemberDetails { get; }
         }
 
-        public class Detail
+        public class MemberDetail
         {
             private string description = "";
             private MemberKind memberKind;
@@ -33,7 +33,7 @@ namespace Jackfruit.IncrementalGenerator
             private string argDisplayId = "";
             private bool required;
 
-            public Detail(string id, string name, string? typeName = null)
+            public MemberDetail(string id, string name, string? typeName = null)
             {
                 Id = id;
                 Name = char.ToUpperInvariant(name[0]) + name.Substring(1);
@@ -117,13 +117,13 @@ namespace Jackfruit.IncrementalGenerator
         {
             var nspace = methodSymbol.ContainingNamespace.ToString();
 
-            var commandDetail = new Detail(methodSymbol.ToDisplayString(), methodSymbol.Name, methodSymbol.ReturnType.ToString());
+            var commandDetail = new MemberDetail(methodSymbol.ToDisplayString(), methodSymbol.Name, methodSymbol.ReturnType.ToString());
 
-            var details = new Dictionary<string, Detail>();
+            var details = new Dictionary<string, MemberDetail>();
 
             foreach (var param in methodSymbol.Parameters)
             {
-                details[param.Name] = new Detail(param.Name, param.Name, param.Type.ToString());
+                details[param.Name] = new MemberDetail(param.Name, param.Name, param.Type.ToString());
                 if (param.Name.EndsWith("Arg"))
                 {
                     details[param.Name].MemberKind = MemberKind.Argument;
@@ -137,7 +137,7 @@ namespace Jackfruit.IncrementalGenerator
             return new CommandDetails(nspace, commandDetail, details);
         }
 
-        public static void AddDescFromXmlDocComment(XDocument xDoc, Dictionary<string, Detail> details)
+        public static void AddDescFromXmlDocComment(XDocument xDoc, Dictionary<string, MemberDetail> details)
         {
             foreach (var element in xDoc.Root.Elements("param"))
             {
@@ -150,7 +150,7 @@ namespace Jackfruit.IncrementalGenerator
             }
         }
 
-        public static void AddDescFromXmlDocComment(XDocument xDoc, Detail commandDetail)
+        public static void AddDescFromXmlDocComment(XDocument xDoc, MemberDetail commandDetail)
         {
             var summaryElement = xDoc.Root.Element("summary");
             commandDetail.Description =
@@ -159,10 +159,10 @@ namespace Jackfruit.IncrementalGenerator
                     : summaryElement.Value.Trim();
         }
 
-        public static Dictionary<string, Detail> AddDetailsFromAttributes(
+        public static Dictionary<string, MemberDetail> AddDetailsFromAttributes(
             IMethodSymbol methodSymbol,
-            Detail commandDetail,
-            Dictionary<string, Detail> details)
+            MemberDetail commandDetail,
+            Dictionary<string, MemberDetail> details)
         {
             AddToDetail(methodSymbol.GetAttributes(), commandDetail);
             foreach (var param in methodSymbol.Parameters)
@@ -176,7 +176,7 @@ namespace Jackfruit.IncrementalGenerator
             return details;
         }
 
-        private static void AddToDetail(IEnumerable<AttributeData> attributes, Detail detail)
+        private static void AddToDetail(IEnumerable<AttributeData> attributes, MemberDetail detail)
         {
             foreach (var attrib in attributes)
             {

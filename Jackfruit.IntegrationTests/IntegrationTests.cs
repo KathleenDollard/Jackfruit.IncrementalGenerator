@@ -40,7 +40,7 @@ namespace Jackfruit.Tests
             var (outputCompilation, outputDiagnostics) = TestHelpers.RunGenerator(compilation, generator);
             Assert.NotNull(outputCompilation);
             Assert.Empty(outputDiagnostics);
-            Assert.Equal(6, outputCompilation.SyntaxTrees.Count());
+            Assert.Equal(9, outputCompilation.SyntaxTrees.Count());
             return outputCompilation;
         }
 
@@ -60,7 +60,7 @@ namespace Jackfruit.Tests
                     File.WriteAllText(fileName, tree.ToString());
                 }
             }
-            Assert.Equal(3, Directory.GetFiles(testGeneratedCodePath).Count());
+            Assert.Equal(6, Directory.GetFiles(testGeneratedCodePath).Count());
         }
 
         private static Process? TestOutputCompiles()
@@ -77,7 +77,7 @@ namespace Jackfruit.Tests
             Assert.NotNull(exeProcess);
             if (exeProcess is not null)
             {
-                exeProcess.WaitForExit(10000);
+                exeProcess.WaitForExit(30000);
 
                 var output = exeProcess.StandardOutput.ReadToEnd();
                 var error = exeProcess.StandardError.ReadToEnd();

@@ -28,7 +28,7 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test()
     {
-       Cli.Create(new( ToValidate, Validator1))
+       var rootCommand = RootCommand.Create(CommandNode.Create( ToValidate, Validator1))
     }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -42,7 +42,7 @@ public class MyClass
             var input = methodWrapper(@"
             public void Test()
             {
-               Cli.Create(new( ToValidate, ValidatorAll))
+               var rootCommand = RootCommand.Create(CommandNode.Create( ToValidate, ValidatorAll))
             }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -56,7 +56,7 @@ public class MyClass
             var input = methodWrapper(@"
             public void Test()
             {
-               Cli.Create(new( ToValidate, Validator0))
+               var rootCommand = RootCommand.Create(CommandNode.Create( ToValidate, Validator0))
             }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 

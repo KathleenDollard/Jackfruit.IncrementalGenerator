@@ -1,5 +1,4 @@
-﻿
-using Jackfruit.Internal;
+﻿using Jackfruit.Internal;
 
 namespace Jackfruit
 {
@@ -16,27 +15,3 @@ namespace Jackfruit
         }
     }
 }
-// *******************************
-
-/*
-//Key:         
-//Id:          MyClass.AA(int)
-//Handler:     MyClass.AA
-//Path:        
-//Parent:      
-//Description: 
-//Aliases:     
-//Namespace:   <global namespace>
-//Members:     
-   //Option:
-      //Option Id:      i
-      //Name:           I
-      //TypeName:       int
-      //Description:    
-      //Aliases:        
-      //ArgDisplayName: ArgName
-      //Required:       False
-//SubCommands:     
-//**************************************    
-
-*/

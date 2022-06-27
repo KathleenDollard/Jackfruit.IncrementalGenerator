@@ -29,9 +29,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestOutputExample", "TestOutputExample\TestOutputExample.csproj", "{104E63F6-E426-4310-B490-79601B118CC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jackfruit.CodeOutput", "Jackfruit.CodeOutput\Jackfruit.CodeOutput.csproj", "{478D17C2-25EC-40EB-88AB-E72B34858C98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jackfruit.CodeOutput", "Jackfruit.CodeOutput\Jackfruit.CodeOutput.csproj", "{478D17C2-25EC-40EB-88AB-E72B34858C98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jackfruit.Common", "Jackfruit.Common\Jackfruit.Common.csproj", "{1BFC4D35-AB6A-4827-AE00-31E8E470AF14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jackfruit.Common", "Jackfruit.Common\Jackfruit.Common.csproj", "{1BFC4D35-AB6A-4827-AE00-31E8E470AF14}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Design", "Design", "{965C814D-9803-4BA0-AEDE-AC5191959368}"
+	ProjectSection(SolutionItems) = preProject
+		Design\DemoHandlersStarTrek.g.cs = Design\DemoHandlersStarTrek.g.cs
+		Design\DemoHandlersStarTrekNextGeneration.g.cs = Design\DemoHandlersStarTrekNextGeneration.g.cs
+		Design\DemoHandlersStarTrekNextGenerationDeepSpaceNine.g.cs = Design\DemoHandlersStarTrekNextGenerationDeepSpaceNine.g.cs
+		Design\DemoHandlersStarTrekNextGenerationVoyager.g.cs = Design\DemoHandlersStarTrekNextGenerationVoyager.g.cs
+		Design\RootCommand.g.cs = Design\RootCommand.g.cs
+		Design\RootCommand.partial.g.cs = Design\RootCommand.partial.g.cs
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,6 +84,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{84C752FF-9504-4568-82F5-EED04AAE67F5} = {F9C97B07-DEBD-4B37-836F-E4629157B17D}
 		{A3F296B1-F789-4E5A-AF56-CF6A63E55304} = {84C752FF-9504-4568-82F5-EED04AAE67F5}
+		{965C814D-9803-4BA0-AEDE-AC5191959368} = {F9C97B07-DEBD-4B37-836F-E4629157B17D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {62F79128-8645-4BF7-B346-AD9C81B06D71}

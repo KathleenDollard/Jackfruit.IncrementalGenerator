@@ -5,17 +5,30 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        // TODO: Add conditional to generated output
-        Cli.Create(new CliNode(Handlers.Franchise, Validators.FranchiseValidate,
-            new CliNode(Handlers.StarTrek,
-                new CliNode(Handlers.NextGeneration,
-                    new CliNode(Handlers.DeepSpaceNine),
-                    new CliNode(Handlers.Voyager)
-                ))));
+        var rootCommand = RootCommand.Create(
+           CommandNode.Create(Handlers.Franchise, Validators.FranchiseValidate,
+              CommandNode.Create(Handlers.StarTrek,
+                 CommandNode.Create(Handlers.NextGeneration,
+                     CommandNode.Create(Handlers.DeepSpaceNine),
+                     CommandNode.Create(Handlers.Voyager)
+                 ))));
+        rootCommand.GreetingArgument.SetDefaultValue("Hello");
+        rootCommand.Run(args);
 
-        Cli.Franchise.GreetingArgument.SetDefaultValue("Hello");
-        Cli.Franchise.Run(args);
+        #region 0
+        //private static void Main(string[] args)
+        //{
+        //    // TODO: Add conditional to generated output
+        //    Cli.Create(new CliNode(Handlers.Franchise, Validators.FranchiseValidate,
+        //        new CliNode(Handlers.StarTrek,
+        //            new CliNode(Handlers.NextGeneration,
+        //                new CliNode(Handlers.DeepSpaceNine),
+        //                new CliNode(Handlers.Voyager)
+        //            ))));
 
+        //    Cli.Franchise.GreetingArgument.SetDefaultValue("Hello");
+        //    Cli.Franchise.Run(args);
+        #endregion
 
         #region 1
         //In the version below, the return value of Create changes due to generation - creepy!!

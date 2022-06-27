@@ -13,6 +13,8 @@ namespace Jackfruit.Tests
         public  string methodWrapper (string method)
             => @$"
 using Jackfruit;
+using System.ComponentModel;
+
 public class MyClass
 {{
     {method}
@@ -33,7 +35,7 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test()
     {
-       Cli.Create(new(A))
+       var rootCommand = RootCommand.Create(CommandNode.Create(A));
     }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -47,8 +49,8 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test()
     {
-         Cli.Create(new (A,
-              new CliNode(B)));
+       var rootCommand = RootCommand.Create(CommandNode.Create(A, 
+            CommandNode.Create(B)));
     }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -62,11 +64,10 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test() 
     {
-        Cli.Create(new CliNode(A, 
-                new CliNode(B),
-                new CliNode(C),
-                new CliNode(D)
-            )) ;
+       var rootCommand = RootCommand.Create(CommandNode.Create(A, 
+            CommandNode.Create(B),
+            CommandNode.Create(C),
+            CommandNode.Create(D)));
     }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -80,48 +81,20 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test() 
     {
-        Cli.Create(new(A, 
-                new CliNode(B),
-                new CliNode(C, 
-                    new CliNode(E),
-                    new CliNode(F, 
-                        new CliNode(G), 
-                        new CliNode(H)
-                    )
-                ),
-                new CliNode(D)
-            )) ;
+       var rootCommand = RootCommand.Create(CommandNode.Create(A, 
+            CommandNode.Create(B),
+            CommandNode.Create(C,
+                CommandNode.Create(E),
+                CommandNode.Create(F,
+                    CommandNode.Create(G),
+                    CommandNode.Create(H))),
+            CommandNode.Create(D))),
     }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
-
-        [Fact(Skip = "Waiting for target type new /param array fix")]
-        public Task CliNode_and_implicit_creation_allowed()
-        {
-            var input = methodWrapper(@"
-    public void Test() 
-    {
-        Cli.Create(new(A, 
-                new(B),
-                new CliNode(C,  
-                    new(E),
-                    new(F, 
-                        new(G), 
-                        new CliNode(H)
-                    )
-                ),
-                new CliNode(D)
-            ));
-    }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
-
-            Assert.Empty(diagnostics);
-            return Verifier.Verify(output).UseDirectory("Snapshots");
-        }
-
 
         [Fact(Skip = "Waiting for target type new /param array fix")]
         public Task List_ctor_and_implicit_creation_allowed()
@@ -129,16 +102,16 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test() 
     {
-        Cli.Create(new(A, 
-                new(B),
-                new(C,  
-                    new(E),
-                    new(F,
-                        new(G), 
-                        new(H)
+        var rootCommand = RootCommand.Create(CommandNode.Create(A, 
+                CommandNode.Create(B),
+                CommandNode.Create(C,  
+                    CommandNode.Create(E),
+                    CommandNode.Create(F,
+                        CommandNode.Create(G), 
+                        CommandNode.Create(H)
                     )
                 ),
-                new(D)
+                CommandNode.Create(D)
             ));
     }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
@@ -152,7 +125,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            Cli.Create(new (null));
+            var rootCommand = RootCommand.Create(CommandNode.Create(null));
         }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -166,7 +139,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            Cli.CreateX(new (A));
+            var rootCommand = RootCommand.CreateX(CommandNode.Create(A));
         }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -180,7 +153,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            Cli.Create();
+            var rootCommand = RootCommand.Create();
         }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -194,7 +167,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            Cli.Create(new (A),new (B),new (C));
+            var rootCommand = RootCommand.Create(CommandNode.Create(A),CommandNode.Create(B),CommandNode.Create(C));
         }");
             var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -208,7 +181,7 @@ public class MyClass
         var input = methodWrapper(@"
         public void Test()
         {
-            Cli.Create(new (AA));
+            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
         }
 
         /// <summary>
@@ -229,7 +202,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            Cli.Create(new (AA));
+            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
         }
 
         [Description(""Command description in Attribute"")]
@@ -248,7 +221,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            Cli.Create(new (AA));
+            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
         }
 
         public void AA(
@@ -266,7 +239,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            Cli.Create(new (AA));
+            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
         }
 
         public void AA(
@@ -285,7 +258,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            Cli.Create(new (AA));
+            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
         }
 
         public void AA(
@@ -303,7 +276,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            Cli.Create(new (AA));
+            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
         }
 
         public void AA(
@@ -322,7 +295,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            Cli.Create(new (AA));
+            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
         }
 
         [Aliases(""C1"")]
@@ -341,7 +314,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            Cli.Create(new (AA));
+            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
         }
 
         public void AA(

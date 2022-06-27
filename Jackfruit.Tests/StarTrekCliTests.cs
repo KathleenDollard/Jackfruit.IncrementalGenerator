@@ -32,7 +32,7 @@ public class MyClass
 {
     public void F() 
     {
-        Cli.Create(new(Handlers.Voyager));
+        var rootCommand = RootCommand.Create(CommandNode.Create(Handlers.Voyager));
     }
 
 }";
@@ -45,11 +45,11 @@ public class MyClass
 {
     public void F() 
     {
-        Cli.Create(new CliNode(Handlers.Franchise, 
-            new CliNode(Handlers.StarTrek, 
-                new CliNode(Handlers.NextGeneration, 
-                    new CliNode(Handlers.DeepSpaceNine),
-                    new CliNode(Handlers.Voyager) 
+        var rootCommand = RootCommand.Create(CommandNode.Create(Handlers.Franchise, 
+            CommandNode.Create(Handlers.StarTrek, 
+                CommandNode.Create(Handlers.NextGeneration, 
+                    CommandNode.Create(Handlers.DeepSpaceNine),
+                    CommandNode.Create(Handlers.Voyager) 
                 ))));
 
         var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();
@@ -69,11 +69,11 @@ public class MyClass
 {
     public void F() 
     {
-        Cli.Create(new CliNode(Handlers.Franchise, Validators.FranchiseValidate,
-            new CliNode(Handlers.StarTrek, 
-                new CliNode(Handlers.NextGeneration, 
-                    new CliNode(Handlers.DeepSpaceNine),
-                    new CliNode(Handlers.Voyager) 
+        var rootCommand = RootCommand.Create(CommandNode.Create(Handlers.Franchise, Validators.FranchiseValidate,
+            CommandNode.Create(Handlers.StarTrek, 
+                CommandNode.Create(Handlers.NextGeneration, 
+                    CommandNode.Create(Handlers.DeepSpaceNine),
+                    CommandNode.Create(Handlers.Voyager) 
                 ))));
 
         var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();
@@ -94,7 +94,7 @@ public class MyClass
 {
     public void F() 
     {
-        Cli.Create(new(Handlers.NextGeneration));
+        var rootCommand = RootCommand.Create(CommandNode.Create(Handlers.NextGeneration));
     }
 
 }";

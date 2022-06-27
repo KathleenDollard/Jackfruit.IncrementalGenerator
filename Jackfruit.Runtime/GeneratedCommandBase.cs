@@ -13,52 +13,60 @@ namespace Jackfruit.Internal
         where TSelf : GeneratedCommandBase<TSelf, TResult>
         where TParent : GeneratedCommandBase
     {
-        protected GeneratedCommandBase(string name, TParent parent, string? description = null)
-            : base(name, description)
-        {
-            this.Parent = parent;
-        }
+        protected TParent Parent { get; set; }
 
-        protected TParent Parent { get; }
-
-        public override void Validate(CommandResult commandResult)
+        public override void Validate(InvocationContext invocationContext)
         {
-            base.Validate(commandResult);
-            Parent.Validate(commandResult);
+            base.Validate(invocationContext);
+            Parent.Validate(invocationContext);
         }
     }
 
     public abstract class GeneratedCommandBase<TSelf, TResult> : GeneratedCommandBase
         where TSelf : GeneratedCommandBase
     {
-        protected GeneratedCommandBase(string name, string? description = null)
-            : base(name, description) { }
-
-        public abstract TResult GetResult(InvocationContext invocationContext);
-        public abstract TResult GetResult(CommandResult result);
-
-        //public TResult GetResult(InvocationContext context) => GetResult(context.ParseResult.CommandResult);
-
-        public override void Validate(CommandResult commandResult)
+        public override void Validate(InvocationContext invocationContext)
         {
-            base.Validate(commandResult);
+            base.Validate(invocationContext);
         }
+    }
+
+    public abstract class RootCommand<T, TResult> : GeneratedCommandBase<T, TResult>
+        where T : RootCommand<T, TResult>, new()
+    {
+        public static RootCommand<T, TResult> Create(CommandNode cliRoot)
+        { return new T(); }
+
+        public int Run(string[] args) 
+            => SystemCommandLineCommand.Invoke(args);
     }
 
     public abstract class GeneratedCommandBase
     {
+        public string? Name { get; protected set; }
+        private Command? _sytemCommandLineCommand = null;
+        public Command SystemCommandLineCommand
+        {
+            get
+            {
+                if (_sytemCommandLineCommand is null)
+                {
+                    _sytemCommandLineCommand =
+                        string.IsNullOrWhiteSpace(Name)
+                            ? new RootCommand()
+                            : new Command(Name!);
+                }
+                return _sytemCommandLineCommand;
+            }
+        }
+
         // no op: for generation
         public void AddCommand(Delegate method) { }
         //public void AddCommands(params Delegate[] method) { }
         public void AddCommand<TAttachTo>(Delegate method) { }
         //public void AddCommands<TAttachTo>(params Delegate[] method) { }
-        public virtual void Validate(CommandResult commandResult) { }
+        public virtual void Validate(InvocationContext invocationContext) { }
         public void AddValidator(Delegate action, params object[] values) { }
-
-        protected GeneratedCommandBase(string name, string? description = null)
-        {
-            SystemCommandLineCommand = new Command(name, description);
-        }
 
         protected void AddMessageOnFail(List<string> messages, string? newMessage)
         {
@@ -73,8 +81,6 @@ namespace Jackfruit.Internal
             { messages.AddRange(newMessages); }
         }
 
-        protected Command SystemCommandLineCommand { get; }
-
         /// <summary>
         /// Adds a subcommand to the command.
         /// </summary>
@@ -83,24 +89,13 @@ namespace Jackfruit.Internal
         protected void AddCommandToScl(GeneratedCommandBase command)
             => SystemCommandLineCommand.AddCommand(command.SystemCommandLineCommand);
 
-
-        public int Run(string[] args)
-        {
-            return SystemCommandLineCommand.Invoke(args);
-        }
-
         //*** Put SCL wrappers below. Avoiding regions to avoid antagonizing region haters
         /// <summary>
         /// Gets the set of strings that can be used on the command line to specify the symbol.
         /// </summary>
         public IReadOnlyCollection<string> Aliases => SystemCommandLineCommand.Aliases;
 
-        /// <inheritdoc/>
-        public string Name
-        {
-            get => SystemCommandLineCommand.Name;
-            set => SystemCommandLineCommand.Name = value;
-        }
+        public string? Description => SystemCommandLineCommand.Description;
 
         /// <summary>
         /// Determines whether the specified alias has already been defined.
@@ -225,10 +220,6 @@ namespace Jackfruit.Internal
     }
 
     public class EmptyCommand : GeneratedCommandBase
-    {
-        public EmptyCommand() : base("<EmptyCommand>", null)
-        {
-        }
-    }
+    { }
 }
 

@@ -1,5 +1,7 @@
 ﻿using Jackfruit;
 using System.CommandLine;
+using System;
+using System.ComponentModel;
 
 namespace DemoHandlers
 {
@@ -13,7 +15,9 @@ namespace DemoHandlers
         }
 
         public static void Franchise(string greetingArg)
-        { }
+        {
+            Console.WriteLine("You must enter a command, such as 'StartTrek'");
+        }
 
 
         /// <summary>

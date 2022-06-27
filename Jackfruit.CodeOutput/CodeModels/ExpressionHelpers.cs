@@ -45,6 +45,19 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
     }
 
+
+    public class CastModel : ExpressionBase
+    {
+        public CastModel(NamedItemModel typeName, ExpressionBase expression)
+        {
+            TypeName = typeName;
+            Expression = expression;
+        }
+
+        public NamedItemModel TypeName { get; set; }
+        public ExpressionBase Expression { get; }
+    }
+
     public class ComparisonModel : ExpressionBase
     {
         public ComparisonModel(ExpressionBase left, Operator op, ExpressionBase right)
@@ -85,8 +98,6 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
             Value = value;
         }
         public string Value { get; set; }
-
-
     }
 
     public class SymbolModel : ExpressionBase
@@ -125,6 +136,9 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
         public static TypeOfModel TypeOf(NamedItemModel typeName)
             => new(typeName);
+
+        public static CastModel Cast(NamedItemModel typeName, ExpressionBase expression)
+            => new(typeName, expression);
 
         public static ComparisonModel Compare(ExpressionBase left, Operator op, ExpressionBase right)
             => new(left, op, right);
