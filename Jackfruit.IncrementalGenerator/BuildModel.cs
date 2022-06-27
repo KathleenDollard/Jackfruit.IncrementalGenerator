@@ -145,7 +145,7 @@ namespace Jackfruit.IncrementalGenerator
             { return null; }
 
             var commandDef = Helpers.BuildCommandDef(path,
-                                                     parentNode?.CommandDef.Name,
+                                                     parentNode,
                                                      CommonHelpers.MethodFullName(handlerSymbol),
                                                      commandDetails,
                                                      ancestorMembers,

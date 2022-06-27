@@ -78,12 +78,12 @@ namespace Jackfruit
             var commandsCodeFileModel = commands
                 .Select((x, _) => CreateSource.GetCommandCodeFile(x));
 
-            var rootCommandCodeFileModel = roots
-                .Select((x, _) => CreateSource.GetRootCommandPartialCodeFile(x));
+            //var rootCommandCodeFileModel = roots
+            //    .Select((x, _) => CreateSource.GetRootCommandPartialCodeFile(x));
 
             // And finally, we output files/sources
-            initContext.RegisterSourceOutput(rootCommandCodeFileModel,
-                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel?.Name ?? ""));
+            //initContext.RegisterSourceOutput(rootCommandCodeFileModel,
+            //    static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel?.Name ?? ""));
 
             initContext.RegisterSourceOutput(commandsCodeFileModel,
                 static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel?.Name));

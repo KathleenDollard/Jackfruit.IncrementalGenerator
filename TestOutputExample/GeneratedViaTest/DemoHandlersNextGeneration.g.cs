@@ -1,22 +1,3 @@
-﻿
-using Jackfruit.Internal;
-
-namespace Jackfruit
-{
-    /// <summary>
-    /// This is the main class for the Jackfruit generator. After you call the 
-    /// Create command, the returned RootCommand will contain your CLI. If you 
-    /// need multiple root commands in your application differentiate them with &gt;T&lt;
-    /// </summary>
-    public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
-    {
-        public new static RootCommand Create(CommandNode cliRoot)
-            => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create( cliRoot);
-    }
-}
-
-// *******************************
-
 // This file is created by a generator.
 using System;
 using System.Threading.Tasks;
@@ -24,51 +5,52 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;
-using Jackfruit_DemoHandlers;
 
-namespace Jackfruit
+namespace Jackfruit_DemoHandlers
 {
-   public partial class RootCommand : ICommandHandler
+   /// <summary>
+   /// The wrapper class for the NextGeneration command.
+   /// </summary>
+   public partial class NextGeneration : GeneratedCommandBase<NextGeneration, NextGeneration.Result, StarTrek>, ICommandHandler
    {
-      public RootCommand()
+      internal static NextGeneration Build(StarTrek parent)
       {
-         Name = "NextGeneration";
-         GreetingArgument = new Argument<string>("greetingArg");
-         Add(GreetingArgument);
-         PicardOption = new Option<bool>("--Picard");
-         PicardOption.Description = "This is the description for Picard";
-         PicardOption.AddAlias("-p");
-         Add(PicardOption);
-         AddValidator(Validate);
-         Handler = this;
+         var command = new NextGeneration();
+         command.Name = "NextGeneration";
+         command.Parent = parent;
+         command.PicardOption = new Option<bool>("--Picard");
+         command.PicardOption.Description = "This is the description for Picard";
+         command.PicardOption.AddAlias("-p");
+         command.Add(command.PicardOption);
+         command.DeepSpaceNine = DeepSpaceNine.Build(command);
+         command.AddCommandToScl(command.DeepSpaceNine);
+         command.Voyager = Voyager.Build(command);
+         command.AddCommandToScl(command.Voyager);
+         command.AddValidator(command.Validate);
+         command.Handler = command;
+         return command;
       }
       
       /// <summary>
       /// The result class for the NextGeneration command.
       /// </summary>
-      public class Result
+      public class Result : StarTrek.Result
       {
-         public string Greeting {get; set;}
          public bool Picard {get; set;}
          /// <summary>
          /// Get an instance of the Result class for the NextGeneration command.
          /// </summary>
          /// <param name="command">The command corresponding to the result</param>
          /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve.</param>
-         internal static Result GetResult(RootCommand command, InvocationContext invocationContext)
+         internal static Result GetResult(NextGeneration command, InvocationContext invocationContext)
          {
             return new Result(command, invocationContext.ParseResult.CommandResult);
          }
          
-         private protected Result(RootCommand command, CommandResult commandResult)
+         private protected Result(NextGeneration command, CommandResult commandResult)
+         : base(command.Parent, commandResult)
          {
-            Greeting = GetValueForSymbol(command.GreetingArgument, commandResult);
             Picard = GetValueForSymbol(command.PicardOption, commandResult);
-         }
-         
-         private protected Result(RootCommand command, InvocationContext invocationContext)
-         : this(command, invocationContext.ParseResult.CommandResult)
-         {
          }
          
       }
@@ -95,8 +77,9 @@ namespace Jackfruit
          return Task.FromResult(invocationContext.ExitCode);
       }
       
-      public Argument<string> GreetingArgument {get; set;}
       public Option<bool> PicardOption {get; set;}
+      public DeepSpaceNine DeepSpaceNine {get; set;}
+      public Voyager Voyager {get; set;}
    }
    
 }

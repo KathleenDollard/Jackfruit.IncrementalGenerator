@@ -10,12 +10,15 @@ namespace Jackfruit.IncrementalGenerator
     public static class Helpers
     {
         internal static CommandDef? BuildCommandDef(string[] path,
-                                                    string? parent,
+                                                    CommandDefNode parent,
                                                     string methodName,
                                                     CommandDetails? commandDetails,
                                                     IEnumerable<MemberDef> ancestorMembers,
                                                     string triggerStyle)
         {
+            var parentName = parent?.CommandDef.Name;
+            var isParentRoot = string.IsNullOrWhiteSpace(parent?.CommandDef.Parent);
+
             var members = new List<MemberDef>();
             if (commandDetails == null)
             { return null; }
@@ -61,7 +64,8 @@ namespace Jackfruit.IncrementalGenerator
                                             string.Join("_", path),
                                             commandDetails.Namespace,
                                             path,
-                                            parent,
+                                            parentName,
+                                            isParentRoot,
                                             commandDetails.Detail.Description,
                                             commandDetails.Detail.Aliases,
                                             members,

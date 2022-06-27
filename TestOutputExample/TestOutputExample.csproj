@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="GeneratedViaTest\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

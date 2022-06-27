@@ -40,7 +40,7 @@ namespace Jackfruit.Tests
             var (outputCompilation, outputDiagnostics) = TestHelpers.RunGenerator(compilation, generator);
             Assert.NotNull(outputCompilation);
             Assert.Empty(outputDiagnostics);
-            Assert.Equal(6, outputCompilation.SyntaxTrees.Count());
+            Assert.Equal(9, outputCompilation.SyntaxTrees.Count());
             return outputCompilation;
         }
 
@@ -60,7 +60,7 @@ namespace Jackfruit.Tests
                     File.WriteAllText(fileName, tree.ToString());
                 }
             }
-            Assert.Equal(3, Directory.GetFiles(testGeneratedCodePath).Count());
+            Assert.Equal(6, Directory.GetFiles(testGeneratedCodePath).Count());
         }
 
         private static Process? TestOutputCompiles()
@@ -160,8 +160,7 @@ namespace Jackfruit.Tests
         //    TestOutputCompiles();
         //}
 
-        [Fact(Skip ="Not ready to overwrite")]
-
+        [Fact]
         public void Simple_uhura()
         {
             var output = RunGeneratedProject("StarTrek --Uhura");
@@ -169,14 +168,14 @@ namespace Jackfruit.Tests
         }
 
 
-        [Fact(Skip = "Not ready to overwrite")]
+        [Fact]
         public void Nested_janeway()
         {
             var output = RunGeneratedProject("StarTrek NextGeneration Voyager --Janeway");
             Assert.Equal($"Hello, Kathryn Janeway{Environment.NewLine}", output);
         }
 
-        [Fact(Skip = "Not ready to overwrite")]
+        [Fact]
         public void Alias_picard()
         {
             var output = RunGeneratedProject("StarTrek NextGeneration -p");

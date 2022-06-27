@@ -18,31 +18,13 @@ namespace Jackfruit
 // *******************************
 
 // This file is created by a generator.
-using DemoHandlers;
-
-namespace Jackfruit
-{
-   public partial class RootCommand : RootCommand<RootCommand.Result>
-   {
-       static new RootCommand Create(CommandNode rootNode)
-      {
-         return RootCommand<RootCommand, RootCommand.Result>.Create("rootNode");
-      }
-      
-   }
-   
-}
-
-// *******************************
-
-// This file is created by a generator.
 using System;
 using System.Threading.Tasks;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;
-using Jackfruit.DemoHandlers;
+using Jackfruit_DemoHandlers;
 
 namespace Jackfruit
 {
@@ -70,7 +52,7 @@ namespace Jackfruit
          /// </summary>
          /// <param name="command">The command corresponding to the result</param>
          /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve.</param>
-         internal static Result GetResult(Franchise command, InvocationContext invocationContext)
+         internal static Result GetResult(RootCommand command, InvocationContext invocationContext)
          {
             return new Result(command, invocationContext.ParseResult.CommandResult);
          }
@@ -112,15 +94,15 @@ namespace Jackfruit
       /// <summary>
       /// The validate method invoked by System.CommandLine.
       /// </summary>
-      /// <param name="commandResult">The System.CommandLine CommandResult used to retrieve values for validation and it will hold any errors.</param>
-      public override void Validate(CommandResult commandResult)
+      /// <param name="invocationContext">The System.CommandLine CommandResult used to retrieve values for validation and it will hold any errors.</param>
+      public override void Validate(InvocationContext invocationContext)
       {
-         base.Validate(commandResult);
-         var result = GetResult(commandResult);
+         base.Validate(invocationContext);
+         var result = Result.GetResult(this, invocationContext);
          var err = string.Join(Environment.NewLine, DemoHandlers.Validators.FranchiseValidate(result.Greeting));
          if (!(string.IsNullOrWhiteSpace(err)))
          {
-            commandResult.ErrorMessage = err;
+            invocationContext.ParseResult.CommandResult.ErrorMessage = err;
          }
       }
       
@@ -140,17 +122,18 @@ using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;
 
-namespace DemoHandlers
+namespace Jackfruit_DemoHandlers
 {
    /// <summary>
    /// The wrapper class for the StarTrek command.
    /// </summary>
-   public partial class StarTrek : GeneratedCommandBase<StarTrek, StarTrek.Result, Franchise>, ICommandHandler
+   public partial class StarTrek : GeneratedCommandBase<StarTrek, StarTrek.Result, Jackfruit.RootCommand>, ICommandHandler
    {
-      internal static StarTrek Build(Franchise parent)
+      internal static StarTrek Build(Jackfruit.RootCommand parent)
       {
-         var command = new StarTrek(parent);
+         var command = new StarTrek();
          command.Name = "StarTrek";
+         command.Parent = parent;
          command.KirkOption = new Option<bool>("--Kirk");
          command.KirkOption.Description = "Whether to greet Captain Kirk";
          command.Add(command.KirkOption);
@@ -170,7 +153,7 @@ namespace DemoHandlers
       /// <summary>
       /// The result class for the StarTrek command.
       /// </summary>
-      public class Result
+      public class Result : Jackfruit.RootCommand.Result
       {
          public bool Kirk {get; set;}
          public bool Spock {get; set;}
@@ -186,7 +169,7 @@ namespace DemoHandlers
          }
          
          private protected Result(StarTrek command, CommandResult commandResult)
-         : base("command", "commandResult")
+         : base(command.Parent, commandResult)
          {
             Kirk = GetValueForSymbol(command.KirkOption, commandResult);
             Spock = GetValueForSymbol(command.SpockOption, commandResult);
@@ -235,7 +218,7 @@ using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;
 
-namespace DemoHandlers
+namespace Jackfruit_DemoHandlers
 {
    /// <summary>
    /// The wrapper class for the NextGeneration command.
@@ -244,8 +227,9 @@ namespace DemoHandlers
    {
       internal static NextGeneration Build(StarTrek parent)
       {
-         var command = new NextGeneration(parent);
+         var command = new NextGeneration();
          command.Name = "NextGeneration";
+         command.Parent = parent;
          command.PicardOption = new Option<bool>("--Picard");
          command.PicardOption.Description = "This is the description for Picard";
          command.PicardOption.AddAlias("-p");
@@ -262,7 +246,7 @@ namespace DemoHandlers
       /// <summary>
       /// The result class for the NextGeneration command.
       /// </summary>
-      public class Result
+      public class Result : StarTrek.Result
       {
          public bool Picard {get; set;}
          /// <summary>
@@ -276,7 +260,7 @@ namespace DemoHandlers
          }
          
          private protected Result(NextGeneration command, CommandResult commandResult)
-         : base("command", "commandResult")
+         : base(command.Parent, commandResult)
          {
             Picard = GetValueForSymbol(command.PicardOption, commandResult);
          }
@@ -322,7 +306,7 @@ using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;
 
-namespace DemoHandlers
+namespace Jackfruit_DemoHandlers
 {
    /// <summary>
    /// The wrapper class for the DeepSpaceNine command.
@@ -331,8 +315,9 @@ namespace DemoHandlers
    {
       internal static DeepSpaceNine Build(NextGeneration parent)
       {
-         var command = new DeepSpaceNine(parent);
+         var command = new DeepSpaceNine();
          command.Name = "DeepSpaceNine";
+         command.Parent = parent;
          command.SiskoOption = new Option<bool>("--Sisko");
          command.Add(command.SiskoOption);
          command.OdoOption = new Option<bool>("--Odo");
@@ -351,7 +336,7 @@ namespace DemoHandlers
       /// <summary>
       /// The result class for the DeepSpaceNine command.
       /// </summary>
-      public class Result
+      public class Result : NextGeneration.Result
       {
          public bool Sisko {get; set;}
          public bool Odo {get; set;}
@@ -369,7 +354,7 @@ namespace DemoHandlers
          }
          
          private protected Result(DeepSpaceNine command, CommandResult commandResult)
-         : base("command", "commandResult")
+         : base(command.Parent, commandResult)
          {
             Sisko = GetValueForSymbol(command.SiskoOption, commandResult);
             Odo = GetValueForSymbol(command.OdoOption, commandResult);
@@ -421,7 +406,7 @@ using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;
 
-namespace DemoHandlers
+namespace Jackfruit_DemoHandlers
 {
    /// <summary>
    /// The wrapper class for the Voyager command.
@@ -430,8 +415,9 @@ namespace DemoHandlers
    {
       internal static Voyager Build(NextGeneration parent)
       {
-         var command = new Voyager(parent);
+         var command = new Voyager();
          command.Name = "Voyager";
+         command.Parent = parent;
          command.JanewayOption = new Option<bool>("--Janeway");
          command.Add(command.JanewayOption);
          command.ChakotayOption = new Option<bool>("--Chakotay");
@@ -450,7 +436,7 @@ namespace DemoHandlers
       /// <summary>
       /// The result class for the Voyager command.
       /// </summary>
-      public class Result
+      public class Result : NextGeneration.Result
       {
          public System.CommandLine.IConsole Console {get; set;}
          public bool Janeway {get; set;}
@@ -469,7 +455,7 @@ namespace DemoHandlers
          }
          
          private protected Result(Voyager command, CommandResult commandResult)
-         : base("command", "commandResult")
+         : base(command.Parent, commandResult)
          {
             Janeway = GetValueForSymbol(command.JanewayOption, commandResult);
             Chakotay = GetValueForSymbol(command.ChakotayOption, commandResult);

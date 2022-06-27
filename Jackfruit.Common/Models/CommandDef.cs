@@ -11,22 +11,22 @@
 
     public record CommandDef : CommandDefBase
     {
-        public CommandDef(
-            string id,
-            IEnumerable<string> path)
-        {
-            Id = id;
-            Name = id;
-            UniqueId = string.Join("|", path);
-            Namespace = "";
-            Description = null;
-            Aliases = new string[] { };
-            Members = new List<MemberDef>();
-            HandlerMethodName = "";
-            SubCommandNames = new List<string>(); ;
-            Path = path;
-            ReturnType = "";
-        }
+        //public CommandDef(
+        //    string id,
+        //    IEnumerable<string> path)
+        //{
+        //    Id = id;
+        //    Name = id;
+        //    UniqueId = string.Join("|", path);
+        //    Namespace = "";
+        //    Description = null;
+        //    Aliases = new string[] { };
+        //    Members = new List<MemberDef>();
+        //    HandlerMethodName = "";
+        //    SubCommandNames = new List<string>(); ;
+        //    Path = path;
+        //    ReturnType = "";
+        //}
 
         public CommandDef(
             string id,
@@ -35,6 +35,7 @@
             string nspace,
             IEnumerable<string> path,
             string? parent,
+            bool isParentRoot,
             string? description,
             string[] aliases,
             IEnumerable<MemberDef> members,
@@ -48,6 +49,7 @@
             UniqueId = uniqueId;
             Namespace = nspace;
             Parent = parent;
+            IsParentRoot = isParentRoot;
             Description = description;
             Aliases = aliases;
             Members = members;
@@ -63,6 +65,7 @@
         public string UniqueId { get; }
         public string Namespace { get; }
         public string? Parent { get; }
+        public bool IsParentRoot { get; }
         public ValidatorDef? Validator { get; set; }
         public string? Description { get; }
         public string[] Aliases { get; }

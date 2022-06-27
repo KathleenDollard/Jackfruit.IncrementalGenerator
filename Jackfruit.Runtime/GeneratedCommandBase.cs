@@ -31,7 +31,6 @@ namespace Jackfruit.Internal
         }
     }
 
-
     public abstract class RootCommand<T, TResult> : GeneratedCommandBase<T, TResult>
         where T : RootCommand<T, TResult>, new()
     {

@@ -27,12 +27,7 @@ namespace Jackfruit
         /// </summary>
         public class Result
         {
-            internal Result(RootCommand command, InvocationContext invocationContext)
-                : this(command, invocationContext.ParseResult.CommandResult)
-            {
-            }
-
-            internal Result(RootCommand command, CommandResult commandResult)
+            private protected Result(RootCommand command, CommandResult commandResult)
             {
                 Greeting = GetValueForSymbol(command.GreetingArgument, commandResult);
             }

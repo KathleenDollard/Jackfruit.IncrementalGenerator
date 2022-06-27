@@ -17,10 +17,22 @@ namespace Jackfruit.Common
 
         private static bool IsRoot(CommandDef commandDef)
             => string.IsNullOrWhiteSpace(commandDef.Parent);
+        // TODO: The rootcommand name should include any generic - might move this to the commandDef
+        // TODO: This needs to be unique within the project, like fully qualified
         private static string CommandClassName(CommandDef commandDef)
             => IsRoot(commandDef)
                     ? "RootCommand"
                     : commandDef.Name;
+        private static string ParentClassName(CommandDef commandDef)
+            => commandDef.IsParentRoot
+                    ? "Jackfruit.RootCommand"
+                    : commandDef.Parent ?? "";
+        // TODO: This needs to include the generic to be unique
+        private static string FileName(CommandDef commandDef)
+            => $"{commandDef.Namespace}{CommandClassName(commandDef)}";
+        private static string NewNamespace(CommandDef commandDef)
+            => $"Jackfruit_{commandDef.Namespace}";
+
         private static string CommandPropertyName(CommandDef commandDef) => commandDef.Name;
         private static string MemberPropertyName(MemberDef memberDef)
             => memberDef switch
@@ -73,7 +85,7 @@ namespace Jackfruit.Common
                                     .Statements(
                                         Return(Invoke("RootCommand<RootCommand, RootCommand.Result>",
                                              "Create",
-                                             "rootNode")))));
+                                             Symbol("rootNode"))))));
         }
 
         public static CodeFileModel? GetCommandCodeFile(CommandDefBase commandDefBase)
@@ -88,43 +100,30 @@ namespace Jackfruit.Common
         }
 
         private static CodeFileModel? GetRootCommandCode(CommandDef commandDef)
-        {
-            // TODO: This needs to include the generic to be unique
-            var fileName = "RootCommand";
-            // TODO: The rootcommand name should include any generic - might move this to the commandDef
-            var className = CommandClassName(commandDef);
-
-            return CodeFile(fileName)
+            => CodeFile(FileName(commandDef))
                 .Usings(usings)
-                .Usings($"Jackfruit.{commandDef.Namespace}")
+                .Usings(NewNamespace(commandDef))
                 .Namespace("Jackfruit",
-                    Class(className)
+                    Class(CommandClassName(commandDef))
                         .Public().Partial()
                         .ImplementedInterfaces("ICommandHandler")
                         .Members(RootConstructor(commandDef))
                         .Members(CommonClassMembers(commandDef)));
-        }
 
         public static CodeFileModel? GetNonRootCommandCode(CommandDef commandDef)
-        {
-            // TODO: This needs to be unique within the project, like fully qualified
-            var fileName = commandDef.Name;
-            var className = CommandClassName(commandDef);
-
-            return CodeFile(fileName)
+            => CodeFile(FileName(commandDef))
                 .Usings(usings)
-                .Namespace((string?)commandDef.Namespace,
-                    Class(className)
+                .Namespace(NewNamespace(commandDef),
+                    Class(CommandClassName(commandDef))
                         .Public().Partial()
-                        .XmlDescription((string?)$"The wrapper class for the {className} command.")
+                        .XmlDescription($"The wrapper class for the {CommandClassName(commandDef)} command.")
                         .ImplementedInterfaces(
                             string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
                                 ? Array.Empty<NamedItemModel>()
                                 : new NamedItemModel[] { "ICommandHandler" })
-                        .InheritedFrom((NamedItemModel?)GeneratedCommandBase(className, commandDef.Parent!))
+                        .InheritedFrom((NamedItemModel?)GeneratedCommandBase(CommandClassName(commandDef), ParentClassName(commandDef)))
                         .Members(BuildMethod(commandDef))
                         .Members(CommonClassMembers(commandDef)));
-        }
 
         private static IEnumerable<IMember> CommonClassMembers(CommandDef commandDef)
         {
@@ -216,35 +215,37 @@ namespace Jackfruit.Common
                     .Public()
                     .Override()
                     .Parameters(
-                        Parameter(commandResultVar, "CommandResult")
+                        Parameter("invocationContext", "InvocationContext")
                             .XmlDescription("The System.CommandLine CommandResult used to retrieve values for validation and it will hold any errors."))
                     .Statements(
                         // TODO: Fix invoke to take base in langugae neutral way
-                        SimpleCall(Invoke("base", "Validate", Symbol(commandResultVar))),
-                        AssignWithDeclare(result, Invoke("", getResultName, Symbol(commandResultVar))),
+                        SimpleCall(Invoke("base", "Validate", Symbol("invocationContext"))),
+                        AssignWithDeclare(result, Invoke("Result", getResultName, This, Symbol("invocationContext"))),
                         AssignWithDeclare("err", Invoke("string", "Join",
                                     Symbol("Environment.NewLine"),
                                     Invoke("", validatorDef.MethodName, arguments))),
                         If(Not(Invoke("string", "IsNullOrWhiteSpace", Symbol("err"))),
-                                Assign($"{commandResultVar}.ErrorMessage", Symbol("err"))));
+                                Assign("invocationContext.ParseResult.CommandResult.ErrorMessage",
+                                       Symbol("err"))));
 
         }
 
-        private static ConstructorModel RootConstructor(CommandDef commandDef) 
+        private static ConstructorModel RootConstructor(CommandDef commandDef)
             => Constructor("RootCommand")
                 .Public()
                 .Statements(BuildStatements(commandDef).ToArray());
 
         private static MethodModel BuildMethod(CommandDef commandDef)
         {
-            var method =
-                    Method("Build", CommandClassName(commandDef))
-                        .Internal().Static();
+            var method = Method("Build", CommandClassName(commandDef))
+                            .Internal().Static()
+                            .Statements(
+                                AssignWithDeclare(commandVar, New(CommandClassName(commandDef))))
+                            .Statements(BuildStatements(commandDef).ToArray());
 
-            method.Parameters.Add(Parameter("parent", commandDef.Parent ?? ""));
-            method.Statements.Add(AssignWithDeclare(commandVar, New(CommandClassName(commandDef), Symbol("parent"))));
+            if (!IsRoot(commandDef))
+                method.Parameters(Parameter("parent", ParentClassName(commandDef)));
 
-            method.Statements.AddRange(BuildStatements(commandDef).ToArray());
             return method;
         }
 
@@ -254,11 +255,14 @@ namespace Jackfruit.Common
             var targetVar = IsRoot(commandDef)
                 ? ""
                 : commandVar;
-            var target = IsRoot(commandDef) ? "" :  $"{targetVar}.";
+            var target = IsRoot(commandDef) ? "" : $"{targetVar}.";
             var thisOrCommand = IsRoot(commandDef)
                 ? (ExpressionBase)This
                 : Symbol(commandVar);
+
             statements.Add(Assign($"{target}Name", commandDef.Name));
+            if (!IsRoot(commandDef))
+            { statements.Add(Assign($"{target}Parent", Symbol("parent"))); }
 
             foreach (var member in commandDef.MyMembers)
             {
@@ -295,7 +299,7 @@ namespace Jackfruit.Common
                 if (!string.IsNullOrWhiteSpace(subCommandName))
                 {
                     var toAdd = $"{target}{subCommandName}";
-                    statements.Add(Assign(toAdd, Invoke(subCommandName, "Build",thisOrCommand)));
+                    statements.Add(Assign(toAdd, Invoke(subCommandName, "Build", thisOrCommand)));
                     statements.Add(SimpleCall(Invoke(targetVar, "AddCommandToScl", Symbol(toAdd))));
                 }
             }
@@ -315,14 +319,18 @@ namespace Jackfruit.Common
                 Class("Result")
                     .XmlDescription($"The result class for the {commandDef.Name} command.")
                     .Public()
+
                     .Members(
                         DataMembers(commandDef).ToArray())
                     .Members(
                         GetResultMethod(commandDef),
-                        ResultCommandResultConstructor( commandDef));
+                        ResultCommandResultConstructor(commandDef));
+
+            if (!IsRoot(commandDef))
+            { resultClass.InheritedFrom($"{ParentClassName(commandDef)}.Result"); }
 
             if (commandDef.Parent is null)
-            { resultClass.Members.Add(ResultInvocationConstructor( commandDef)); }
+            { resultClass.Members.Add(ResultInvocationConstructor(commandDef)); }
 
             return resultClass;
 
@@ -331,7 +339,7 @@ namespace Jackfruit.Common
                     .XmlDescription("Get an instance of the Result class for the NextGeneration command.")
                     .Internal().Static()
                     .Parameters(
-                        Parameter("command", commandDef.Name)
+                        Parameter("command", CommandClassName(commandDef))
                             .XmlDescription("The command corresponding to the result"),
                         Parameter("invocationContext", "InvocationContext")
                             .XmlDescription("The System.CommandLine InvocationContext used to retrieve."))
@@ -353,23 +361,23 @@ namespace Jackfruit.Common
                                        Parameter(command, CommandClassName(commandDef)),
                                        Parameter(name: invocationContext, "InvocationContext"))
                                .This(args.ToArray())
-                               .Statements(ServiceConstructorStatements( commandDef));
+                               .Statements(ServiceConstructorStatements(commandDef));
             }
 
-            static ConstructorModel ResultCommandResultConstructor( CommandDef commandDef)
+            static ConstructorModel ResultCommandResultConstructor(CommandDef commandDef)
             {
                 var ctor = Constructor("Result")
                     .PrivateProtected()
                     .Parameters(
                         Parameter(command, CommandClassName(commandDef)),
                         Parameter(name: commandResultVar, "CommandResult"))
-                    .Statements(ResultConstructorStatements( commandDef));
+                    .Statements(ResultConstructorStatements(commandDef));
                 if (commandDef.Parent is not null)
-                { ctor.Base(command, commandResultVar); }
+                { ctor.Base(Symbol("command.Parent"), Symbol(commandResultVar)); }
                 return ctor;
             }
 
-            static IEnumerable<IStatement> ServiceConstructorStatements(   CommandDef commandDef)
+            static IEnumerable<IStatement> ServiceConstructorStatements(CommandDef commandDef)
                 => commandDef.MyMembers
                     .OfType<ServiceDef>()
                     .Select(service =>
