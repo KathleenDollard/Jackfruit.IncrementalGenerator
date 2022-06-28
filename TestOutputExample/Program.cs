@@ -12,7 +12,7 @@ internal class Program
                      CommandNode.Create(Handlers.DeepSpaceNine),
                      CommandNode.Create(Handlers.Voyager)
                  ))));
-        rootCommand.GreetingArgument.SetDefaultValue("Hello");
+        rootCommand.GreetingArgument.SetDefaultValue("Hello"); 
         rootCommand.Run(args);
 
         #region 0

@@ -4,12 +4,11 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<PackageVersion>0.0.1-alphaG</PackageVersion>
 		<LangVersion>10.0</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22222.1" />
+	    <PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22222.1" />
 	</ItemGroup>
 
 </Project>

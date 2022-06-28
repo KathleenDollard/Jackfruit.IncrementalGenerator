@@ -4,7 +4,6 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<PackageVersion>0.0.1-alphaA</PackageVersion>
 		<LangVersion>10.0</LangVersion>
 	</PropertyGroup>
 
@@ -12,11 +11,8 @@
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.1.0" PrivateAssets="all" />
 	</ItemGroup>
-	<ItemGroup Condition="'$(CreatePackage)' == 'true'">
-		<PackageReference Include="Jackfruit.CodeOutput" Version="0.0.1-alphaA" />
-	</ItemGroup>
 
-	<ItemGroup Condition="'$(CreatePackage)' != 'true'">
+	<ItemGroup>
 		<ProjectReference Include="../Jackfruit.CodeOutput/Jackfruit.CodeOutput.csproj" />
 	</ItemGroup>
 

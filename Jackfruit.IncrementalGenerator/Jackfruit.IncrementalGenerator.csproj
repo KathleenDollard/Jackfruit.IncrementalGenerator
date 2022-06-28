@@ -11,31 +11,31 @@
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<!-- NU5128 is a packaging warning when you don't have lib/ref folders. we're a generator, we're never going to have those. -->
 		<NoWarn>$(NoWarn); NU5128</NoWarn>
-
-		<PackageVersion>0.0.1-alphaR</PackageVersion>
-		
+		<BuildOutputTargetFolder>analyzers/dotnet/cs</BuildOutputTargetFolder>
 	</PropertyGroup>
 
-	<ItemGroup>
+	<!--<ItemGroup>
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-	</ItemGroup>
-	
+	</ItemGroup>-->
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.1.0" PrivateAssets="all" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22222.1" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(CreatePackage)' == 'true'">
-		<PackageReference Include="Jackfruit.Runtime" Version="0.0.1-alphaG" />
-		<PackageReference Include="Jackfruit.CodeOutput" Version="0.0.1-alphaA" />
-		<PackageReference Include="Jackfruit.Common" Version="0.0.1-alphaA" />
+	<!--<ItemGroup Condition="'$(CreatePackage)' == 'true'">
+		<PackageReference Include="Jackfruit.Runtime" Version="$(PackageVersion)" />
 	</ItemGroup>
-	
+
 	<ItemGroup Condition="'$(CreatePackage)' != 'true'">
 		<ProjectReference Include="../Jackfruit.Runtime/Jackfruit.Runtime.csproj" />
-		<ProjectReference Include="../Jackfruit.CodeOutput/Jackfruit.CodeOutput.csproj" />
-		<ProjectReference Include="../Jackfruit.Common/Jackfruit.Common.csproj" />
+	</ItemGroup>-->
+
+	<ItemGroup>
+		<ProjectReference Include="../Jackfruit.Runtime/Jackfruit.Runtime.csproj" />
+		<ProjectReference Include="../Jackfruit.CodeOutput/Jackfruit.CodeOutput.csproj" PrivateAssets="all"/>
+		<ProjectReference Include="../Jackfruit.Common/Jackfruit.Common.csproj" PrivateAssets="all"/>
 	</ItemGroup>
 
 </Project>

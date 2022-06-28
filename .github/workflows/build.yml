@@ -20,8 +20,6 @@ jobs:
       
       - name: setup .NET
         uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 6.0.300
 
       - name: build the Source Generator
         run: dotnet build Jackfruit.IncrementalGenerator
