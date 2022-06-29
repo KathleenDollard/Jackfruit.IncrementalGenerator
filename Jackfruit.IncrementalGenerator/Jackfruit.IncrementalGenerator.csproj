@@ -2,16 +2,16 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>true</ImplicitUsings>
 		<LangVersion>10.0</LangVersion>
+		<IsPackable>true</IsPackable>
 
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<!-- NU5128 is a packaging warning when you don't have lib/ref folders. we're a generator, we're never going to have those. -->
 		<NoWarn>$(NoWarn); NU5128</NoWarn>
 		<BuildOutputTargetFolder>analyzers/dotnet/cs</BuildOutputTargetFolder>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 	</PropertyGroup>
 
 	<!--<ItemGroup>
@@ -34,8 +34,35 @@
 
 	<ItemGroup>
 		<ProjectReference Include="../Jackfruit.Runtime/Jackfruit.Runtime.csproj" />
-		<ProjectReference Include="../Jackfruit.CodeOutput/Jackfruit.CodeOutput.csproj" PrivateAssets="all"/>
-		<ProjectReference Include="../Jackfruit.Common/Jackfruit.Common.csproj" PrivateAssets="all"/>
+		<ProjectReference Include="../Jackfruit.CodeOutput/Jackfruit.CodeOutput.csproj" PrivateAssets="all" />
+		<ProjectReference Include="../Jackfruit.Common/Jackfruit.Common.csproj" PrivateAssets="all" />
 	</ItemGroup>
 
+	<Target
+		Name="CopyProjectReferencesToPackage">
+	<ItemGroup>
+		<_PrivateProjects Include="@(ProjectReference)" Condition="'%(ProjectReference.PrivateAssets)' == 'all'" />
+	</ItemGroup>
+
+	<!--
+		Build referenced projects when building from the command line.
+		-->
+	<MSBuild
+		Projects="@(_PrivateProjects)"
+		Targets="%(_PrivateProjects.Targets)"
+		BuildInParallel="$(BuildInParallel)"
+		Properties="%(_PrivateProjects.SetConfiguration); %(_PrivateProjects.SetPlatform);  %(_PrivateProjects.SetTargetFramework)"
+		ContinueOnError="$(ContinueOnError)"
+		RemoveProperties="%(_PrivateProjects.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)">
+
+		<Output TaskParameter="TargetOutputs" ItemName="_PrivateProjectsOutputs"/>
+	</MSBuild>
+	<ItemGroup>
+		<!-- the dependencies of your MSBuild task must be packaged inside the package, they cannot be expressed as normal PackageReferences -->
+		<BuildOutputInPackage
+			Include="@(_PrivateProjectsOutputs)"
+			TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)" />
+	  </ItemGroup>
+
+	</Target>
 </Project>
