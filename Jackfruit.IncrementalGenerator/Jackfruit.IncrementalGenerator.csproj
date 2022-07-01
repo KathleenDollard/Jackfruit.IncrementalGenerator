@@ -40,29 +40,29 @@
 
 	<Target
 		Name="CopyProjectReferencesToPackage">
-	<ItemGroup>
-		<_PrivateProjects Include="@(ProjectReference)" Condition="'%(ProjectReference.PrivateAssets)' == 'all'" />
-	</ItemGroup>
+		<ItemGroup>
+			<_PrivateProjects Include="@(ProjectReference)" Condition="'%(ProjectReference.PrivateAssets)' == 'all'" />
+		</ItemGroup>
 
-	<!--
+		<!--
 		Build referenced projects when building from the command line.
 		-->
-	<MSBuild
-		Projects="@(_PrivateProjects)"
-		Targets="%(_PrivateProjects.Targets)"
-		BuildInParallel="$(BuildInParallel)"
-		Properties="%(_PrivateProjects.SetConfiguration); %(_PrivateProjects.SetPlatform);  %(_PrivateProjects.SetTargetFramework)"
-		ContinueOnError="$(ContinueOnError)"
-		RemoveProperties="%(_PrivateProjects.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)">
+		<MSBuild
+			Projects="@(_PrivateProjects)"
+			Targets="%(_PrivateProjects.Targets)"
+			BuildInParallel="$(BuildInParallel)"
+			Properties="%(_PrivateProjects.SetConfiguration); %(_PrivateProjects.SetPlatform);  %(_PrivateProjects.SetTargetFramework)"
+			ContinueOnError="$(ContinueOnError)"
+			RemoveProperties="%(_PrivateProjects.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)">
 
-		<Output TaskParameter="TargetOutputs" ItemName="_PrivateProjectsOutputs"/>
-	</MSBuild>
-	<ItemGroup>
-		<!-- the dependencies of your MSBuild task must be packaged inside the package, they cannot be expressed as normal PackageReferences -->
-		<BuildOutputInPackage
-			Include="@(_PrivateProjectsOutputs)"
-			TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)" />
-	  </ItemGroup>
+			<Output TaskParameter="TargetOutputs" ItemName="_PrivateProjectsOutputs"/>
+		</MSBuild>
+		<ItemGroup>
+			<!-- the dependencies of your MSBuild task must be packaged inside the package, they cannot be expressed as normal PackageReferences -->
+			<BuildOutputInPackage
+				Include="@(_PrivateProjectsOutputs)"
+				TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)" />
+		</ItemGroup>
 
 	</Target>
 </Project>
