@@ -17,6 +17,10 @@ namespace Jackfruit.Tests
         public IntegrationTests(JackfruitIntegrationTestFixture support)
         {
             this.support = support;
+            var inputCompilation = support.TestCreatingCompilation(ProgramSyntaxTree, HandlerSyntaxTree, ValidatorSyntaxTree);
+            var outputCompilation = support.TestGeneration(inputCompilation, new Generator());
+            support.TestOutput(outputCompilation);
+            support.TestOutputCompiles();
         }
         [Fact]
         public void Simple_uhura()
@@ -24,7 +28,6 @@ namespace Jackfruit.Tests
             var output = support.RunProject("StarTrek --Uhura");
             Assert.Equal($"Hello, Nyota Uhura{Environment.NewLine}", output);
         }
-
 
         [Fact]
         public void Nested_janeway()

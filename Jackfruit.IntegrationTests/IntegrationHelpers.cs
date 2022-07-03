@@ -14,19 +14,7 @@ namespace Jackfruit.Tests
         internal const string dotnetVersion = "net6.0";
         internal static string currentPath = Environment.CurrentDirectory;
 
-        //public readonly string TestSetName;
-        //private SyntaxTree HandlerSyntaxTree => CSharpSyntaxTree.ParseText(File.ReadAllText(HandlerFilePath));
-        //private SyntaxTree ValidatorSyntaxTree => CSharpSyntaxTree.ParseText(File.ReadAllText(ValidatorFilePath));
-        //private SyntaxTree ProgramSyntaxTree => CSharpSyntaxTree.ParseText(File.ReadAllText(ProgramFilePath));
-
-        //public string TestInputPath { get; set; }
-        //public string TestGeneratedCodePath { get; set; }
-        //public string TestBuildPath { get; set; }
-        //public string HandlerFilePath { get; set; }
-        //public string ValidatorFilePath { get; set; }
-        //public string ProgramFilePath { get; set; }
-
-        private static CSharpCompilation TestCreatingCompilation(params SyntaxTree[] syntaxTrees)
+        public static CSharpCompilation TestCreatingCompilation(params SyntaxTree[] syntaxTrees)
         {
             var (compilation, inputDiagnostics) = TestHelpers.GetCompilation<Generator>(syntaxTrees);
             Assert.NotNull(compilation);
@@ -36,7 +24,7 @@ namespace Jackfruit.Tests
             return compilation;
         }
 
-        private static Compilation TestGeneration<T>(CSharpCompilation compilation, T generator)
+        public static Compilation TestGeneration<T>(CSharpCompilation compilation, T generator)
             where T : IIncrementalGenerator, new()
         {
             var (outputCompilation, outputDiagnostics) = TestHelpers.RunGenerator(compilation, generator);
@@ -46,7 +34,7 @@ namespace Jackfruit.Tests
             return outputCompilation;
         }
 
-        private static void OutputGeneratedTrees(Compilation generatedCompilation, string outputDir, params string[] skipFiles)
+        public static void OutputGeneratedTrees(Compilation generatedCompilation, string outputDir, params string[] skipFiles)
         {
             foreach (var tree in generatedCompilation.SyntaxTrees)
             {
@@ -57,7 +45,6 @@ namespace Jackfruit.Tests
                             .First()
                             .Identifier.ToString() + ".cs";
                 if (skipFiles.Contains(className) || skipFiles.Contains(Path.GetFileNameWithoutExtension(className)))
-                    //!= "Program.cs" && className != "Handlers.cs" && className != "Validators.cs")
                 {
                     var fileName = Path.Combine(outputDir, className);
                     File.WriteAllText(fileName, tree.ToString());
@@ -66,7 +53,7 @@ namespace Jackfruit.Tests
             Assert.Equal(6, Directory.GetFiles(outputDir).Count());
         }
 
-        private static Process? TestOutputCompiles(string testInputPath)
+        public static Process? TestOutputCompiles(string testInputPath)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
             ////startInfo.CreateNoWindow = false;
