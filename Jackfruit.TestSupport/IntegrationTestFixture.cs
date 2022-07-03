@@ -1,25 +1,16 @@
-﻿using Jackfruit.IncrementalGenerator;
-using Jackfruit.Tests;
-using Jackfruit.TestSupport;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.CSharp;
+﻿using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.CommandLine;
 using System.Collections.Immutable;
+using Xunit;
 
-namespace Jackfruit.IntegrationTests
+namespace Jackfruit.TestSupport
 {
-    public class JackfruitIntegrationTestFixture
+    public class IntegrationTestFixture
     {
-        public E2EConfiguration Configuration { get; }
+        public IntegrationTestConfiguration Configuration { get; }
 
-        public JackfruitIntegrationTestFixture()
+        public IntegrationTestFixture()
             => Configuration = new();
 
         public string TestSetName
@@ -38,7 +29,7 @@ namespace Jackfruit.IntegrationTests
         }
 
         public string? RunProject(string arguments)
-            => IntegrationHelpers.RunGeneratedProject(arguments, Configuration.TestSetName, Configuration.TestBuildPath);
+            => TestHelpers.RunGeneratedProject(arguments, Configuration.TestSetName, Configuration.TestBuildPath);
 
         //public CSharpCompilation CreateCompilation(params SyntaxTree[] syntaxTrees)
         //    => IntegrationHelpers.TestCreatingCompilation(syntaxTrees);
@@ -58,12 +49,12 @@ namespace Jackfruit.IntegrationTests
         }
 
         public void OutputGeneratedTrees(Compilation generatedCompilation)
-            => IntegrationHelpers.OutputGeneratedTrees(generatedCompilation,
+            => TestHelpers.OutputGeneratedTrees(generatedCompilation,
                                                        Configuration.TestGeneratedCodePath,
                                                        new string[] { "Program.cs", "Handlers.cs", "Validators.cs" });
 
         public Process? CompileOutput()
-            => IntegrationHelpers.CompileOutput(Configuration.TestInputPath);
+            => TestHelpers.CompileOutput(Configuration.TestInputPath);
 
         public (CSharpCompilation compilation, ImmutableArray<Diagnostic> inputDiagnostics) 
             GetCompilation<T>(params SyntaxTree[] syntaxTrees) 
@@ -72,9 +63,11 @@ namespace Jackfruit.IntegrationTests
             return TestHelpers.GetCompilation<T>(syntaxTrees);
         }
 
-        internal (Compilation compilation, ImmutableArray<Diagnostic> inputDiagnostics) 
-            RunGenerator(CSharpCompilation inputCompilation, Generator generator)
+        public (Compilation compilation, ImmutableArray<Diagnostic> inputDiagnostics) 
+            RunGenerator<T>(CSharpCompilation inputCompilation)
+            where T : IIncrementalGenerator, new()
         {
+            var generator = new T();
             return TestHelpers.RunGenerator(inputCompilation, generator);
         }
     }

@@ -1,22 +1,16 @@
 using Jackfruit.IncrementalGenerator;
-using Jackfruit.IntegrationTests;
 using Jackfruit.TestSupport;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Emit;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
-using System.Reflection.Emit;
+using System;
+using Xunit;
 
 namespace Jackfruit.Tests
 {
 
-    public class IntegrationTests : IClassFixture<JackfruitIntegrationTestFixture>
+    public class IntegrationTests : IClassFixture<IntegrationTestFixture>
     {
-        private JackfruitIntegrationTestFixture support;
+        private IntegrationTestFixture support;
 
-        public IntegrationTests(JackfruitIntegrationTestFixture support)
+        public IntegrationTests(IntegrationTestFixture support)
         {
             this.support = support;
 
@@ -26,7 +20,7 @@ namespace Jackfruit.Tests
                 support.TreeFromFileInInputPath("Program.cs"));
             support.CheckCompilation(inputCompilation, inputDiagnostics, diagnosticFilter: x => x.Id != "CS0103");
 
-            var (outputCompilation, outputDiagnostics) = support.RunGenerator(inputCompilation, new Generator());
+            var (outputCompilation, outputDiagnostics) = support.RunGenerator<Generator>(inputCompilation);
             support.CheckCompilation(outputCompilation, outputDiagnostics, syntaxTreeCount: 9);
 
             support.OutputGeneratedTrees(outputCompilation);

@@ -1,6 +1,6 @@
-﻿namespace Jackfruit.IntegrationTests
+﻿namespace Jackfruit.TestSupport
 {
-    public class E2EConfiguration
+    public class IntegrationTestConfiguration
     {
 
         internal static string currentPath = Environment.CurrentDirectory;
@@ -14,7 +14,7 @@
         public string dotnetVersion = "net6.0"; // this is the first place incremental generators appeared
         private string? testSetName;
 
-        public E2EConfiguration()
+        public IntegrationTestConfiguration()
         { }
 
         public string TestSetName

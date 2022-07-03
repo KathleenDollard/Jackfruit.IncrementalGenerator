@@ -5,6 +5,9 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.IO;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Diagnostics;
+using Xunit;
 
 namespace Jackfruit.TestSupport;
 
@@ -78,4 +81,75 @@ public class TestHelpers
         var inputDiagnostics = compilation.GetDiagnostics();
         return (compilation, inputDiagnostics);
     }
+
+    public static void OutputGeneratedTrees(Compilation generatedCompilation, string outputDir, params string[] skipFiles)
+    {
+        foreach (var tree in generatedCompilation.SyntaxTrees)
+        {
+            var className = !string.IsNullOrWhiteSpace(tree.FilePath)
+                    ? Path.GetFileName(tree.FilePath)
+                    : tree.GetRoot().DescendantNodes()
+                        .OfType<ClassDeclarationSyntax>()
+                        .First()
+                        .Identifier.ToString() + ".cs";
+            if (skipFiles.Contains(className) || skipFiles.Contains(Path.GetFileNameWithoutExtension(className)))
+            { continue; }
+            var fileName = Path.Combine(outputDir, className);
+            File.WriteAllText(fileName, tree.ToString());
+        }
+    }
+
+    public static Process? CompileOutput(string testInputPath)
+    {
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        ////startInfo.CreateNoWindow = false;
+        startInfo.UseShellExecute = false;
+        startInfo.RedirectStandardOutput = true;
+        startInfo.RedirectStandardError = true;
+        startInfo.WorkingDirectory = testInputPath;
+        startInfo.FileName = "dotnet";
+        startInfo.Arguments = "build";
+        Process? exeProcess = Process.Start(startInfo);
+        Assert.NotNull(exeProcess);
+        if (exeProcess is not null)
+        {
+            exeProcess.WaitForExit(30000);
+        }
+
+        return exeProcess;
+    }
+
+    public static string IfOsIsWindows(string windowsString, string unixString)
+        => Environment.OSVersion.Platform == PlatformID.Unix
+            ? unixString
+            : windowsString;
+
+    public static string? RunGeneratedProject(string arguments, string setName, string buildPath)
+    {
+
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        startInfo.UseShellExecute = false;
+        startInfo.RedirectStandardOutput = true;
+        startInfo.RedirectStandardError = true;
+        var fieName = Path.Combine(buildPath, setName);
+
+        startInfo.FileName = $"{fieName}{IfOsIsWindows(".exe", "")}";
+        startInfo.Arguments = arguments;
+
+        Process? exeProcess = Process.Start(startInfo);
+        Assert.NotNull(exeProcess);
+        if (exeProcess is not null)
+        {
+            exeProcess.WaitForExit();
+
+            var output = exeProcess.StandardOutput.ReadToEnd();
+            var error = exeProcess.StandardError.ReadToEnd();
+
+            Assert.Equal(0, exeProcess.ExitCode);
+            Assert.Equal("", error);
+            return output;
+        }
+        return null;
+    }
+
 }

@@ -19,8 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jackfruit.IntegrationTests", "Jackfruit.IntegrationTests\Jackfruit.IntegrationTests.csproj", "{1FED63CC-3664-4488-8645-DF02A5E75860}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{84C752FF-9504-4568-82F5-EED04AAE67F5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{A3F296B1-F789-4E5A-AF56-CF6A63E55304}"
@@ -44,7 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Design", "Design", "{965C81
 		Design\RootCommand.partial.g.cs = Design\RootCommand.partial.g.cs
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jackfruit.TestSupport", "Jackfruit.TestSupport\Jackfruit.TestSupport.csproj", "{C3353A51-8939-447E-A36F-3C5816CF32B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jackfruit.TestSupport", "Jackfruit.TestSupport\Jackfruit.TestSupport.csproj", "{C3353A51-8939-447E-A36F-3C5816CF32B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,10 +62,6 @@ Global
 		{EC75BA93-FC2F-4A6F-8965-2DABE11E1C5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC75BA93-FC2F-4A6F-8965-2DABE11E1C5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC75BA93-FC2F-4A6F-8965-2DABE11E1C5A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1FED63CC-3664-4488-8645-DF02A5E75860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1FED63CC-3664-4488-8645-DF02A5E75860}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1FED63CC-3664-4488-8645-DF02A5E75860}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1FED63CC-3664-4488-8645-DF02A5E75860}.Release|Any CPU.Build.0 = Release|Any CPU
 		{104E63F6-E426-4310-B490-79601B118CC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{104E63F6-E426-4310-B490-79601B118CC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{104E63F6-E426-4310-B490-79601B118CC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
