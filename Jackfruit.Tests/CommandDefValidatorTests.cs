@@ -3,6 +3,7 @@ using VerifyXunit;
 using System.Threading.Tasks;
 using Jackfruit;
 using System;
+using Jackfruit.TestSupport;
 
 namespace Jackfruit.Tests
 {

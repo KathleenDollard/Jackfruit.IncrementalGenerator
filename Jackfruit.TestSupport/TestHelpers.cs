@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.IO;
 
-namespace Jackfruit.Tests;
+namespace Jackfruit.TestSupport;
 
 public class TestHelpers
 {
