@@ -11,10 +11,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.CommandLine;
+using System.Collections.Immutable;
 
 namespace Jackfruit.IntegrationTests
 {
-    public abstract class JackfruitIntegrationTestFixture
+    public class JackfruitIntegrationTestFixture
     {
         public E2EConfiguration Configuration { get; }
 
@@ -39,19 +40,42 @@ namespace Jackfruit.IntegrationTests
         public string? RunProject(string arguments)
             => IntegrationHelpers.RunGeneratedProject(arguments, Configuration.TestSetName, Configuration.TestBuildPath);
 
-        public CSharpCompilation CreateCompilation(params SyntaxTree[] syntaxTrees)
-            => IntegrationHelpers.TestCreatingCompilation(syntaxTrees);
+        //public CSharpCompilation CreateCompilation(params SyntaxTree[] syntaxTrees)
+        //    => IntegrationHelpers.TestCreatingCompilation(syntaxTrees);
 
-        public Compilation TestGeneration<T>(CSharpCompilation compilation, T generator)
-            where T : IIncrementalGenerator, new()
-            => IntegrationHelpers.TestGeneration<T>(compilation, generator);
+        public void CheckCompilation(Compilation compilation,
+                                     IEnumerable<Diagnostic> diagnostics,
+                                     Func<Diagnostic, bool>? diagnosticFilter = null,
+                                     int? syntaxTreeCount = null)
+        {
+            Assert.NotNull(compilation);
+            var filteredDiagnostics = diagnosticFilter is null
+                ? diagnostics
+                : diagnostics.Where(diagnosticFilter);
+            Assert.Empty(filteredDiagnostics);
+            if (syntaxTreeCount.HasValue)
+            { Assert.Equal(syntaxTreeCount.Value, compilation.SyntaxTrees.Count()); }
+        }
 
         public void OutputGeneratedTrees(Compilation generatedCompilation)
             => IntegrationHelpers.OutputGeneratedTrees(generatedCompilation,
                                                        Configuration.TestBuildPath,
                                                        new string[] { "Program.cs", "Handlers.cs", "Validators.cs" });
 
-        public Process? TestOutputCompiles()
-            => IntegrationHelpers.TestOutputCompiles(Configuration.TestBuildPath);
+        public Process? CompileOutput()
+            => IntegrationHelpers.CompileOutput(Configuration.TestBuildPath);
+
+        public (CSharpCompilation compilation, ImmutableArray<Diagnostic> inputDiagnostics) 
+            GetCompilation<T>(params SyntaxTree[] syntaxTrees) 
+            where T : IIncrementalGenerator, new()
+               {
+            return TestHelpers.GetCompilation<T>(syntaxTrees);
+        }
+
+        internal (Compilation compilation, ImmutableArray<Diagnostic> inputDiagnostics) 
+            RunGenerator(CSharpCompilation inputCompilation, Generator generator)
+        {
+            return TestHelpers.RunGenerator(inputCompilation, generator);
+        }
     }
 }

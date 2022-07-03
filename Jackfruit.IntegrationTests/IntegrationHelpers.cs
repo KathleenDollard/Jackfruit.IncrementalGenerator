@@ -1,11 +1,6 @@
-using Jackfruit.IncrementalGenerator;
-using Jackfruit.TestSupport;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Emit;
 using System.Diagnostics;
-using System.Net.NetworkInformation;
 
 namespace Jackfruit.Tests
 {
@@ -14,25 +9,25 @@ namespace Jackfruit.Tests
         internal const string dotnetVersion = "net6.0";
         internal static string currentPath = Environment.CurrentDirectory;
 
-        public static CSharpCompilation TestCreatingCompilation(params SyntaxTree[] syntaxTrees)
-        {
-            var (compilation, inputDiagnostics) = TestHelpers.GetCompilation<Generator>(syntaxTrees);
-            Assert.NotNull(compilation);
-            // TODO: Figure out how to get the text from the span and compare with "Cli"
-            var trouble = inputDiagnostics.Where(x => x.Id != "CS0103");
-            Assert.Empty(trouble);
-            return compilation;
-        }
+        //public static CSharpCompilation TestCreatingCompilation(params SyntaxTree[] syntaxTrees)
+        //{
+        //    var (compilation, inputDiagnostics) = TestHelpers.GetCompilation<Generator>(syntaxTrees);
+        //    Assert.NotNull(compilation);
+        //    // TODO: Figure out how to get the text from the span and compare with "Cli"
+        //    var trouble = inputDiagnostics.Where(x => x.Id != "CS0103");
+        //    Assert.Empty(trouble);
+        //    return compilation;
+        //}
 
-        public static Compilation TestGeneration<T>(CSharpCompilation compilation, T generator)
-            where T : IIncrementalGenerator, new()
-        {
-            var (outputCompilation, outputDiagnostics) = TestHelpers.RunGenerator(compilation, generator);
-            Assert.NotNull(outputCompilation);
-            Assert.Empty(outputDiagnostics);
-            Assert.Equal(9, outputCompilation.SyntaxTrees.Count());
-            return outputCompilation;
-        }
+        //public static Compilation TestGeneration<T>(CSharpCompilation compilation, T generator)
+        //    where T : IIncrementalGenerator, new()
+        //{
+        //    var (outputCompilation, outputDiagnostics) = TestHelpers.RunGenerator(compilation, generator);
+        //    Assert.NotNull(outputCompilation);
+        //    Assert.Empty(outputDiagnostics);
+        //    Assert.Equal(9, outputCompilation.SyntaxTrees.Count());
+        //    return outputCompilation;
+        //}
 
         public static void OutputGeneratedTrees(Compilation generatedCompilation, string outputDir, params string[] skipFiles)
         {
@@ -50,10 +45,9 @@ namespace Jackfruit.Tests
                     File.WriteAllText(fileName, tree.ToString());
                 }
             }
-            Assert.Equal(6, Directory.GetFiles(outputDir).Count());
         }
 
-        public static Process? TestOutputCompiles(string testInputPath)
+        public static Process? CompileOutput(string testInputPath)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
             ////startInfo.CreateNoWindow = false;
@@ -68,21 +62,15 @@ namespace Jackfruit.Tests
             if (exeProcess is not null)
             {
                 exeProcess.WaitForExit(30000);
-
-                var output = exeProcess.StandardOutput.ReadToEnd();
-                var error = exeProcess.StandardError.ReadToEnd();
-
-                Assert.Equal(0, exeProcess.ExitCode);
-                Assert.Equal("", error);
             }
 
             return exeProcess;
         }
 
         public static string IfOsIsWindows(string windowsString, string unixString)
-    => Environment.OSVersion.Platform == PlatformID.Unix
-        ? unixString
-        : windowsString;
+            => Environment.OSVersion.Platform == PlatformID.Unix
+                ? unixString
+                : windowsString;
 
         public static string? RunGeneratedProject(string arguments, string setName, string buildPath)
         {

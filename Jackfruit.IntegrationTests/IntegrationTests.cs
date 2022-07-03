@@ -1,11 +1,13 @@
 using Jackfruit.IncrementalGenerator;
 using Jackfruit.IntegrationTests;
+using Jackfruit.TestSupport;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using System.Reflection.Emit;
 
 namespace Jackfruit.Tests
 {
@@ -17,14 +19,28 @@ namespace Jackfruit.Tests
         public IntegrationTests(JackfruitIntegrationTestFixture support)
         {
             this.support = support;
-            var inputCompilation = support.CreateCompilation(
+
+            var (inputCompilation, inputDiagnostics) = support.GetCompilation<Generator>(
                 support.TreeFromFileInInputPath("Handlers.cs"),
                 support.TreeFromFileInInputPath("Validators.cs"),
                 support.TreeFromFileInInputPath("Program.cs"));
-            var outputCompilation = support.TestGeneration(inputCompilation, new Generator());
-            support.TestOutput(outputCompilation);
-            support.TestOutputCompiles();
+            support.CheckCompilation(inputCompilation, inputDiagnostics, diagnosticFilter: x => x.Id != "CS0103");
+
+            var (outputCompilation, outputDiagnostics) = support.RunGenerator(inputCompilation, new Generator());
+            support.CheckCompilation(outputCompilation, outputDiagnostics, syntaxTreeCount: 9);
+
+            support.OutputGeneratedTrees(outputCompilation);
+            var exeProcess = support.CompileOutput();
+            Assert.NotNull(exeProcess);
+            Assert.True(exeProcess.HasExited);
+
+            var output = exeProcess.StandardOutput.ReadToEnd(); // available for debugging - can be a pain to get in VS
+            var error = exeProcess.StandardError.ReadToEnd();
+
+            Assert.Equal(0, exeProcess.ExitCode);
+            Assert.Equal("", error);
         }
+
         [Fact]
         public void Simple_uhura()
         {
