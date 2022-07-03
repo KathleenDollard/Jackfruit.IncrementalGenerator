@@ -17,7 +17,10 @@ namespace Jackfruit.Tests
         public IntegrationTests(JackfruitIntegrationTestFixture support)
         {
             this.support = support;
-            var inputCompilation = support.TestCreatingCompilation(ProgramSyntaxTree, HandlerSyntaxTree, ValidatorSyntaxTree);
+            var inputCompilation = support.CreateCompilation(
+                support.TreeFromFileInInputPath("Handlers.cs"),
+                support.TreeFromFileInInputPath("Validators.cs"),
+                support.TreeFromFileInInputPath("Program.cs"));
             var outputCompilation = support.TestGeneration(inputCompilation, new Generator());
             support.TestOutput(outputCompilation);
             support.TestOutputCompiles();

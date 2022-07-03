@@ -27,10 +27,19 @@ namespace Jackfruit.IntegrationTests
             set => Configuration.TestSetName = value;
         }
 
+        public SyntaxTree TreeFromFileInInputPath(string fileName)
+        {
+            fileName = fileName.EndsWith(".cs")
+                ? Path.Combine(Configuration.TestInputPath, fileName)
+                : Path.Combine(Configuration.TestInputPath, fileName + ".cs");
+
+            return CSharpSyntaxTree.ParseText(File.ReadAllText(fileName));
+        }
+
         public string? RunProject(string arguments)
             => IntegrationHelpers.RunGeneratedProject(arguments, Configuration.TestSetName, Configuration.TestBuildPath);
 
-        public CSharpCompilation TestCreatingCompilation(params SyntaxTree[] syntaxTrees)
+        public CSharpCompilation CreateCompilation(params SyntaxTree[] syntaxTrees)
             => IntegrationHelpers.TestCreatingCompilation(syntaxTrees);
 
         public Compilation TestGeneration<T>(CSharpCompilation compilation, T generator)
