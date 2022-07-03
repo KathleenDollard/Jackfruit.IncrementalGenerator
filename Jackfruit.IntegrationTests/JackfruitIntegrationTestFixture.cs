@@ -59,11 +59,11 @@ namespace Jackfruit.IntegrationTests
 
         public void OutputGeneratedTrees(Compilation generatedCompilation)
             => IntegrationHelpers.OutputGeneratedTrees(generatedCompilation,
-                                                       Configuration.TestBuildPath,
+                                                       Configuration.TestGeneratedCodePath,
                                                        new string[] { "Program.cs", "Handlers.cs", "Validators.cs" });
 
         public Process? CompileOutput()
-            => IntegrationHelpers.CompileOutput(Configuration.TestBuildPath);
+            => IntegrationHelpers.CompileOutput(Configuration.TestInputPath);
 
         public (CSharpCompilation compilation, ImmutableArray<Diagnostic> inputDiagnostics) 
             GetCompilation<T>(params SyntaxTree[] syntaxTrees) 

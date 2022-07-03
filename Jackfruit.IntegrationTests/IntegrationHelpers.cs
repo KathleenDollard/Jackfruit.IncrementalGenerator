@@ -40,10 +40,9 @@ namespace Jackfruit.Tests
                             .First()
                             .Identifier.ToString() + ".cs";
                 if (skipFiles.Contains(className) || skipFiles.Contains(Path.GetFileNameWithoutExtension(className)))
-                {
-                    var fileName = Path.Combine(outputDir, className);
-                    File.WriteAllText(fileName, tree.ToString());
-                }
+                { continue; }
+                var fileName = Path.Combine(outputDir, className);
+                File.WriteAllText(fileName, tree.ToString());
             }
         }
 

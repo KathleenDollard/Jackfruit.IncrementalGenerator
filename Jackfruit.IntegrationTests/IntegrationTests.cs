@@ -37,6 +37,8 @@ namespace Jackfruit.Tests
             var output = exeProcess.StandardOutput.ReadToEnd(); // available for debugging - can be a pain to get in VS
             var error = exeProcess.StandardError.ReadToEnd();
 
+            Console.WriteLine(output);
+
             Assert.Equal(0, exeProcess.ExitCode);
             Assert.Equal("", error);
         }
