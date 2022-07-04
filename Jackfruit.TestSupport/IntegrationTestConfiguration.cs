@@ -1,27 +1,25 @@
-﻿namespace Jackfruit.TestSupport
+﻿using Microsoft.CodeAnalysis;
+
+namespace Jackfruit.TestSupport
 {
     public class IntegrationTestConfiguration
     {
 
         internal static string currentPath = Environment.CurrentDirectory;
 
-        public string? testInputPath;
-        public string? testGeneratedCodePath;
-        public string? testBuildPath;
-        public string? handlerFilePath;
-        public string? validatorFilePath;
-        public string? programFilePath;
-        public string dotnetVersion = "net6.0"; // this is the first place incremental generators appeared
-        private string? testSetName;
+        private string? testInputPath;
+        private string? testGeneratedCodePath;
+        private string? testBuildPath;
+        private string? handlerFilePath;
+        private string? validatorFilePath;
+        private string? programFilePath;
 
-        public IntegrationTestConfiguration()
-        { }
-
-        public string TestSetName
+        public IntegrationTestConfiguration(string testSetName)
         {
-            get => testSetName ?? "TestOutputExample"; 
-            protected internal set => testSetName = value;
+            TestSetName = testSetName;
         }
+
+        public string TestSetName { get; }
         public string TestInputPath
         {
             get => testInputPath ?? Path.Combine(currentPath, @$"../../../../{TestSetName}");
@@ -34,7 +32,7 @@
         }
         public string TestBuildPath
         {
-            get => testBuildPath ?? Path.Combine(TestInputPath, "bin", "Debug", dotnetVersion);
+            get => testBuildPath ?? Path.Combine(TestInputPath, "bin", "Debug", DotnetVersion);
             set => testBuildPath = value;
         }
         public string HandlerFilePath
@@ -52,10 +50,13 @@
             get => programFilePath ?? Path.Combine(TestInputPath, "Program.cs");
             set => programFilePath = value;
         }
-        public string DotnetVersion
-        {
-            get => dotnetVersion;
-            set => dotnetVersion = value;
-        }
+        public string DotnetVersion { get; set; } = "net6.0";
+
+        public OutputKind? OutputKind { get; set; } = 
+            Microsoft.CodeAnalysis.OutputKind.DynamicallyLinkedLibrary;
+
+        public int? SyntaxTreeCount { get; set; } = null;
+
+        public string[] SourceFiles { get; set; } = Array.Empty<string>();
     }
 }

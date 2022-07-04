@@ -37,7 +37,7 @@ namespace Jackfruit_DemoHandlers
       /// <summary>
       /// The result class for the StarTrek command.
       /// </summary>
-      public class Result : Jackfruit.RootCommand.Result
+      public partial class Result : Jackfruit.RootCommand.Result
       {
          public bool Kirk {get; set;}
          public bool Spock {get; set;}

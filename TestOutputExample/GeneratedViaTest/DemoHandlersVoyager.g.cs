@@ -36,7 +36,7 @@ namespace Jackfruit_DemoHandlers
       /// <summary>
       /// The result class for the Voyager command.
       /// </summary>
-      public class Result : NextGeneration.Result
+      public partial class Result : NextGeneration.Result
       {
          public System.CommandLine.IConsole Console {get; set;}
          public bool Janeway {get; set;}

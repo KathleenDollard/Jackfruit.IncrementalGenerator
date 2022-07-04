@@ -45,6 +45,9 @@ namespace Jackfruit
     {
         public new static RootCommand Create(CommandNode cliRoot)
             => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create( cliRoot);
+
+        public partial class Result
+        { }
     }
 }
 ";
