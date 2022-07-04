@@ -86,7 +86,7 @@ namespace Jackfruit
             //    static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel?.Name ?? ""));
 
             initContext.RegisterSourceOutput(commandsCodeFileModel,
-                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel?.Name));
+                static (context, codeFileModel) => OutputGenerated(codeFileModel, context, codeFileModel?.Name ?? ""));
         }
 
         // currently public because used by CommandDef generator that is used by testing

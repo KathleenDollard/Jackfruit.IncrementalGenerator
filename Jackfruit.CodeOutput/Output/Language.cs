@@ -121,7 +121,7 @@ namespace Jackfruit.IncrementalGenerator
 
 
         // expressions
-        public abstract string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments);
+        public abstract string Invoke(NamedItemModel? instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments);
         public abstract string Instantiate(NamedItemModel typeName, IEnumerable<ExpressionBase> arguments);
         public abstract string TypeOf(NamedItemModel typeName);
         public abstract string Cast(NamedItemModel typeName, ExpressionBase expression);

@@ -5,6 +5,7 @@ using Jackfruit;
 using System;
 using System.Linq;
 using Jackfruit.TestSupport;
+using Microsoft.CodeAnalysis;
 
 namespace Jackfruit.Tests
 {
@@ -15,6 +16,12 @@ namespace Jackfruit.Tests
             => @$"
 using Jackfruit;
 using System.ComponentModel;
+
+public partial class RootCommand
+{{
+    public static RootCommand Create(params CommandNode[] cliRoot)
+        => new RootCommand();
+}}
 
 public class MyClass
 {{
@@ -38,8 +45,9 @@ public class MyClass
     {
        var rootCommand = RootCommand.Create(CommandNode.Create(A));
     }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics,diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -53,8 +61,9 @@ public class MyClass
        var rootCommand = RootCommand.Create(CommandNode.Create(A, 
             CommandNode.Create(B)));
     }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -70,8 +79,9 @@ public class MyClass
             CommandNode.Create(C),
             CommandNode.Create(D)));
     }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -89,10 +99,11 @@ public class MyClass
                 CommandNode.Create(F,
                     CommandNode.Create(G),
                     CommandNode.Create(H))),
-            CommandNode.Create(D))),
+            CommandNode.Create(D)));
     }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -115,8 +126,9 @@ public class MyClass
                 CommandNode.Create(D)
             ));
     }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -128,8 +140,9 @@ public class MyClass
         {
             var rootCommand = RootCommand.Create(CommandNode.Create(null));
         }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -142,8 +155,9 @@ public class MyClass
         {
             var rootCommand = RootCommand.CreateX(CommandNode.Create(A));
         }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Single(TestHelpers.WarningAndErrors(inputDiagnostics)); // explicitly creating an error here
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -156,22 +170,9 @@ public class MyClass
         {
             var rootCommand = RootCommand.Create();
         }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
-            Assert.Empty(diagnostics);
-            return Verifier.Verify(output).UseDirectory("Snapshots");
-        }
-
-        [Fact]
-        public Task Method_with_more_than_one_parameter_has_no_output()
-        {
-            var input = methodWrapper(@"
-        public void Test()
-        {
-            var rootCommand = RootCommand.Create(CommandNode.Create(A),CommandNode.Create(B),CommandNode.Create(C));
-        }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
-
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -191,8 +192,9 @@ public class MyClass
         /// <param name=""i"">Option description in XmlComment</param>
         public void AA(int i) 
         { }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -210,8 +212,9 @@ public class MyClass
         public void AA(
                 [Description(""Member description in Attribute"")] int i) 
         { }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -228,8 +231,9 @@ public class MyClass
         public void AA(
                 [Description(""Member description in Attribute"")][Argument] int i) 
         { }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -247,8 +251,9 @@ public class MyClass
                 [Argument] int i) 
         {
         }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -265,8 +270,9 @@ public class MyClass
         public void AA(
                 [Required] int i) 
         { }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -283,8 +289,9 @@ public class MyClass
         public void AA(
                 [Argument][Required] int i) 
         { }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -303,8 +310,9 @@ public class MyClass
         public void AA(
                 [Aliases(""1"",""2"")] int i) 
         { }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -321,8 +329,9 @@ public class MyClass
         public void AA(
                 [OptionArgumentName(""ArgName"")] int i) 
         { }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }

@@ -129,10 +129,10 @@ namespace Jackfruit.IncrementalGenerator
         private static CommandDefNode? GetCommandDefNode(string[] path,
                                                          CommandDefNode? parentNode, 
                                                          IEnumerable<MemberDef> ancestorMembers,
-                                                         IInvocationOperation invocationOp,
+                                                         IInvocationOperation?  invocationOp,
                                                          CancellationToken cancellationToken)
         {
-            if (cancellationToken.IsCancellationRequested)
+            if (cancellationToken.IsCancellationRequested || invocationOp is null)
             {
                 return null;
             }

@@ -13,12 +13,13 @@ namespace Jackfruit.Internal
         where TSelf : GeneratedCommandBase<TSelf, TResult>
         where TParent : GeneratedCommandBase
     {
-        protected TParent Parent { get; set; }
+        protected TParent? Parent { get; set; }
 
         public override void Validate(InvocationContext invocationContext)
         {
             base.Validate(invocationContext);
-            Parent.Validate(invocationContext);
+            if (Parent is not null)
+            { Parent.Validate(invocationContext); }
         }
     }
 
@@ -206,11 +207,10 @@ namespace Jackfruit.Internal
             var typeT = typeof(T);
             return typeT.IsAssignableFrom(typeof(IConsole))
                 ? (T)invocationContext.Console
-                : GetService<T>(invocationContext);
+                : GetService(invocationContext);
 
-            static T? GetService<T>(InvocationContext invocationContext)
-                where T : class
-            {
+            static T? GetService(InvocationContext invocationContext)
+             {
                 var service = invocationContext.BindingContext.GetService(typeof(T));
                 return service is null
                     ? null

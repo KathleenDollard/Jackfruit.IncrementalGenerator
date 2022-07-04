@@ -4,15 +4,23 @@ using System.Threading.Tasks;
 using Jackfruit;
 using System;
 using Jackfruit.TestSupport;
+using Jackfruit.IncrementalGenerator;
 
 namespace Jackfruit.Tests
 {
     [UsesVerify]
     public class CommandDefValidatorTests
     {
-        public  string methodWrapper (string method)
-            => @$"
+        public static string MethodWrapper(string method)
+                    => @$"
 using Jackfruit;
+
+public partial class RootCommand
+{{
+    public static RootCommand Create(CommandNode cliRoot)
+        => new RootCommand();
+}}
+
 public class MyClass
 {{
     {method}
@@ -26,13 +34,14 @@ public class MyClass
         [Fact]
         public Task Validator_with_one_parameter_succeeds()
         {
-            var input = methodWrapper(@"
+            var input = MethodWrapper(@"
     public void Test()
     {
-       var rootCommand = RootCommand.Create(CommandNode.Create( ToValidate, Validator1))
+       var rootCommand = RootCommand.Create(CommandNode.Create( ToValidate, Validator1));
     }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -40,13 +49,14 @@ public class MyClass
         [Fact]
         public Task Validator_with_all_parameters_succeeds()
         {
-            var input = methodWrapper(@"
+            var input = MethodWrapper(@"
             public void Test()
             {
-               var rootCommand = RootCommand.Create(CommandNode.Create( ToValidate, ValidatorAll))
+               var rootCommand = RootCommand.Create(CommandNode.Create( ToValidate, ValidatorAll));
             }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }
@@ -54,13 +64,14 @@ public class MyClass
         [Fact]
         public Task Validator_with_no_parameters_is_ignored()
         {
-            var input = methodWrapper(@"
+            var input = MethodWrapper(@"
             public void Test()
             {
-               var rootCommand = RootCommand.Create(CommandNode.Create( ToValidate, Validator0))
+               var rootCommand = RootCommand.Create(CommandNode.Create( ToValidate, Validator0));
             }");
-            var (diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Empty(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("Snapshots");
         }

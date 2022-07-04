@@ -34,7 +34,7 @@ namespace Jackfruit.TestSupport
         //public CSharpCompilation CreateCompilation(params SyntaxTree[] syntaxTrees)
         //    => IntegrationHelpers.TestCreatingCompilation(syntaxTrees);
 
-        public void CheckCompilation(Compilation compilation,
+        public static void CheckCompilation(Compilation compilation,
                                      IEnumerable<Diagnostic> diagnostics,
                                      Func<Diagnostic, bool>? diagnosticFilter = null,
                                      int? syntaxTreeCount = null)
@@ -56,14 +56,14 @@ namespace Jackfruit.TestSupport
         public Process? CompileOutput()
             => TestHelpers.CompileOutput(Configuration.TestInputPath);
 
-        public (CSharpCompilation compilation, ImmutableArray<Diagnostic> inputDiagnostics) 
+        public static (CSharpCompilation compilation, ImmutableArray<Diagnostic> inputDiagnostics) 
             GetCompilation<T>(params SyntaxTree[] syntaxTrees) 
             where T : IIncrementalGenerator, new()
                {
             return TestHelpers.GetCompilation<T>(syntaxTrees);
         }
 
-        public (Compilation compilation, ImmutableArray<Diagnostic> inputDiagnostics) 
+        public static (Compilation compilation, ImmutableArray<Diagnostic> inputDiagnostics) 
             RunGenerator<T>(CSharpCompilation inputCompilation)
             where T : IIncrementalGenerator, new()
         {

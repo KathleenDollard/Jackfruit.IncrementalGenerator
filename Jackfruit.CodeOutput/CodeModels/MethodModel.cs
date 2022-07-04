@@ -18,7 +18,7 @@
         public bool IsPartial { get; set; }
         public List<ParameterModel> Parameters { get; set; } = new List<ParameterModel>();
         public List<IStatement> Statements { get; set; } = new List<IStatement>();
-        public string XmlDescription { get; set; }
+        public string? XmlDescription { get; set; }
 
     }
 
