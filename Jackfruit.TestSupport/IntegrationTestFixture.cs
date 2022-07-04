@@ -13,6 +13,11 @@ namespace Jackfruit.TestSupport
         public IntegrationTestFixture()
             => Configuration = new();
 
+        public IntegrationTestFixture(string testSetName)
+        {
+            TestSetName = testSetName;
+        }
+
         public string TestSetName
         {
             get => Configuration.TestSetName;
@@ -41,8 +46,8 @@ namespace Jackfruit.TestSupport
         {
             Assert.NotNull(compilation);
             var filteredDiagnostics = diagnosticFilter is null
-                ? diagnostics
-                : diagnostics.Where(diagnosticFilter);
+                ? TestHelpers.WarningAndErrors(diagnostics)
+                : TestHelpers.WarningAndErrors(diagnostics).Where(diagnosticFilter);
             Assert.Empty(filteredDiagnostics);
             if (syntaxTreeCount.HasValue)
             { Assert.Equal(syntaxTreeCount.Value, compilation.SyntaxTrees.Count()); }
