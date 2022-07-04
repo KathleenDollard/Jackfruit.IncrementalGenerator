@@ -34,7 +34,7 @@ namespace Jackfruit_DemoHandlers
       /// <summary>
       /// The result class for the NextGeneration command.
       /// </summary>
-      public class Result : StarTrek.Result
+      public partial class Result : StarTrek.Result
       {
          public bool Picard {get; set;}
          /// <summary>

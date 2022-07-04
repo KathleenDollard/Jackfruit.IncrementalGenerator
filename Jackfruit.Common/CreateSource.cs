@@ -100,15 +100,19 @@ namespace Jackfruit.Common
         }
 
         private static CodeFileModel? GetRootCommandCode(CommandDef commandDef)
-            => CodeFile(FileName(commandDef))
-                .Usings(usings)
-                .Usings(NewNamespace(commandDef))
-                .Namespace("Jackfruit",
-                    Class(CommandClassName(commandDef))
-                        .Public().Partial()
-                        .ImplementedInterfaces("ICommandHandler")
-                        .Members(RootConstructor(commandDef))
-                        .Members(CommonClassMembers(commandDef)));
+        {
+            var codeFile = CodeFile(FileName(commandDef))
+                        .Usings(usings)
+                        .Namespace("Jackfruit",
+                            Class(CommandClassName(commandDef))
+                                .Public().Partial()
+                                .ImplementedInterfaces("ICommandHandler")
+                                .Members(RootConstructor(commandDef))
+                                .Members(CommonClassMembers(commandDef)));
+            if (commandDef.SubCommandNames.Any())
+            { codeFile.Usings(NewNamespace(commandDef)); }
+            return codeFile;
+        }
 
         public static CodeFileModel? GetNonRootCommandCode(CommandDef commandDef)
             => CodeFile(FileName(commandDef))
@@ -318,8 +322,7 @@ namespace Jackfruit.Common
             var resultClass =
                 Class("Result")
                     .XmlDescription($"The result class for the {commandDef.Name} command.")
-                    .Public()
-
+                    .Public().Partial()
                     .Members(
                         DataMembers(commandDef).ToArray())
                     .Members(

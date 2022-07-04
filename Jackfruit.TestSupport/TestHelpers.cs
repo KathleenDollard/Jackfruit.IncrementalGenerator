@@ -67,9 +67,8 @@ public class TestHelpers
         where T : IIncrementalGenerator, new()
         => GetCompilation<T>(OutputKind.DynamicallyLinkedLibrary, syntaxTrees);
 
-
     public static (CSharpCompilation compilation, ImmutableArray<Diagnostic> inputDiagnostics)
-        GetCompilation<T>(OutputKind compilationKind, params SyntaxTree[] syntaxTrees)
+        GetCompilation<T>(OutputKind? compilationKind, params SyntaxTree[] syntaxTrees)
         where T : IIncrementalGenerator, new()
     {
         System.Reflection.Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -87,7 +86,7 @@ public class TestHelpers
             "generator",
             syntaxTrees,
             references,
-            new CSharpCompilationOptions(compilationKind));
+            new CSharpCompilationOptions(compilationKind ?? OutputKind.DynamicallyLinkedLibrary));
         var inputDiagnostics = compilation.GetDiagnostics();
         return (compilation, inputDiagnostics);
     }
@@ -98,15 +97,22 @@ public class TestHelpers
         {
             var className = !string.IsNullOrWhiteSpace(tree.FilePath)
                     ? Path.GetFileName(tree.FilePath)
-                    : tree.GetRoot().DescendantNodes()
-                        .OfType<ClassDeclarationSyntax>()
-                        .First()
-                        .Identifier.ToString() + ".cs";
-            if (skipFiles.Contains(className) || skipFiles.Contains(Path.GetFileNameWithoutExtension(className)))
+                    : ClassName(tree.GetRoot()
+                        .DescendantNodes()
+                        .OfType<ClassDeclarationSyntax>());
+            if (string.IsNullOrWhiteSpace(className) || 
+                skipFiles.Contains(className) || 
+                skipFiles.Contains(Path.GetFileNameWithoutExtension(className)))
             { continue; }
             var fileName = Path.Combine(outputDir, className);
             File.WriteAllText(fileName, tree.ToString());
         }
+
+        static string? ClassName(IEnumerable<ClassDeclarationSyntax> classes)
+            => classes.Any()
+                ? classes.First()
+                         .Identifier.ToString() + ".cs"
+                : null;
     }
 
     public static Process? CompileOutput(string testInputPath)

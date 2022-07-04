@@ -25,7 +25,7 @@ namespace Jackfruit
       /// <summary>
       /// The result class for the Franchise command.
       /// </summary>
-      public class Result
+      public partial class Result
       {
          public string Greeting {get; set;}
          /// <summary>

@@ -362,9 +362,11 @@ namespace Jackfruit.IncrementalGenerator
 
 
         // Expressions
-        public override string Invoke(NamedItemModel instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments)
+        public override string Invoke(NamedItemModel? instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments)
         {
-            var namedItem = NamedItem(instance);
+            var namedItem = instance is null
+                            ? null
+                            : NamedItem(instance);
             var target = string.IsNullOrEmpty(namedItem)
                             ? NamedItem(methodName)
                             : $"{namedItem}.{NamedItem(methodName)}";

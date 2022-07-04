@@ -36,7 +36,7 @@ namespace Jackfruit_DemoHandlers
       /// <summary>
       /// The result class for the DeepSpaceNine command.
       /// </summary>
-      public class Result : NextGeneration.Result
+      public partial class Result : NextGeneration.Result
       {
          public bool Sisko {get; set;}
          public bool Odo {get; set;}

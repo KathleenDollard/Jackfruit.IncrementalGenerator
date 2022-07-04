@@ -12,6 +12,9 @@ namespace Jackfruit
     {
         public new static RootCommand Create(CommandNode cliRoot)
             => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create( cliRoot);
+
+        public partial class Result
+        { }
     }
 }
 
@@ -44,7 +47,7 @@ namespace Jackfruit
       /// <summary>
       /// The result class for the Franchise command.
       /// </summary>
-      public class Result
+      public partial class Result
       {
          public string Greeting {get; set;}
          /// <summary>
@@ -153,7 +156,7 @@ namespace Jackfruit_DemoHandlers
       /// <summary>
       /// The result class for the StarTrek command.
       /// </summary>
-      public class Result : Jackfruit.RootCommand.Result
+      public partial class Result : Jackfruit.RootCommand.Result
       {
          public bool Kirk {get; set;}
          public bool Spock {get; set;}
@@ -246,7 +249,7 @@ namespace Jackfruit_DemoHandlers
       /// <summary>
       /// The result class for the NextGeneration command.
       /// </summary>
-      public class Result : StarTrek.Result
+      public partial class Result : StarTrek.Result
       {
          public bool Picard {get; set;}
          /// <summary>
@@ -336,7 +339,7 @@ namespace Jackfruit_DemoHandlers
       /// <summary>
       /// The result class for the DeepSpaceNine command.
       /// </summary>
-      public class Result : NextGeneration.Result
+      public partial class Result : NextGeneration.Result
       {
          public bool Sisko {get; set;}
          public bool Odo {get; set;}
@@ -436,7 +439,7 @@ namespace Jackfruit_DemoHandlers
       /// <summary>
       /// The result class for the Voyager command.
       /// </summary>
-      public class Result : NextGeneration.Result
+      public partial class Result : NextGeneration.Result
       {
          public System.CommandLine.IConsole Console {get; set;}
          public bool Janeway {get; set;}

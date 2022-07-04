@@ -12,6 +12,9 @@ namespace Jackfruit
     {
         public new static RootCommand Create(CommandNode cliRoot)
             => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create( cliRoot);
+
+        public partial class Result
+        { }
     }
 }
 
@@ -24,7 +27,6 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using Jackfruit.Internal;
-using Jackfruit_DemoHandlers;
 
 namespace Jackfruit
 {
@@ -52,7 +54,7 @@ namespace Jackfruit
       /// <summary>
       /// The result class for the Voyager command.
       /// </summary>
-      public class Result
+      public partial class Result
       {
          public System.CommandLine.IConsole Console {get; set;}
          public string Greeting {get; set;}
