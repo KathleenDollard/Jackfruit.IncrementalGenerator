@@ -19,9 +19,9 @@
 	</ItemGroup>-->
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.1.0" PrivateAssets="all" />
-		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22222.1" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4-beta1.22274.2" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0-2.final" PrivateAssets="all" />
+		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 	</ItemGroup>
 
 	<!--<ItemGroup Condition="'$(CreatePackage)' == 'true'">
@@ -38,8 +38,7 @@
 		<ProjectReference Include="../Jackfruit.Common/Jackfruit.Common.csproj" PrivateAssets="all" />
 	</ItemGroup>
 
-	<Target
-		Name="CopyProjectReferencesToPackage">
+	<Target Name="CopyProjectReferencesToPackage">
 		<ItemGroup>
 			<_PrivateProjects Include="@(ProjectReference)" Condition="'%(ProjectReference.PrivateAssets)' == 'all'" />
 		</ItemGroup>
@@ -47,21 +46,13 @@
 		<!--
 		Build referenced projects when building from the command line.
 		-->
-		<MSBuild
-			Projects="@(_PrivateProjects)"
-			Targets="%(_PrivateProjects.Targets)"
-			BuildInParallel="$(BuildInParallel)"
-			Properties="%(_PrivateProjects.SetConfiguration); %(_PrivateProjects.SetPlatform);  %(_PrivateProjects.SetTargetFramework)"
-			ContinueOnError="$(ContinueOnError)"
-			RemoveProperties="%(_PrivateProjects.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)">
+		<MSBuild Projects="@(_PrivateProjects)" Targets="%(_PrivateProjects.Targets)" BuildInParallel="$(BuildInParallel)" Properties="%(_PrivateProjects.SetConfiguration); %(_PrivateProjects.SetPlatform);  %(_PrivateProjects.SetTargetFramework)" ContinueOnError="$(ContinueOnError)" RemoveProperties="%(_PrivateProjects.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)">
 
-			<Output TaskParameter="TargetOutputs" ItemName="_PrivateProjectsOutputs"/>
+			<Output TaskParameter="TargetOutputs" ItemName="_PrivateProjectsOutputs" />
 		</MSBuild>
 		<ItemGroup>
 			<!-- the dependencies of your MSBuild task must be packaged inside the package, they cannot be expressed as normal PackageReferences -->
-			<BuildOutputInPackage
-				Include="@(_PrivateProjectsOutputs)"
-				TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)" />
+			<BuildOutputInPackage Include="@(_PrivateProjectsOutputs)" TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)" />
 		</ItemGroup>
 
 	</Target>

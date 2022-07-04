@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Jackfruit.IncrementalGenerator;
 using System.Collections.Immutable;
 using System.Collections.Generic;
+using Jackfruit.TestSupport;
 
 namespace Jackfruit.Tests
 {

@@ -28,6 +28,16 @@ internal class Program
 
         //    Cli.Franchise.GreetingArgument.SetDefaultValue("Hello");
         //    Cli.Franchise.Run(args);
+
+
+        // This uses a non-existent array initialization on type inference
+        //
+        //    Cli.Create( { Handlers.Franchise, 
+        //         { Handlers.StarTrek,
+        //            { Handlers.NextGeneration,
+        //                { Handlers.DeepSpaceNine },
+        //                { Handlers.Voyager }
+        //            }}}};
         #endregion
 
         #region 1

@@ -12,12 +12,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.1.0" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0-preview-20220301-01" />
-		<PackageReference Include="Verify.SourceGenerators" Version="1.5.0-beta.1" />
-		<PackageReference Include="Verify.Xunit" Version="16.7.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0-2.final" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0-preview-20220612-01" />
+		<PackageReference Include="Verify.SourceGenerators" Version="1.5.0" />
+		<PackageReference Include="Verify.Xunit" Version="17.2.1" />
 		<PackageReference Include="xunit" Version="2.4.2-pre.12" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
@@ -30,6 +30,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Jackfruit.IncrementalGenerator\Jackfruit.IncrementalGenerator.csproj" />
 		<ProjectReference Include="..\Jackfruit.Common\Jackfruit.Common.csproj" />
+		<ProjectReference Include="..\Jackfruit.TestSupport\Jackfruit.TestSupport.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
