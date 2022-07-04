@@ -14,7 +14,7 @@ namespace Jackfruit.Tests
     [UsesVerify]
     public class StartTrekCliTests
     {
-        private (ImmutableArray<Diagnostic> Diagnostics, string Output) GetGeneratedOutput<T>(string source)
+        private static (ImmutableArray<Diagnostic> InputDiagnostics, ImmutableArray<Diagnostic> Diagnostics, string Output) GetGeneratedOutput<T>(string source)
             where T : IIncrementalGenerator, new()
         {
             var syntaxTrees = new List<SyntaxTree>
@@ -107,7 +107,7 @@ public class MyClass
         [InlineData("StarTrekRootWithValidator", StarTrekRootWithValidator)]
         public Task Can_create_commandDef(string fileName, string input)
         {
-            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("StarTrekSnapshots").UseTextForParameters(fileName);
@@ -120,7 +120,7 @@ public class MyClass
         [InlineData("StarTrekRootWithValidator", StarTrekRootWithValidator)]
         public Task Can_Generate(string fileName, string input)
         {
-            var (diagnostics, output) = GetGeneratedOutput<Generator>(input);
+            var (inputDiagnostics, diagnostics, output) = GetGeneratedOutput<Generator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("StarTrekSnapshots").UseTextForParameters(fileName);
@@ -130,7 +130,7 @@ public class MyClass
         public Task Command_descrption_from_xml_comment()
         {
             const string input = StarTrekRoot;
-            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("StarTrekSnapshots");
@@ -140,7 +140,7 @@ public class MyClass
         public Task Command_descrption_from_attribute()
         {
             const string input = NextGenerationRoot;
-            var (diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
+            var (inputDiagnostics, diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
 
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("StarTrekSnapshots");

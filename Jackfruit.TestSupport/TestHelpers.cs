@@ -13,23 +13,32 @@ namespace Jackfruit.TestSupport;
 
 public class TestHelpers
 {
-    public static (ImmutableArray<Diagnostic> Diagnostics, string Output) GetGeneratedOutput<T>(string source)
+    public static IEnumerable<Diagnostic> WarningAndErrors(IEnumerable<Diagnostic> diagnostics)
+        => diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error || d.Severity == DiagnosticSeverity.Warning);
+
+    public static (ImmutableArray<Diagnostic> InputDiagnostics, ImmutableArray<Diagnostic> Diagnostics, string Output)
+        GetGeneratedOutput<T>(string source = "")
         where T : IIncrementalGenerator, new()
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(source);
         return GetGeneratedOutput<T>(new[] { syntaxTree });
     }
 
-    public static (ImmutableArray<Diagnostic> Diagnostics, string Output)
+    public static (ImmutableArray<Diagnostic> InputDiagnostics, ImmutableArray<Diagnostic> Diagnostics, string Output)
         GetGeneratedOutput<T>(IEnumerable<SyntaxTree> syntaxTrees)
         where T : IIncrementalGenerator, new()
         => GetGeneratedOutput<T>(syntaxTrees.ToArray());
 
-    public static (ImmutableArray<Diagnostic> Diagnostics, string Output)
-        GetGeneratedOutput<T>(params SyntaxTree[] syntaxTrees)
-        where T : IIncrementalGenerator, new()
+    public static (ImmutableArray<Diagnostic> InputDiagnostics, ImmutableArray<Diagnostic> Diagnostics, string Output)
+    GetGeneratedOutput<T>(params SyntaxTree[] syntaxTrees)
+         where T : IIncrementalGenerator, new()
+         => GetGeneratedOutput<T>(OutputKind.DynamicallyLinkedLibrary, syntaxTrees);
+
+    public static (ImmutableArray<Diagnostic> InputDiagnostics, ImmutableArray<Diagnostic> Diagnostics, string Output)
+    GetGeneratedOutput<T>(OutputKind compilationKind, params SyntaxTree[] syntaxTrees)
+    where T : IIncrementalGenerator, new()
     {
-        var (compilation, inputDiagnostics) = GetCompilation<T>(syntaxTrees);
+        var (compilation, inputDiagnostics) = GetCompilation<T>(compilationKind, syntaxTrees);
 
         var originalTreeCount = compilation.SyntaxTrees.Length;
         var generator = new T();
@@ -41,7 +50,7 @@ public class TestHelpers
                 $"{Environment.NewLine}// *******************************{Environment.NewLine}{Environment.NewLine}",
                 trees.Skip(originalTreeCount));
 
-        return (diagnostics, newTrees);
+        return (inputDiagnostics, diagnostics, newTrees);
     }
 
     public static (Compilation outputCompilation, ImmutableArray<Diagnostic> outputDiagnostics)
@@ -54,12 +63,13 @@ public class TestHelpers
     }
 
     public static (CSharpCompilation compilation, ImmutableArray<Diagnostic> inputDiagnostics)
-        GetCompilation<T>(IEnumerable<SyntaxTree> syntaxTrees)
+        GetCompilation<T>(params SyntaxTree[] syntaxTrees)
         where T : IIncrementalGenerator, new()
-        => GetCompilation<T>(syntaxTrees.ToArray());
+        => GetCompilation<T>(OutputKind.DynamicallyLinkedLibrary, syntaxTrees);
+
 
     public static (CSharpCompilation compilation, ImmutableArray<Diagnostic> inputDiagnostics)
-        GetCompilation<T>(params SyntaxTree[] syntaxTrees)
+        GetCompilation<T>(OutputKind compilationKind, params SyntaxTree[] syntaxTrees)
         where T : IIncrementalGenerator, new()
     {
         System.Reflection.Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -72,12 +82,12 @@ public class TestHelpers
                 //MetadataReference.CreateFromFile(typeof(EnumExtensionsAttribute).Assembly.Location)
             });
         var temp = references.Where(x => x is not null &&
-                Path.GetFileName( x.FilePath).Contains("Jackfruit", StringComparison.OrdinalIgnoreCase));
+                Path.GetFileName(x.FilePath ?? "").Contains("Jackfruit", StringComparison.OrdinalIgnoreCase));
         var compilation = CSharpCompilation.Create(
             "generator",
             syntaxTrees,
             references,
-            new CSharpCompilationOptions(OutputKind.ConsoleApplication));
+            new CSharpCompilationOptions(compilationKind));
         var inputDiagnostics = compilation.GetDiagnostics();
         return (compilation, inputDiagnostics);
     }
@@ -101,14 +111,16 @@ public class TestHelpers
 
     public static Process? CompileOutput(string testInputPath)
     {
-        ProcessStartInfo startInfo = new ProcessStartInfo();
-        ////startInfo.CreateNoWindow = false;
-        startInfo.UseShellExecute = false;
-        startInfo.RedirectStandardOutput = true;
-        startInfo.RedirectStandardError = true;
-        startInfo.WorkingDirectory = testInputPath;
-        startInfo.FileName = "dotnet";
-        startInfo.Arguments = "build";
+        ProcessStartInfo startInfo = new()
+        {
+            ////startInfo.CreateNoWindow = false;
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            WorkingDirectory = testInputPath,
+            FileName = "dotnet",
+            Arguments = "build"
+        };
         Process? exeProcess = Process.Start(startInfo);
         Assert.NotNull(exeProcess);
         if (exeProcess is not null)
@@ -127,10 +139,12 @@ public class TestHelpers
     public static string? RunGeneratedProject(string arguments, string setName, string buildPath)
     {
 
-        ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.UseShellExecute = false;
-        startInfo.RedirectStandardOutput = true;
-        startInfo.RedirectStandardError = true;
+        ProcessStartInfo startInfo = new()
+        {
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
         var fieName = Path.Combine(buildPath, setName);
 
         startInfo.FileName = $"{fieName}{IfOsIsWindows(".exe", "")}";

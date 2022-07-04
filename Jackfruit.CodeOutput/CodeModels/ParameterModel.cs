@@ -13,7 +13,7 @@
         public ParameterStyle Style { get; set; }
         public bool IsParamArray { get; set; }
         public ExpressionBase? DefaultValue { get; set; }
-        public string XmlDescription { get; set; }
+        public string? XmlDescription { get; set; }
     }
 }
 /* Hmmm. Will we need these?

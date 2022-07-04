@@ -28,7 +28,7 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public NamedItemModel? InheritedFrom { get; set; }
         public List<NamedItemModel> ImplementedInterfaces { get; } = new List<NamedItemModel> { };
         public List<IMember> Members { get; set; } = new List<IMember> { };
-        public string XmlDescription { get; set; }
+        public string? XmlDescription { get; set; }
     }
 
 }

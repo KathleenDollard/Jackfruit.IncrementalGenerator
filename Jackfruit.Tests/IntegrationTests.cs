@@ -14,14 +14,14 @@ namespace Jackfruit.Tests
         {
             this.support = support;
 
-            var (inputCompilation, inputDiagnostics) = support.GetCompilation<Generator>(
+            var (inputCompilation, inputDiagnostics) = IntegrationTestFixture.GetCompilation<Generator>(
                 support.TreeFromFileInInputPath("Handlers.cs"),
                 support.TreeFromFileInInputPath("Validators.cs"),
                 support.TreeFromFileInInputPath("Program.cs"));
-            support.CheckCompilation(inputCompilation, inputDiagnostics, diagnosticFilter: x => x.Id != "CS0103");
+            IntegrationTestFixture.CheckCompilation(inputCompilation, inputDiagnostics, diagnosticFilter: x => x.Id != "CS0103");
 
-            var (outputCompilation, outputDiagnostics) = support.RunGenerator<Generator>(inputCompilation);
-            support.CheckCompilation(outputCompilation, outputDiagnostics, syntaxTreeCount: 9);
+            var (outputCompilation, outputDiagnostics) = IntegrationTestFixture.RunGenerator<Generator>(inputCompilation);
+            IntegrationTestFixture.CheckCompilation(outputCompilation, outputDiagnostics, syntaxTreeCount: 9);
 
             support.OutputGeneratedTrees(outputCompilation);
             var exeProcess = support.CompileOutput();

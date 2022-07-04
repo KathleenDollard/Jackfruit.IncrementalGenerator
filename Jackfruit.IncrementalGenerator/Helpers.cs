@@ -10,7 +10,7 @@ namespace Jackfruit.IncrementalGenerator
     public static class Helpers
     {
         internal static CommandDef? BuildCommandDef(string[] path,
-                                                    CommandDefNode parent,
+                                                    CommandDefNode? parent,
                                                     string methodName,
                                                     CommandDetails? commandDetails,
                                                     IEnumerable<MemberDef> ancestorMembers,
