@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DemoHandlers
 {
-    internal class Validators
+    internal class ResultValidators
     {
         public static IEnumerable<string> FranchiseValidate(string greeting)
         {

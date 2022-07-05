@@ -13,22 +13,19 @@ namespace Jackfruit.Tests
         private readonly IntegrationTestConfiguration testOutputExampleConfiguration =
             new("TestOutputExample")
             {
-                OutputKind = OutputKind.ConsoleApplication,
-                SourceFiles = new string[] { "Handlers.cs", "Validators.cs", "Program.cs" }
+                OutputKind = OutputKind.ConsoleApplication 
             };
 
         private readonly IntegrationTestConfiguration testOutputEmptyConfiguration =
             new("TestOutputEmpty")
             {
-                OutputKind = OutputKind.ConsoleApplication,
-                SourceFiles = new string[] { "Program.cs" }
+                OutputKind = OutputKind.ConsoleApplication
             };
 
         private readonly IntegrationTestConfiguration testOutputSimpleConfiguration =
             new("TestOutputSimple")
             {
-                OutputKind = OutputKind.ConsoleApplication,
-                SourceFiles = new string[] { "Program.cs", "Class1.cs" }
+                OutputKind = OutputKind.ConsoleApplication
             };
 
 

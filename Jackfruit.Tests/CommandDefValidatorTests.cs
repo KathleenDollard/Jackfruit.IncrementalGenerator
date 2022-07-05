@@ -17,7 +17,7 @@ using Jackfruit;
 
 public partial class RootCommand
 {{
-    public static RootCommand Create(CommandNode cliRoot)
+    public static RootCommand Create(SubCommand cliRoot)
         => new RootCommand();
 }}
 
@@ -37,7 +37,7 @@ public class MyClass
             var input = MethodWrapper(@"
     public void Test()
     {
-       var rootCommand = RootCommand.Create(CommandNode.Create( ToValidate, Validator1));
+       var rootCommand = RootCommand.Create(SubCommand.Create( ToValidate, Validator1));
     }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -52,7 +52,7 @@ public class MyClass
             var input = MethodWrapper(@"
             public void Test()
             {
-               var rootCommand = RootCommand.Create(CommandNode.Create( ToValidate, ValidatorAll));
+               var rootCommand = RootCommand.Create(SubCommand.Create( ToValidate, ValidatorAll));
             }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -67,7 +67,7 @@ public class MyClass
             var input = MethodWrapper(@"
             public void Test()
             {
-               var rootCommand = RootCommand.Create(CommandNode.Create( ToValidate, Validator0));
+               var rootCommand = RootCommand.Create(SubCommand.Create( ToValidate, Validator0));
             }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
