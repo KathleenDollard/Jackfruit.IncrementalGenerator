@@ -36,28 +36,33 @@ namespace Jackfruit.Common
     }
     public record OptionDef : MemberDef
     {
+        private readonly string[] aliases;
+
         public OptionDef(
-            string id,
-            string name,
-            string description,
-            string? typeName,
-            IEnumerable<string> aliases,
-            string argDisplayName,
-            bool required,
-            bool isOnRoot)
-            : base(id, name, description, typeName, isOnRoot)
+                    string id,
+                    string name,
+                    string description,
+                    string? typeName,
+                    string[] aliases,
+                    string argDisplayName,
+                    bool required,
+                    bool isOnRoot)
+                    : base(id, name, description, typeName, isOnRoot)
         {
             ArgDisplayName = argDisplayName;
-            Aliases = aliases;
+            this.aliases = aliases;
             Required = required;
         }
 
         public string ArgDisplayName { get; }
-        public IEnumerable<string> Aliases { get; }
+        public string[] Aliases => aliases.Any(x=>x.StartsWith("--"))
+                    ? aliases
+                    : new string[] { $"--{Name.ToKebabCase()}" }.Concat(aliases).ToArray();
+
         public bool Required { get; }
 
         public virtual bool Equals(OptionDef other)
-            =>  base.Equals(other) &&
+            => base.Equals(other) &&
                 ArgDisplayName == other.ArgDisplayName &&
                 Required == other.Required &&
                 Aliases.SequenceEqual(other.Aliases);

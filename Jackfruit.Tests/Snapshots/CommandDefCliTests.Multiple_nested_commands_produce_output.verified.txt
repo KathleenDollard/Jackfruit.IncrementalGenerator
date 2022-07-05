@@ -25,7 +25,7 @@ namespace Jackfruit
 //Path:        
 //Parent:      
 //Description: 
-//Aliases:     
+//Aliases:     a
 //Namespace:   <global namespace>
 //Members:     
    //Option:
@@ -33,7 +33,7 @@ namespace Jackfruit
       //Name:           I
       //TypeName:       int
       //Description:    
-      //Aliases:        
+      //Aliases:        --i
       //ArgDisplayName: 
       //Required:       False
 //SubCommands:     
@@ -43,7 +43,7 @@ namespace Jackfruit
    //Path:        A
    //Parent:      A
    //Description: 
-   //Aliases:     
+   //Aliases:     b
    //Namespace:   <global namespace>
    //Members:     
       //Option:
@@ -51,7 +51,7 @@ namespace Jackfruit
          //Name:           I
          //TypeName:       int
          //Description:    
-         //Aliases:        
+         //Aliases:        --i
          //ArgDisplayName: 
          //Required:       False
    //SubCommands:     
@@ -63,7 +63,7 @@ namespace Jackfruit
    //Path:        A
    //Parent:      A
    //Description: 
-   //Aliases:     
+   //Aliases:     c
    //Namespace:   <global namespace>
    //Members:     
       //Option:
@@ -71,7 +71,7 @@ namespace Jackfruit
          //Name:           I
          //TypeName:       int
          //Description:    
-         //Aliases:        
+         //Aliases:        --i
          //ArgDisplayName: 
          //Required:       False
    //SubCommands:     
@@ -81,7 +81,7 @@ namespace Jackfruit
       //Path:        A.C
       //Parent:      C
       //Description: 
-      //Aliases:     
+      //Aliases:     e
       //Namespace:   <global namespace>
       //Members:     
          //Option:
@@ -89,7 +89,7 @@ namespace Jackfruit
             //Name:           I
             //TypeName:       int
             //Description:    
-            //Aliases:        
+            //Aliases:        --i
             //ArgDisplayName: 
             //Required:       False
       //SubCommands:     
@@ -101,7 +101,7 @@ namespace Jackfruit
       //Path:        A.C
       //Parent:      C
       //Description: 
-      //Aliases:     
+      //Aliases:     f
       //Namespace:   <global namespace>
       //Members:     
          //Option:
@@ -109,7 +109,7 @@ namespace Jackfruit
             //Name:           I
             //TypeName:       int
             //Description:    
-            //Aliases:        
+            //Aliases:        --i
             //ArgDisplayName: 
             //Required:       False
       //SubCommands:     
@@ -119,7 +119,7 @@ namespace Jackfruit
          //Path:        A.C.F
          //Parent:      F
          //Description: 
-         //Aliases:     
+         //Aliases:     g
          //Namespace:   <global namespace>
          //Members:     
             //Option:
@@ -127,7 +127,7 @@ namespace Jackfruit
                //Name:           I
                //TypeName:       int
                //Description:    
-               //Aliases:        
+               //Aliases:        --i
                //ArgDisplayName: 
                //Required:       False
          //SubCommands:     
@@ -139,7 +139,7 @@ namespace Jackfruit
          //Path:        A.C.F
          //Parent:      F
          //Description: 
-         //Aliases:     
+         //Aliases:     h
          //Namespace:   <global namespace>
          //Members:     
             //Option:
@@ -147,7 +147,7 @@ namespace Jackfruit
                //Name:           I
                //TypeName:       int
                //Description:    
-               //Aliases:        
+               //Aliases:        --i
                //ArgDisplayName: 
                //Required:       False
          //SubCommands:     
@@ -163,7 +163,7 @@ namespace Jackfruit
    //Path:        A
    //Parent:      A
    //Description: 
-   //Aliases:     
+   //Aliases:     d
    //Namespace:   <global namespace>
    //Members:     
       //Option:
@@ -171,7 +171,7 @@ namespace Jackfruit
          //Name:           I
          //TypeName:       int
          //Description:    
-         //Aliases:        
+         //Aliases:        --i
          //ArgDisplayName: 
          //Required:       False
    //SubCommands:     

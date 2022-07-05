@@ -11,22 +11,7 @@
 
     public record CommandDef : CommandDefBase
     {
-        //public CommandDef(
-        //    string id,
-        //    IEnumerable<string> path)
-        //{
-        //    Id = id;
-        //    Name = id;
-        //    UniqueId = string.Join("|", path);
-        //    Namespace = "";
-        //    Description = null;
-        //    Aliases = new string[] { };
-        //    Members = new List<MemberDef>();
-        //    HandlerMethodName = "";
-        //    SubCommandNames = new List<string>(); ;
-        //    Path = path;
-        //    ReturnType = "";
-        //}
+        private readonly string[] aliases;
 
         public CommandDef(
             string id,
@@ -51,9 +36,9 @@
             Parent = parent;
             IsParentRoot = isParentRoot;
             Description = description;
-            Aliases = aliases;
+            this.aliases = aliases;
             Members = members;
-            MyMembers= members.Where(m=>!m.IsOnRoot).ToList();
+            MyMembers = members.Where(m => !m.IsOnRoot).ToList();
             HandlerMethodName = handlerMethodName;
             SubCommandNames = subCommandNames;
             Path = path;
@@ -68,8 +53,10 @@
         public bool IsParentRoot { get; }
         public ValidatorDef? Validator { get; set; }
         public string? Description { get; }
-        public string[] Aliases { get; }
-        //Options, args, and services in order of handler parameters
+        public string[] Aliases => aliases.Any()
+                    ? aliases
+                    : new string[] { Name.ToKebabCase() };
+
         public IEnumerable<MemberDef> Members { get; }
         public IEnumerable<MemberDef> MyMembers { get; }
         public string HandlerMethodName { get; }

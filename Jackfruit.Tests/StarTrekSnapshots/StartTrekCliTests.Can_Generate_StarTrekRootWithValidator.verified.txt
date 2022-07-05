@@ -35,7 +35,7 @@ namespace Jackfruit
    {
       public RootCommand()
       {
-         Name = "Franchise";
+         Name = "franchise";
          GreetingArgument = new Argument<string>("greetingArg");
          Add(GreetingArgument);
          StarTrek = StarTrek.Build(this);
@@ -135,16 +135,19 @@ namespace Jackfruit_DemoHandlers
       internal static StarTrek Build(Jackfruit.RootCommand parent)
       {
          var command = new StarTrek();
-         command.Name = "StarTrek";
+         command.Name = "star-trek";
          command.Parent = parent;
-         command.KirkOption = new Option<bool>("--Kirk");
+         command.KirkOption = new Option<bool>("--kirk");
          command.KirkOption.Description = "Whether to greet Captain Kirk";
+         command.KirkOption.AddAlias("--kirk");
          command.Add(command.KirkOption);
-         command.SpockOption = new Option<bool>("--Spock");
+         command.SpockOption = new Option<bool>("--spock");
          command.SpockOption.Description = "Whether to greet Spock";
+         command.SpockOption.AddAlias("--spock");
          command.Add(command.SpockOption);
-         command.UhuraOption = new Option<bool>("--Uhura");
+         command.UhuraOption = new Option<bool>("--uhura");
          command.UhuraOption.Description = "Whether to greet Lieutenant Uhura";
+         command.UhuraOption.AddAlias("--uhura");
          command.Add(command.UhuraOption);
          command.NextGeneration = NextGeneration.Build(command);
          command.AddCommandToScl(command.NextGeneration);
@@ -231,10 +234,11 @@ namespace Jackfruit_DemoHandlers
       internal static NextGeneration Build(StarTrek parent)
       {
          var command = new NextGeneration();
-         command.Name = "NextGeneration";
+         command.Name = "next-generation";
          command.Parent = parent;
-         command.PicardOption = new Option<bool>("--Picard");
+         command.PicardOption = new Option<bool>("--picard");
          command.PicardOption.Description = "This is the description for Picard";
+         command.PicardOption.AddAlias("--picard");
          command.PicardOption.AddAlias("-p");
          command.Add(command.PicardOption);
          command.DeepSpaceNine = DeepSpaceNine.Build(command);
@@ -319,17 +323,22 @@ namespace Jackfruit_DemoHandlers
       internal static DeepSpaceNine Build(NextGeneration parent)
       {
          var command = new DeepSpaceNine();
-         command.Name = "DeepSpaceNine";
+         command.Name = "deep-space-nine";
          command.Parent = parent;
-         command.SiskoOption = new Option<bool>("--Sisko");
+         command.SiskoOption = new Option<bool>("--sisko");
+         command.SiskoOption.AddAlias("--sisko");
          command.Add(command.SiskoOption);
-         command.OdoOption = new Option<bool>("--Odo");
+         command.OdoOption = new Option<bool>("--odo");
+         command.OdoOption.AddAlias("--odo");
          command.Add(command.OdoOption);
-         command.DaxOption = new Option<bool>("--Dax");
+         command.DaxOption = new Option<bool>("--dax");
+         command.DaxOption.AddAlias("--dax");
          command.Add(command.DaxOption);
-         command.WorfOption = new Option<bool>("--Worf");
+         command.WorfOption = new Option<bool>("--worf");
+         command.WorfOption.AddAlias("--worf");
          command.Add(command.WorfOption);
-         command.OBrienOption = new Option<bool>("--OBrien");
+         command.OBrienOption = new Option<bool>("--obrien");
+         command.OBrienOption.AddAlias("--obrien");
          command.Add(command.OBrienOption);
          command.AddValidator(command.Validate);
          command.Handler = command;
@@ -419,17 +428,22 @@ namespace Jackfruit_DemoHandlers
       internal static Voyager Build(NextGeneration parent)
       {
          var command = new Voyager();
-         command.Name = "Voyager";
+         command.Name = "voyager";
          command.Parent = parent;
-         command.JanewayOption = new Option<bool>("--Janeway");
+         command.JanewayOption = new Option<bool>("--janeway");
+         command.JanewayOption.AddAlias("--janeway");
          command.Add(command.JanewayOption);
-         command.ChakotayOption = new Option<bool>("--Chakotay");
+         command.ChakotayOption = new Option<bool>("--chakotay");
+         command.ChakotayOption.AddAlias("--chakotay");
          command.Add(command.ChakotayOption);
-         command.TorresOption = new Option<bool>("--Torres");
+         command.TorresOption = new Option<bool>("--torres");
+         command.TorresOption.AddAlias("--torres");
          command.Add(command.TorresOption);
-         command.TuvokOption = new Option<bool>("--Tuvok");
+         command.TuvokOption = new Option<bool>("--tuvok");
+         command.TuvokOption.AddAlias("--tuvok");
          command.Add(command.TuvokOption);
-         command.SevenOfNineOption = new Option<bool>("--SevenOfNine");
+         command.SevenOfNineOption = new Option<bool>("--seven-of-nine");
+         command.SevenOfNineOption.AddAlias("--seven-of-nine");
          command.Add(command.SevenOfNineOption);
          command.AddValidator(command.Validate);
          command.Handler = command;

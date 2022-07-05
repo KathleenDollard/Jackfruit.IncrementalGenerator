@@ -2,7 +2,7 @@
   "profiles": {
     "TestOutputExample": {
       "commandName": "Project",
-      "commandLineArgs": "StarTrek -h"
+      "commandLineArgs": "star-trek next-generation -h"
     }
   }
 }

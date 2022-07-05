@@ -12,8 +12,9 @@ namespace Jackfruit
    {
       public RootCommand()
       {
-         Name = "Hello";
-         ToOption = new Option<string>("--To");
+         Name = "hello";
+         ToOption = new Option<string>("--to");
+         ToOption.AddAlias("--to");
          Add(ToOption);
          AddValidator(Validate);
          Handler = this;

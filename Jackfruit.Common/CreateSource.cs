@@ -264,7 +264,7 @@ namespace Jackfruit.Common
                 ? (ExpressionBase)This
                 : Symbol(commandVar);
 
-            statements.Add(Assign($"{target}Name", commandDef.Name));
+            statements.Add(Assign($"{target}Name", commandDef.Aliases[0]));
             if (!IsRoot(commandDef))
             { statements.Add(Assign($"{target}Parent", Symbol("parent"))); }
 
@@ -274,7 +274,7 @@ namespace Jackfruit.Common
                 {
                     case OptionDef opt:
                         var optPropertyName = $"{target}{MemberPropertyName(opt)}";
-                        statements.Add(Assign(optPropertyName, New(Generic("Option", opt.TypeName), $"--{opt.Name}")));
+                        statements.Add(Assign(optPropertyName, New(Generic("Option", opt.TypeName), $"{opt.Aliases[0]}")));
                         if (!string.IsNullOrWhiteSpace(opt.Description))
                         { statements.Add(Assign($"{optPropertyName}.Description", opt.Description)); }
                         foreach (var alias in opt.Aliases)

@@ -29,7 +29,7 @@ namespace Jackfruit
 //   MethodName:  MyClass.ValidatorAll
 //   Members:     i, j, k
 //Description: 
-//Aliases:     
+//Aliases:     to-validate
 //Namespace:   <global namespace>
 //Members:     
    //Option:
@@ -37,7 +37,7 @@ namespace Jackfruit
       //Name:           I
       //TypeName:       int
       //Description:    
-      //Aliases:        
+      //Aliases:        --i
       //ArgDisplayName: 
       //Required:       False
    //Option:
@@ -45,7 +45,7 @@ namespace Jackfruit
       //Name:           J
       //TypeName:       int
       //Description:    
-      //Aliases:        
+      //Aliases:        --j
       //ArgDisplayName: 
       //Required:       False
    //Option:
@@ -53,7 +53,7 @@ namespace Jackfruit
       //Name:           K
       //TypeName:       int
       //Description:    
-      //Aliases:        
+      //Aliases:        --k
       //ArgDisplayName: 
       //Required:       False
 //SubCommands:     

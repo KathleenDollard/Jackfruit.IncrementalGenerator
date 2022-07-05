@@ -16,10 +16,11 @@ namespace Jackfruit_DemoHandlers
       internal static NextGeneration Build(StarTrek parent)
       {
          var command = new NextGeneration();
-         command.Name = "NextGeneration";
+         command.Name = "next-generation";
          command.Parent = parent;
-         command.PicardOption = new Option<bool>("--Picard");
+         command.PicardOption = new Option<bool>("--picard");
          command.PicardOption.Description = "This is the description for Picard";
+         command.PicardOption.AddAlias("--picard");
          command.PicardOption.AddAlias("-p");
          command.Add(command.PicardOption);
          command.DeepSpaceNine = DeepSpaceNine.Build(command);

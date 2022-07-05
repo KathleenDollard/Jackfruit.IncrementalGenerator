@@ -16,17 +16,22 @@ namespace Jackfruit_DemoHandlers
       internal static Voyager Build(NextGeneration parent)
       {
          var command = new Voyager();
-         command.Name = "Voyager";
+         command.Name = "voyager";
          command.Parent = parent;
-         command.JanewayOption = new Option<bool>("--Janeway");
+         command.JanewayOption = new Option<bool>("--janeway");
+         command.JanewayOption.AddAlias("--janeway");
          command.Add(command.JanewayOption);
-         command.ChakotayOption = new Option<bool>("--Chakotay");
+         command.ChakotayOption = new Option<bool>("--chakotay");
+         command.ChakotayOption.AddAlias("--chakotay");
          command.Add(command.ChakotayOption);
-         command.TorresOption = new Option<bool>("--Torres");
+         command.TorresOption = new Option<bool>("--torres");
+         command.TorresOption.AddAlias("--torres");
          command.Add(command.TorresOption);
-         command.TuvokOption = new Option<bool>("--Tuvok");
+         command.TuvokOption = new Option<bool>("--tuvok");
+         command.TuvokOption.AddAlias("--tuvok");
          command.Add(command.TuvokOption);
-         command.SevenOfNineOption = new Option<bool>("--SevenOfNine");
+         command.SevenOfNineOption = new Option<bool>("--seven-of-nine");
+         command.SevenOfNineOption.AddAlias("--seven-of-nine");
          command.Add(command.SevenOfNineOption);
          command.AddValidator(command.Validate);
          command.Handler = command;
