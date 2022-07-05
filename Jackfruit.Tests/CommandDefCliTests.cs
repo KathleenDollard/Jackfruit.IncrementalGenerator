@@ -19,7 +19,7 @@ using System.ComponentModel;
 
 public partial class RootCommand
 {{
-    public static RootCommand Create(params CommandNode[] cliRoot)
+    public static RootCommand Create(params SubCommand[] cliRoot)
         => new RootCommand();
 }}
 
@@ -43,7 +43,7 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test()
     {
-       var rootCommand = RootCommand.Create(CommandNode.Create(A));
+       var rootCommand = RootCommand.Create(SubCommand.Create(A));
     }");
             var (inputDiagnostics,diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -58,8 +58,8 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test()
     {
-       var rootCommand = RootCommand.Create(CommandNode.Create(A, 
-            CommandNode.Create(B)));
+       var rootCommand = RootCommand.Create(SubCommand.Create(A, 
+            SubCommand.Create(B)));
     }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -74,10 +74,10 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test() 
     {
-       var rootCommand = RootCommand.Create(CommandNode.Create(A, 
-            CommandNode.Create(B),
-            CommandNode.Create(C),
-            CommandNode.Create(D)));
+       var rootCommand = RootCommand.Create(SubCommand.Create(A, 
+            SubCommand.Create(B),
+            SubCommand.Create(C),
+            SubCommand.Create(D)));
     }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -92,14 +92,14 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test() 
     {
-       var rootCommand = RootCommand.Create(CommandNode.Create(A, 
-            CommandNode.Create(B),
-            CommandNode.Create(C,
-                CommandNode.Create(E),
-                CommandNode.Create(F,
-                    CommandNode.Create(G),
-                    CommandNode.Create(H))),
-            CommandNode.Create(D)));
+       var rootCommand = RootCommand.Create(SubCommand.Create(A, 
+            SubCommand.Create(B),
+            SubCommand.Create(C,
+                SubCommand.Create(E),
+                SubCommand.Create(F,
+                    SubCommand.Create(G),
+                    SubCommand.Create(H))),
+            SubCommand.Create(D)));
     }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -114,16 +114,16 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test() 
     {
-        var rootCommand = RootCommand.Create(CommandNode.Create(A, 
-                CommandNode.Create(B),
-                CommandNode.Create(C,  
-                    CommandNode.Create(E),
-                    CommandNode.Create(F,
-                        CommandNode.Create(G), 
-                        CommandNode.Create(H)
+        var rootCommand = RootCommand.Create(SubCommand.Create(A, 
+                SubCommand.Create(B),
+                SubCommand.Create(C,  
+                    SubCommand.Create(E),
+                    SubCommand.Create(F,
+                        SubCommand.Create(G), 
+                        SubCommand.Create(H)
                     )
                 ),
-                CommandNode.Create(D)
+                SubCommand.Create(D)
             ));
     }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
@@ -138,7 +138,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(CommandNode.Create(null));
+            var rootCommand = RootCommand.Create(SubCommand.Create(null));
         }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -153,7 +153,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.CreateX(CommandNode.Create(A));
+            var rootCommand = RootCommand.CreateX(SubCommand.Create(A));
         }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -183,7 +183,7 @@ public class MyClass
         var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
+            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
+            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
         }
 
         [Description(""Command description in Attribute"")]
@@ -225,7 +225,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
+            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
         }
 
         public void AA(
@@ -244,7 +244,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
+            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
         }
 
         public void AA(
@@ -264,7 +264,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
+            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
         }
 
         public void AA(
@@ -283,7 +283,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
+            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
         }
 
         public void AA(
@@ -303,7 +303,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
+            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
         }
 
         [Aliases(""C1"")]
@@ -323,7 +323,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(CommandNode.Create(AA));
+            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
         }
 
         public void AA(

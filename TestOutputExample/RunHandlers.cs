@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace DemoHandlers
 {
-    public static class Handlers
+    public static class RunHandlers
     {
         private static void Greet(string greeting, string name)
         {

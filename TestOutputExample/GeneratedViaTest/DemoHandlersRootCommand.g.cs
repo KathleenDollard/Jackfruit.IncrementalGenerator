@@ -57,7 +57,7 @@ namespace Jackfruit
       public int Invoke(InvocationContext invocationContext)
       {
          var result = Result.GetResult(this, invocationContext);
-         DemoHandlers.Handlers.Franchise(result.Greeting);
+         DemoHandlers.RunHandlers.Franchise(result.Greeting);
          return invocationContext.ExitCode;
       }
       
@@ -68,7 +68,7 @@ namespace Jackfruit
       public Task<int> InvokeAsync(InvocationContext invocationContext)
       {
          var result = Result.GetResult(this, invocationContext);
-         DemoHandlers.Handlers.Franchise(result.Greeting);
+         DemoHandlers.RunHandlers.Franchise(result.Greeting);
          return Task.FromResult(invocationContext.ExitCode);
       }
       
@@ -80,7 +80,7 @@ namespace Jackfruit
       {
          base.Validate(invocationContext);
          var result = Result.GetResult(this, invocationContext);
-         var err = string.Join(Environment.NewLine, DemoHandlers.Validators.FranchiseValidate(result.Greeting));
+         var err = string.Join(Environment.NewLine, DemoHandlers.ResultValidators.FranchiseValidate(result.Greeting));
          if (!(string.IsNullOrWhiteSpace(err)))
          {
             invocationContext.ParseResult.CommandResult.ErrorMessage = err;

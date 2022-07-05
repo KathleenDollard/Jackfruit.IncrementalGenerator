@@ -81,7 +81,7 @@ namespace Jackfruit.Common
                                     .Static()
                                     .NewSlot()
                                     .Parameters(
-                                        Parameter("rootNode", "CommandNode"))
+                                        Parameter("rootNode", "SubCommand"))
                                     .Statements(
                                         Return(Invoke("RootCommand<RootCommand, RootCommand.Result>",
                                              "Create",

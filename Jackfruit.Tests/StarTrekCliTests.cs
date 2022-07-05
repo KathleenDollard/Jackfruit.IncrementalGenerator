@@ -33,7 +33,7 @@ public class MyClass
 {
     public void F() 
     {
-        var rootCommand = RootCommand.Create(CommandNode.Create(Handlers.Voyager));
+        var rootCommand = RootCommand.Create(SubCommand.Create(Handlers.Voyager));
     }
 
 }";
@@ -46,11 +46,11 @@ public class MyClass
 {
     public void F() 
     {
-        var rootCommand = RootCommand.Create(CommandNode.Create(Handlers.Franchise, 
-            CommandNode.Create(Handlers.StarTrek, 
-                CommandNode.Create(Handlers.NextGeneration, 
-                    CommandNode.Create(Handlers.DeepSpaceNine),
-                    CommandNode.Create(Handlers.Voyager) 
+        var rootCommand = RootCommand.Create(SubCommand.Create(Handlers.Franchise, 
+            SubCommand.Create(Handlers.StarTrek, 
+                SubCommand.Create(Handlers.NextGeneration, 
+                    SubCommand.Create(Handlers.DeepSpaceNine),
+                    SubCommand.Create(Handlers.Voyager) 
                 ))));
 
         var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();
@@ -70,11 +70,11 @@ public class MyClass
 {
     public void F() 
     {
-        var rootCommand = RootCommand.Create(CommandNode.Create(Handlers.Franchise, Validators.FranchiseValidate,
-            CommandNode.Create(Handlers.StarTrek, 
-                CommandNode.Create(Handlers.NextGeneration, 
-                    CommandNode.Create(Handlers.DeepSpaceNine),
-                    CommandNode.Create(Handlers.Voyager) 
+        var rootCommand = RootCommand.Create(SubCommand.Create(Handlers.Franchise, Validators.FranchiseValidate,
+            SubCommand.Create(Handlers.StarTrek, 
+                SubCommand.Create(Handlers.NextGeneration, 
+                    SubCommand.Create(Handlers.DeepSpaceNine),
+                    SubCommand.Create(Handlers.Voyager) 
                 ))));
 
         var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();
@@ -95,7 +95,7 @@ public class MyClass
 {
     public void F() 
     {
-        var rootCommand = RootCommand.Create(CommandNode.Create(Handlers.NextGeneration));
+        var rootCommand = RootCommand.Create(SubCommand.Create(Handlers.NextGeneration));
     }
 
 }";

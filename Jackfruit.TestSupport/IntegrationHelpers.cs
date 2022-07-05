@@ -11,8 +11,7 @@ namespace Jackfruit.TestSupport
         public static void GenerateIntoProject<T>(IntegrationTestConfiguration configuration)
             where T : IIncrementalGenerator, new()
         {
-            SyntaxTree[] syntaxTrees = configuration.SourceFiles
-                .Select(fileName => TreeFromFileInInputPath(configuration, fileName)).ToArray();
+            SyntaxTree[] syntaxTrees = GetSyntaxTrees(configuration);
             var (inputCompilation, inputDiagnostics) = GetCompilation<T>(configuration, syntaxTrees);
             CheckCompilation(configuration, inputCompilation, inputDiagnostics, diagnosticFilter: x => x.Id != "CS0103");
 
@@ -29,6 +28,20 @@ namespace Jackfruit.TestSupport
             Console.WriteLine(output);
             Assert.Equal(0, exeProcess.ExitCode);
             Assert.Equal("", error);
+        }
+
+        private static SyntaxTree[] GetSyntaxTrees(IntegrationTestConfiguration configuration)
+        {
+            var options = new EnumerationOptions
+            {
+                RecurseSubdirectories = false,
+                MatchCasing = MatchCasing.PlatformDefault,
+                MatchType= MatchType.Simple,
+            };
+            var files = Directory.GetFiles(configuration.TestInputPath, "*.cs", options);
+
+            return files
+                .Select(fileName => TreeFromFileInInputPath(configuration, fileName)).ToArray();
         }
 
         public static string? RunCommand<T>(IntegrationTestConfiguration configuration, string arguments)
@@ -68,8 +81,7 @@ namespace Jackfruit.TestSupport
 
         public static void OutputGeneratedTrees(IntegrationTestConfiguration configuration, Compilation generatedCompilation)
             => TestHelpers.OutputGeneratedTrees(generatedCompilation,
-                                                       configuration.TestGeneratedCodePath,
-                                                       configuration.SourceFiles);
+                                                       configuration.TestGeneratedCodePath);
 
         public static Process? CompileOutput(IntegrationTestConfiguration configuration)
             => TestHelpers.CompileOutput(configuration.TestInputPath);

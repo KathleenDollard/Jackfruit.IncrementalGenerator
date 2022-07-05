@@ -91,28 +91,16 @@ public class TestHelpers
         return (compilation, inputDiagnostics);
     }
 
-    public static void OutputGeneratedTrees(Compilation generatedCompilation, string outputDir, params string[] skipFiles)
+    public static void OutputGeneratedTrees(Compilation generatedCompilation, string outputDir)
     {
+        // the presence of a file path is used to indicate generated. this feels weak.
         foreach (var tree in generatedCompilation.SyntaxTrees)
         {
-            var className = !string.IsNullOrWhiteSpace(tree.FilePath)
-                    ? Path.GetFileName(tree.FilePath)
-                    : ClassName(tree.GetRoot()
-                        .DescendantNodes()
-                        .OfType<ClassDeclarationSyntax>());
-            if (string.IsNullOrWhiteSpace(className) || 
-                skipFiles.Contains(className) || 
-                skipFiles.Contains(Path.GetFileNameWithoutExtension(className)))
-            { continue; }
-            var fileName = Path.Combine(outputDir, className);
+            if (string.IsNullOrWhiteSpace(tree.FilePath))
+                { continue; }
+            var fileName = Path.Combine(outputDir, Path.GetFileName(tree.FilePath));
             File.WriteAllText(fileName, tree.ToString());
         }
-
-        static string? ClassName(IEnumerable<ClassDeclarationSyntax> classes)
-            => classes.Any()
-                ? classes.First()
-                         .Identifier.ToString() + ".cs"
-                : null;
     }
 
     public static Process? CompileOutput(string testInputPath)

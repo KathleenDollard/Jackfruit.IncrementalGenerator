@@ -62,7 +62,7 @@ namespace Jackfruit_DemoHandlers
       public int Invoke(InvocationContext invocationContext)
       {
          var result = Result.GetResult(this, invocationContext);
-         DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
+         DemoHandlers.RunHandlers.NextGeneration(result.Greeting, result.Picard);
          return invocationContext.ExitCode;
       }
       
@@ -73,7 +73,7 @@ namespace Jackfruit_DemoHandlers
       public Task<int> InvokeAsync(InvocationContext invocationContext)
       {
          var result = Result.GetResult(this, invocationContext);
-         DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
+         DemoHandlers.RunHandlers.NextGeneration(result.Greeting, result.Picard);
          return Task.FromResult(invocationContext.ExitCode);
       }
       

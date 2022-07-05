@@ -56,7 +56,5 @@ namespace Jackfruit.TestSupport
             Microsoft.CodeAnalysis.OutputKind.DynamicallyLinkedLibrary;
 
         public int? SyntaxTreeCount { get; set; } = null;
-
-        public string[] SourceFiles { get; set; } = Array.Empty<string>();
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
      <PropertyGroup> 
-		<PackageVersion>0.0.1-alphaU</PackageVersion>
-		<Version>0.0.1-alphaU</Version>
+		<PackageVersion>0.0.1-alphaV</PackageVersion>
+		<Version>0.0.1-alphaV</Version>
      </PropertyGroup>
 </Project>

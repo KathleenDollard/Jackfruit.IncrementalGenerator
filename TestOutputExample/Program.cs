@@ -6,11 +6,11 @@ internal class Program
     private static void Main(string[] args)
     {
         var rootCommand = RootCommand.Create(
-           CommandNode.Create(Handlers.Franchise, Validators.FranchiseValidate,
-              CommandNode.Create(Handlers.StarTrek,
-                 CommandNode.Create(Handlers.NextGeneration,
-                     CommandNode.Create(Handlers.DeepSpaceNine),
-                     CommandNode.Create(Handlers.Voyager)
+           SubCommand.Create(RunHandlers.Franchise, ResultValidators.FranchiseValidate,
+              SubCommand.Create(RunHandlers.StarTrek,
+                 SubCommand.Create(RunHandlers.NextGeneration,
+                     SubCommand.Create(RunHandlers.DeepSpaceNine),
+                     SubCommand.Create(RunHandlers.Voyager)
                  ))));
         rootCommand.GreetingArgument.SetDefaultValue("Hello"); 
         rootCommand.Run(args);
