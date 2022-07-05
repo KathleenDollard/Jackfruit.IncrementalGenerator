@@ -55,9 +55,18 @@ namespace Jackfruit.Common
         }
 
         public string ArgDisplayName { get; }
-        public string[] Aliases => aliases.Any(x=>x.StartsWith("--"))
+        public string[] Aliases
+        {
+            get
+            {
+                var sclName = Name.Length > 1
+                            ? $"--{Name.ToKebabCase()}"
+                            : $"-{Name.ToLowerInvariant()}";
+                return aliases.Any(x => x.StartsWith("--"))
                     ? aliases
-                    : new string[] { $"--{Name.ToKebabCase()}" }.Concat(aliases).ToArray();
+                    : new string[] { sclName }.Concat(aliases).ToArray();
+            }
+        }
 
         public bool Required { get; }
 

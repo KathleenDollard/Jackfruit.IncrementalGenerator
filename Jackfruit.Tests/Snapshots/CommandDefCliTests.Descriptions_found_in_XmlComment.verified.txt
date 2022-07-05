@@ -33,7 +33,7 @@ namespace Jackfruit
       //Name:           I
       //TypeName:       int
       //Description:    Option description in XmlComment
-      //Aliases:        --i
+      //Aliases:        -i
       //ArgDisplayName: 
       //Required:       False
 //SubCommands:     

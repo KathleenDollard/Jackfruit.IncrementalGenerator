@@ -33,7 +33,7 @@ namespace Jackfruit
       //Name:           I
       //TypeName:       int
       //Description:    
-      //Aliases:        --i
+      //Aliases:        -i
       //ArgDisplayName: 
       //Required:       False
 //SubCommands:     
@@ -51,7 +51,7 @@ namespace Jackfruit
          //Name:           I
          //TypeName:       int
          //Description:    
-         //Aliases:        --i
+         //Aliases:        -i
          //ArgDisplayName: 
          //Required:       False
    //SubCommands:     
@@ -71,7 +71,7 @@ namespace Jackfruit
          //Name:           I
          //TypeName:       int
          //Description:    
-         //Aliases:        --i
+         //Aliases:        -i
          //ArgDisplayName: 
          //Required:       False
    //SubCommands:     
@@ -91,7 +91,7 @@ namespace Jackfruit
          //Name:           I
          //TypeName:       int
          //Description:    
-         //Aliases:        --i
+         //Aliases:        -i
          //ArgDisplayName: 
          //Required:       False
    //SubCommands:     

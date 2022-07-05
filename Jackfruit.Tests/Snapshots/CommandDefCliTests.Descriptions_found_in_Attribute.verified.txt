@@ -33,7 +33,7 @@ namespace Jackfruit
       //Name:           I
       //TypeName:       int
       //Description:    Member description in Attribute
-      //Aliases:        --i
+      //Aliases:        -i
       //ArgDisplayName: 
       //Required:       False
 //SubCommands:     
