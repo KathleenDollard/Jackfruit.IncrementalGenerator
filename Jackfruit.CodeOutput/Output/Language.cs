@@ -350,10 +350,11 @@ namespace Jackfruit.IncrementalGenerator
                 CastModel castModel => Cast(castModel.TypeName, castModel.Expression),
                 ComparisonModel comparisonModel => Compare(comparisonModel.Left, comparisonModel.Operator, comparisonModel.Right),
                 ListModel listModel => Instantiate("List<ExpressionBase>", listModel.Values ),
+                ArrayModel literalModel => 
                 StringLiteralModel literalModel => $@"""{literalModel.Value}""",
-                LiteralModel literalModel => literalModel.Value ?? "",
                 SymbolModel symbolModel => symbolModel.Name ?? "",
                 NotModel notModel => Not(notModel.Expression),
+                LiteralModel literalModel => literalModel.Value ?? "",
                 NullLiteralModel _ => NullKeyword,
                 ThisLiteralModel _ => ThisKeyword,
                 TrueLiteralModel _ => TrueKeyword,

@@ -91,14 +91,16 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public IEnumerable<ExpressionBase> Values { get; set; }
     }
 
-    public class LiteralModel : ExpressionBase
+
+    public class ArrayModel : ExpressionBase
     {
-        public LiteralModel(string value)
+        public ArrayModel(IEnumerable<ExpressionBase> values)
         {
-            Value = value;
+            Values = values;
         }
-        public string Value { get; set; }
+        public IEnumerable<ExpressionBase> Values { get; set; }
     }
+
 
     public class SymbolModel : ExpressionBase
     {
@@ -120,6 +122,16 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public ExpressionBase Expression { get; set; }
 
     }
+
+    public class LiteralModel : ExpressionBase
+    {
+        public LiteralModel(string value)
+        {
+            Value = value;
+        }
+        public string Value { get; set; }
+    }
+
 
     public class NullLiteralModel : ExpressionBase { }
     public class ThisLiteralModel : ExpressionBase { }
