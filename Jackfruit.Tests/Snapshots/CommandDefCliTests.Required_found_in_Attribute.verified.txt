@@ -25,7 +25,7 @@ namespace Jackfruit
 //Path:        
 //Parent:      
 //Description: 
-//Aliases:     
+//Aliases:     aa
 //Namespace:   <global namespace>
 //Members:     
    //Option:
@@ -33,7 +33,7 @@ namespace Jackfruit
       //Name:           I
       //TypeName:       int
       //Description:    
-      //Aliases:        
+      //Aliases:        -i
       //ArgDisplayName: 
       //Required:       True
 //SubCommands:     

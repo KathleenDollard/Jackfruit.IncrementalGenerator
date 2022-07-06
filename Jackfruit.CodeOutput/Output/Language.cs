@@ -123,6 +123,7 @@ namespace Jackfruit.IncrementalGenerator
         // expressions
         public abstract string Invoke(NamedItemModel? instance, NamedItemModel methodName, IEnumerable<ExpressionBase> arguments);
         public abstract string Instantiate(NamedItemModel typeName, IEnumerable<ExpressionBase> arguments);
+        public abstract string Array(NamedItemModel typeName, IEnumerable<ExpressionBase> members);
         public abstract string TypeOf(NamedItemModel typeName);
         public abstract string Cast(NamedItemModel typeName, ExpressionBase expression);
         public abstract string Compare(ExpressionBase left, Operator @operator, ExpressionBase right);
@@ -349,11 +350,12 @@ namespace Jackfruit.IncrementalGenerator
                 TypeOfModel typeOfModel => TypeOf(typeOfModel.TypeName),
                 CastModel castModel => Cast(castModel.TypeName, castModel.Expression),
                 ComparisonModel comparisonModel => Compare(comparisonModel.Left, comparisonModel.Operator, comparisonModel.Right),
-                ListModel listModel => Instantiate("List<ExpressionBase>", listModel.Values ),
+                ListModel listModel => Instantiate("List<ExpressionBase>", listModel.Values ), // this looks wrong (members would be args, not collection init)
+                ArrayModel arrayModel => Array(arrayModel.TypeName, arrayModel.Values),
                 StringLiteralModel literalModel => $@"""{literalModel.Value}""",
-                LiteralModel literalModel => literalModel.Value ?? "",
                 SymbolModel symbolModel => symbolModel.Name ?? "",
                 NotModel notModel => Not(notModel.Expression),
+                LiteralModel literalModel => literalModel.Value ?? "",
                 NullLiteralModel _ => NullKeyword,
                 ThisLiteralModel _ => ThisKeyword,
                 TrueLiteralModel _ => TrueKeyword,

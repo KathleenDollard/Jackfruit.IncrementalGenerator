@@ -34,7 +34,7 @@ namespace Jackfruit.Tests
         {
             IntegrationHelpers.GenerateIntoProject<Generator>(testOutputExampleConfiguration);
             var output = IntegrationHelpers.RunCommand<Generator>(testOutputExampleConfiguration,
-                                                                  "StarTrek --Uhura");
+                                                                  "star-trek --uhura");
             Assert.Equal($"Hello, Nyota Uhura{Environment.NewLine}", output);
         }
 
@@ -43,7 +43,7 @@ namespace Jackfruit.Tests
         {
             IntegrationHelpers.GenerateIntoProject<Generator>(testOutputExampleConfiguration);
             var output = IntegrationHelpers.RunCommand<Generator>(testOutputExampleConfiguration,
-                                                                 "StarTrek NextGeneration Voyager --Janeway");
+                                                                 "star-trek next-generation voyager --janeway");
             Assert.Equal($"Hello, Kathryn Janeway{Environment.NewLine}", output);
         }
 
@@ -52,7 +52,7 @@ namespace Jackfruit.Tests
         {
             IntegrationHelpers.GenerateIntoProject<Generator>(testOutputExampleConfiguration);
             var output = IntegrationHelpers.RunCommand<Generator>(testOutputExampleConfiguration,
-                                                                  "StarTrek NextGeneration -p");
+                                                                  "star-trek next-generation -p");
             Assert.Equal($"Hello, Jean-Luc Picard{Environment.NewLine}", output);
         }
 
@@ -61,7 +61,7 @@ namespace Jackfruit.Tests
         {
             IntegrationHelpers.GenerateIntoProject<Generator>(testOutputEmptyConfiguration);
             var output = IntegrationHelpers.RunCommand<Generator>(testOutputEmptyConfiguration,
-                                                                  "StarTrek NextGeneration -p");
+                                                                  "star-trek next-generation -p");
             Assert.Equal($"Hello, World!{Environment.NewLine}", output);
         }
 
@@ -70,7 +70,7 @@ namespace Jackfruit.Tests
         {
             IntegrationHelpers.GenerateIntoProject<Generator>(testOutputSimpleConfiguration);
             var output = IntegrationHelpers.RunCommand<Generator>(testOutputSimpleConfiguration,
-                                                                  "Hello --To George");
+                                                                  "--to George");
             Assert.Equal($"Hello, George!{Environment.NewLine}", output);
         }
     }

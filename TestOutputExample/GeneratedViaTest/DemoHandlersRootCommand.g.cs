@@ -13,8 +13,8 @@ namespace Jackfruit
    {
       public RootCommand()
       {
-         Name = "Franchise";
-         GreetingArgument = new Argument<string>("greetingArg");
+         Name = "franchise";
+         GreetingArgument = new Argument<string>("GREETING");
          Add(GreetingArgument);
          StarTrek = StarTrek.Build(this);
          AddCommandToScl(StarTrek);

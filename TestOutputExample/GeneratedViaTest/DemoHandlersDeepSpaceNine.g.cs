@@ -16,17 +16,17 @@ namespace Jackfruit_DemoHandlers
       internal static DeepSpaceNine Build(NextGeneration parent)
       {
          var command = new DeepSpaceNine();
-         command.Name = "DeepSpaceNine";
+         command.Name = "deep-space-nine";
          command.Parent = parent;
-         command.SiskoOption = new Option<bool>("--Sisko");
+         command.SiskoOption = new Option<bool>("--sisko");
          command.Add(command.SiskoOption);
-         command.OdoOption = new Option<bool>("--Odo");
+         command.OdoOption = new Option<bool>("--odo");
          command.Add(command.OdoOption);
-         command.DaxOption = new Option<bool>("--Dax");
+         command.DaxOption = new Option<bool>("--dax");
          command.Add(command.DaxOption);
-         command.WorfOption = new Option<bool>("--Worf");
+         command.WorfOption = new Option<bool>("--worf");
          command.Add(command.WorfOption);
-         command.OBrienOption = new Option<bool>("--OBrien");
+         command.OBrienOption = new Option<bool>("--obrien");
          command.Add(command.OBrienOption);
          command.AddValidator(command.Validate);
          command.Handler = command;

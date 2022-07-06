@@ -25,7 +25,7 @@ namespace Jackfruit
 //Path:        
 //Parent:      
 //Description: 
-//Aliases:     
+//Aliases:     franchise
 //Namespace:   DemoHandlers
 //Members:     
    //Argument:
@@ -41,7 +41,7 @@ namespace Jackfruit
    //Path:        Franchise
    //Parent:      Franchise
    //Description: This is the description for StarTrek
-   //Aliases:     
+   //Aliases:     star-trek
    //Namespace:   DemoHandlers
    //Members:     
       //Argument:
@@ -55,7 +55,7 @@ namespace Jackfruit
          //Name:           Kirk
          //TypeName:       bool
          //Description:    Whether to greet Captain Kirk
-         //Aliases:        
+         //Aliases:        --kirk
          //ArgDisplayName: 
          //Required:       False
       //Option:
@@ -63,7 +63,7 @@ namespace Jackfruit
          //Name:           Spock
          //TypeName:       bool
          //Description:    Whether to greet Spock
-         //Aliases:        
+         //Aliases:        --spock
          //ArgDisplayName: 
          //Required:       False
       //Option:
@@ -71,7 +71,7 @@ namespace Jackfruit
          //Name:           Uhura
          //TypeName:       bool
          //Description:    Whether to greet Lieutenant Uhura
-         //Aliases:        
+         //Aliases:        --uhura
          //ArgDisplayName: 
          //Required:       False
    //SubCommands:     
@@ -81,7 +81,7 @@ namespace Jackfruit
       //Path:        Franchise.StarTrek
       //Parent:      StarTrek
       //Description: This is the description for Next Generation
-      //Aliases:     
+      //Aliases:     next-generation
       //Namespace:   DemoHandlers
       //Members:     
          //Argument:
@@ -95,7 +95,7 @@ namespace Jackfruit
             //Name:           Picard
             //TypeName:       bool
             //Description:    This is the description for Picard
-            //Aliases:        -p
+            //Aliases:        --picard, -p
             //ArgDisplayName: 
             //Required:       False
       //SubCommands:     
@@ -105,7 +105,7 @@ namespace Jackfruit
          //Path:        Franchise.StarTrek.NextGeneration
          //Parent:      NextGeneration
          //Description: 
-         //Aliases:     
+         //Aliases:     deep-space-nine
          //Namespace:   DemoHandlers
          //Members:     
             //Argument:
@@ -119,7 +119,7 @@ namespace Jackfruit
                //Name:           Sisko
                //TypeName:       bool
                //Description:    
-               //Aliases:        
+               //Aliases:        --sisko
                //ArgDisplayName: 
                //Required:       False
             //Option:
@@ -127,7 +127,7 @@ namespace Jackfruit
                //Name:           Odo
                //TypeName:       bool
                //Description:    
-               //Aliases:        
+               //Aliases:        --odo
                //ArgDisplayName: 
                //Required:       False
             //Option:
@@ -135,7 +135,7 @@ namespace Jackfruit
                //Name:           Dax
                //TypeName:       bool
                //Description:    
-               //Aliases:        
+               //Aliases:        --dax
                //ArgDisplayName: 
                //Required:       False
             //Option:
@@ -143,7 +143,7 @@ namespace Jackfruit
                //Name:           Worf
                //TypeName:       bool
                //Description:    
-               //Aliases:        
+               //Aliases:        --worf
                //ArgDisplayName: 
                //Required:       False
             //Option:
@@ -151,7 +151,7 @@ namespace Jackfruit
                //Name:           OBrien
                //TypeName:       bool
                //Description:    
-               //Aliases:        
+               //Aliases:        --obrien
                //ArgDisplayName: 
                //Required:       False
          //SubCommands:     
@@ -163,7 +163,7 @@ namespace Jackfruit
          //Path:        Franchise.StarTrek.NextGeneration
          //Parent:      NextGeneration
          //Description: 
-         //Aliases:     
+         //Aliases:     voyager
          //Namespace:   DemoHandlers
          //Members:     
             //Service:
@@ -182,7 +182,7 @@ namespace Jackfruit
                //Name:           Janeway
                //TypeName:       bool
                //Description:    
-               //Aliases:        
+               //Aliases:        --janeway
                //ArgDisplayName: 
                //Required:       False
             //Option:
@@ -190,7 +190,7 @@ namespace Jackfruit
                //Name:           Chakotay
                //TypeName:       bool
                //Description:    
-               //Aliases:        
+               //Aliases:        --chakotay
                //ArgDisplayName: 
                //Required:       False
             //Option:
@@ -198,7 +198,7 @@ namespace Jackfruit
                //Name:           Torres
                //TypeName:       bool
                //Description:    
-               //Aliases:        
+               //Aliases:        --torres
                //ArgDisplayName: 
                //Required:       False
             //Option:
@@ -206,7 +206,7 @@ namespace Jackfruit
                //Name:           Tuvok
                //TypeName:       bool
                //Description:    
-               //Aliases:        
+               //Aliases:        --tuvok
                //ArgDisplayName: 
                //Required:       False
             //Option:
@@ -214,7 +214,7 @@ namespace Jackfruit
                //Name:           SevenOfNine
                //TypeName:       bool
                //Description:    
-               //Aliases:        
+               //Aliases:        --seven-of-nine
                //ArgDisplayName: 
                //Required:       False
          //SubCommands:     

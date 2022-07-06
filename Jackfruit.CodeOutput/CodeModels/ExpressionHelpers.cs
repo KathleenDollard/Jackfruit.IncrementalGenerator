@@ -91,14 +91,18 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
         public IEnumerable<ExpressionBase> Values { get; set; }
     }
 
-    public class LiteralModel : ExpressionBase
+
+    public class ArrayModel : ExpressionBase
     {
-        public LiteralModel(string value)
+        public ArrayModel(NamedItemModel typeName, IEnumerable<ExpressionBase> values)
         {
-            Value = value;
+            Values = values;
+            TypeName = typeName;
         }
-        public string Value { get; set; }
+        public NamedItemModel TypeName { get; set; }
+        public IEnumerable<ExpressionBase> Values { get; set; }
     }
+
 
     public class SymbolModel : ExpressionBase
     {
@@ -121,6 +125,16 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
     }
 
+    public class LiteralModel : ExpressionBase
+    {
+        public LiteralModel(string value)
+        {
+            Value = value;
+        }
+        public string Value { get; set; }
+    }
+
+
     public class NullLiteralModel : ExpressionBase { }
     public class ThisLiteralModel : ExpressionBase { }
     public class TrueLiteralModel : ExpressionBase { }
@@ -133,6 +147,9 @@ namespace Jackfruit.IncrementalGenerator.CodeModels
 
         public static InstantiationModel New(NamedItemModel typeName, params ExpressionBase[] args)
             => new(typeName, args);
+
+        public static ArrayModel Array(NamedItemModel typeName, params ExpressionBase[] members)
+            => new(typeName, members);
 
         public static TypeOfModel TypeOf(NamedItemModel typeName)
             => new(typeName);

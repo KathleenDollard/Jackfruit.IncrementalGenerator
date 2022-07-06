@@ -25,7 +25,7 @@ namespace Jackfruit
 //Path:        
 //Parent:      
 //Description: This is the description for Next Generation
-//Aliases:     
+//Aliases:     next-generation
 //Namespace:   DemoHandlers
 //Members:     
    //Argument:
@@ -39,7 +39,7 @@ namespace Jackfruit
       //Name:           Picard
       //TypeName:       bool
       //Description:    This is the description for Picard
-      //Aliases:        -p
+      //Aliases:        --picard, -p
       //ArgDisplayName: 
       //Required:       False
 //SubCommands:     

@@ -15,12 +15,10 @@ namespace Jackfruit.Common
         private const string commandResultVar = "commandResult";
         private const string invocationContext = "invocationContext";
 
-        private static bool IsRoot(CommandDef commandDef)
-            => string.IsNullOrWhiteSpace(commandDef.Parent);
-        // TODO: The rootcommand name should include any generic - might move this to the commandDef
+       // TODO: The rootcommand name should include any generic - might move this to the commandDef
         // TODO: This needs to be unique within the project, like fully qualified
         private static string CommandClassName(CommandDef commandDef)
-            => IsRoot(commandDef)
+            => commandDef.IsRoot
                     ? "RootCommand"
                     : commandDef.Name;
         private static string ParentClassName(CommandDef commandDef)
@@ -123,7 +121,7 @@ namespace Jackfruit.Common
                         .XmlDescription($"The wrapper class for the {CommandClassName(commandDef)} command.")
                         .ImplementedInterfaces(
                             string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
-                                ? Array.Empty<NamedItemModel>()
+                                ? System.Array.Empty<NamedItemModel>()
                                 : new NamedItemModel[] { "ICommandHandler" })
                         .InheritedFrom((NamedItemModel?)GeneratedCommandBase(CommandClassName(commandDef), ParentClassName(commandDef)))
                         .Members(BuildMethod(commandDef))
@@ -247,7 +245,7 @@ namespace Jackfruit.Common
                                 AssignWithDeclare(commandVar, New(CommandClassName(commandDef))))
                             .Statements(BuildStatements(commandDef).ToArray());
 
-            if (!IsRoot(commandDef))
+            if (!commandDef.IsRoot)
                 method.Parameters(Parameter("parent", ParentClassName(commandDef)));
 
             return method;
@@ -256,16 +254,16 @@ namespace Jackfruit.Common
         private static IEnumerable<IStatement> BuildStatements(CommandDef commandDef)
         {
             var statements = new List<IStatement>();
-            var targetVar = IsRoot(commandDef)
+            var targetVar = commandDef.IsRoot
                 ? ""
                 : commandVar;
-            var target = IsRoot(commandDef) ? "" : $"{targetVar}.";
-            var thisOrCommand = IsRoot(commandDef)
+            var target = commandDef.IsRoot ? "" : $"{targetVar}.";
+            var thisOrCommand = commandDef.IsRoot
                 ? (ExpressionBase)This
                 : Symbol(commandVar);
 
-            statements.Add(Assign($"{target}Name", commandDef.Name));
-            if (!IsRoot(commandDef))
+            statements.Add(Assign($"{target}Name", commandDef.Name.ToKebabCase()));
+            if (!commandDef.IsRoot)
             { statements.Add(Assign($"{target}Parent", Symbol("parent"))); }
 
             foreach (var member in commandDef.MyMembers)
@@ -274,22 +272,24 @@ namespace Jackfruit.Common
                 {
                     case OptionDef opt:
                         var optPropertyName = $"{target}{MemberPropertyName(opt)}";
-                        statements.Add(Assign(optPropertyName, New(Generic("Option", opt.TypeName), $"--{opt.Name}")));
+                        var newOption = opt.Aliases.Length switch
+                        {
+                            0=> New(Generic("Option", opt.TypeName), opt.Name.ToKebabCase()),
+                            1=>New(Generic("Option", opt.TypeName), opt.Aliases[0]),
+                            _=>New(Generic("Option", opt.TypeName), Array("string", opt.Aliases.Select(x=>new StringLiteralModel(x)).ToArray()))
+                        } ;
+                        statements.Add(Assign(optPropertyName, newOption));
                         if (!string.IsNullOrWhiteSpace(opt.Description))
                         { statements.Add(Assign($"{optPropertyName}.Description", opt.Description)); }
-                        foreach (var alias in opt.Aliases)
-                        {
-                            statements.Add(SimpleCall(Invoke(optPropertyName, "AddAlias", alias)));
-                        }
                         if (!string.IsNullOrWhiteSpace(opt.ArgDisplayName))
-                        { statements.Add(Assign($"{optPropertyName}.ArgDisplayName", opt.ArgDisplayName)); }
+                        { statements.Add(Assign($"{optPropertyName}.ArgDisplayName", opt.ArgDisplayName.ToScreamingSnakeCase())); }
                         if (opt.Required)
                         { statements.Add(Assign($"{optPropertyName}.Required", opt.Required)); }
                         statements.Add(SimpleCall(Invoke(targetVar, "Add", Symbol(optPropertyName))));
                         break;
                     case ArgumentDef arg:
                         var argPropertyName = $"{target}{MemberPropertyName(arg)}";
-                        statements.Add(Assign(argPropertyName, New(Generic("Argument", arg.TypeName), arg.Id)));
+                        statements.Add(Assign(argPropertyName, New(Generic("Argument", arg.TypeName), arg.Name.ToScreamingSnakeCase())));
                         if (arg.Required)
                         { statements.Add(Assign($"{argPropertyName}.Required", arg.Required)); }
                         statements.Add(SimpleCall(Invoke(targetVar, "Add", Symbol(argPropertyName))));
@@ -311,7 +311,7 @@ namespace Jackfruit.Common
                                              "AddValidator",
                                              Symbol($"{target}Validate"))));
             statements.Add(Assign($"{target}Handler", thisOrCommand));
-            if (!IsRoot(commandDef))
+            if (!commandDef.IsRoot)
             { statements.Add(Return(Symbol(commandVar))); }
 
             return statements;
@@ -329,7 +329,7 @@ namespace Jackfruit.Common
                         GetResultMethod(commandDef),
                         ResultCommandResultConstructor(commandDef));
 
-            if (!IsRoot(commandDef))
+            if (!commandDef.IsRoot)
             { resultClass.InheritedFrom($"{ParentClassName(commandDef)}.Result"); }
 
             if (commandDef.Parent is null)
@@ -356,7 +356,7 @@ namespace Jackfruit.Common
                     Symbol(command),
                     Symbol($"{invocationContext}.ParseResult.CommandResult"),
                 };
-                if (!IsRoot(commandDef))
+                if (!commandDef.IsRoot)
                 { args.Add(Invoke($"{command}.Parent", "GetResult", Symbol(invocationContext))); }
                 return Constructor("Result")
                                .PrivateProtected()
