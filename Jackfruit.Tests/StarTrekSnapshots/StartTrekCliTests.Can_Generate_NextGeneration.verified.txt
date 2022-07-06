@@ -35,12 +35,10 @@ namespace Jackfruit
       public RootCommand()
       {
          Name = "next-generation";
-         GreetingArgument = new Argument<string>("greetingArg");
+         GreetingArgument = new Argument<string>("GREETING");
          Add(GreetingArgument);
-         PicardOption = new Option<bool>("--picard");
+         PicardOption = new Option<bool>(new string[] {"--picard", "-p"});
          PicardOption.Description = "This is the description for Picard";
-         PicardOption.AddAlias("--picard");
-         PicardOption.AddAlias("-p");
          Add(PicardOption);
          AddValidator(Validate);
          Handler = this;

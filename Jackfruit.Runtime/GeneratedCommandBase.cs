@@ -3,6 +3,7 @@ using System.CommandLine.Binding;
 using System.CommandLine.Completions;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using System.Runtime.InteropServices.ComTypes;
 
 #nullable enable
 namespace Jackfruit.Internal
@@ -32,7 +33,9 @@ namespace Jackfruit.Internal
         }
     }
 
-    public abstract class RootCommand<T, TResult> : GeneratedCommandBase<T, TResult>
+    public interface IRootCommand { }
+
+    public abstract class RootCommand<T, TResult> : GeneratedCommandBase<T, TResult>, IRootCommand
         where T : RootCommand<T, TResult>, new()
     {
         public static RootCommand<T, TResult> Create(SubCommand cliRoot)
@@ -53,7 +56,7 @@ namespace Jackfruit.Internal
                 if (_sytemCommandLineCommand is null)
                 {
                     _sytemCommandLineCommand =
-                        string.IsNullOrWhiteSpace(Name)
+                        this is IRootCommand
                             ? new RootCommand()
                             : new Command(Name!);
                 }

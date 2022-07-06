@@ -36,7 +36,7 @@ namespace Jackfruit
       public RootCommand()
       {
          Name = "franchise";
-         GreetingArgument = new Argument<string>("greetingArg");
+         GreetingArgument = new Argument<string>("GREETING");
          Add(GreetingArgument);
          StarTrek = StarTrek.Build(this);
          AddCommandToScl(StarTrek);
@@ -139,15 +139,12 @@ namespace Jackfruit_DemoHandlers
          command.Parent = parent;
          command.KirkOption = new Option<bool>("--kirk");
          command.KirkOption.Description = "Whether to greet Captain Kirk";
-         command.KirkOption.AddAlias("--kirk");
          command.Add(command.KirkOption);
          command.SpockOption = new Option<bool>("--spock");
          command.SpockOption.Description = "Whether to greet Spock";
-         command.SpockOption.AddAlias("--spock");
          command.Add(command.SpockOption);
          command.UhuraOption = new Option<bool>("--uhura");
          command.UhuraOption.Description = "Whether to greet Lieutenant Uhura";
-         command.UhuraOption.AddAlias("--uhura");
          command.Add(command.UhuraOption);
          command.NextGeneration = NextGeneration.Build(command);
          command.AddCommandToScl(command.NextGeneration);
@@ -236,10 +233,8 @@ namespace Jackfruit_DemoHandlers
          var command = new NextGeneration();
          command.Name = "next-generation";
          command.Parent = parent;
-         command.PicardOption = new Option<bool>("--picard");
+         command.PicardOption = new Option<bool>(new string[] {"--picard", "-p"});
          command.PicardOption.Description = "This is the description for Picard";
-         command.PicardOption.AddAlias("--picard");
-         command.PicardOption.AddAlias("-p");
          command.Add(command.PicardOption);
          command.DeepSpaceNine = DeepSpaceNine.Build(command);
          command.AddCommandToScl(command.DeepSpaceNine);
@@ -326,19 +321,14 @@ namespace Jackfruit_DemoHandlers
          command.Name = "deep-space-nine";
          command.Parent = parent;
          command.SiskoOption = new Option<bool>("--sisko");
-         command.SiskoOption.AddAlias("--sisko");
          command.Add(command.SiskoOption);
          command.OdoOption = new Option<bool>("--odo");
-         command.OdoOption.AddAlias("--odo");
          command.Add(command.OdoOption);
          command.DaxOption = new Option<bool>("--dax");
-         command.DaxOption.AddAlias("--dax");
          command.Add(command.DaxOption);
          command.WorfOption = new Option<bool>("--worf");
-         command.WorfOption.AddAlias("--worf");
          command.Add(command.WorfOption);
          command.OBrienOption = new Option<bool>("--obrien");
-         command.OBrienOption.AddAlias("--obrien");
          command.Add(command.OBrienOption);
          command.AddValidator(command.Validate);
          command.Handler = command;
@@ -431,19 +421,14 @@ namespace Jackfruit_DemoHandlers
          command.Name = "voyager";
          command.Parent = parent;
          command.JanewayOption = new Option<bool>("--janeway");
-         command.JanewayOption.AddAlias("--janeway");
          command.Add(command.JanewayOption);
          command.ChakotayOption = new Option<bool>("--chakotay");
-         command.ChakotayOption.AddAlias("--chakotay");
          command.Add(command.ChakotayOption);
          command.TorresOption = new Option<bool>("--torres");
-         command.TorresOption.AddAlias("--torres");
          command.Add(command.TorresOption);
          command.TuvokOption = new Option<bool>("--tuvok");
-         command.TuvokOption.AddAlias("--tuvok");
          command.Add(command.TuvokOption);
          command.SevenOfNineOption = new Option<bool>("--seven-of-nine");
-         command.SevenOfNineOption.AddAlias("--seven-of-nine");
          command.Add(command.SevenOfNineOption);
          command.AddValidator(command.Validate);
          command.Handler = command;

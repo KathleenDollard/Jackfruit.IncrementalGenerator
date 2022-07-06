@@ -20,15 +20,12 @@ namespace Jackfruit_DemoHandlers
          command.Parent = parent;
          command.KirkOption = new Option<bool>("--kirk");
          command.KirkOption.Description = "Whether to greet Captain Kirk";
-         command.KirkOption.AddAlias("--kirk");
          command.Add(command.KirkOption);
          command.SpockOption = new Option<bool>("--spock");
          command.SpockOption.Description = "Whether to greet Spock";
-         command.SpockOption.AddAlias("--spock");
          command.Add(command.SpockOption);
          command.UhuraOption = new Option<bool>("--uhura");
          command.UhuraOption.Description = "Whether to greet Lieutenant Uhura";
-         command.UhuraOption.AddAlias("--uhura");
          command.Add(command.UhuraOption);
          command.NextGeneration = NextGeneration.Build(command);
          command.AddCommandToScl(command.NextGeneration);

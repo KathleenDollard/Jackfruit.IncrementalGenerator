@@ -14,7 +14,6 @@ namespace Jackfruit
       {
          Name = "hello";
          ToOption = new Option<string>("--to");
-         ToOption.AddAlias("--to");
          Add(ToOption);
          AddValidator(Validate);
          Handler = this;

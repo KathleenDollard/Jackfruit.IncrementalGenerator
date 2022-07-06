@@ -14,20 +14,20 @@
         private readonly string[] aliases;
 
         public CommandDef(
-            string id,
-            string name,
-            string uniqueId,
-            string nspace,
-            IEnumerable<string> path,
-            string? parent,
-            bool isParentRoot,
-            string? description,
-            string[] aliases,
-            IEnumerable<MemberDef> members,
-            string handlerMethodName,
-            IEnumerable<string> subCommandNames,
-            string returnType
-            )
+                    string id,
+                    string name,
+                    string uniqueId,
+                    string nspace,
+                    IEnumerable<string> path,
+                    string? parent,
+                    bool isParentRoot,
+                    string? description,
+                    string[] aliases,
+                    IEnumerable<MemberDef> members,
+                    string handlerMethodName,
+                    IEnumerable<string> subCommandNames,
+                    string returnType
+                    )
         {
             Id = id;
             Name = name;
@@ -50,13 +50,13 @@
         public string UniqueId { get; }
         public string Namespace { get; }
         public string? Parent { get; }
+        public bool IsRoot=> string.IsNullOrWhiteSpace(Parent);
         public bool IsParentRoot { get; }
         public ValidatorDef? Validator { get; set; }
         public string? Description { get; }
         public string[] Aliases => aliases.Any()
                     ? aliases
                     : new string[] { Name.ToKebabCase() };
-
         public IEnumerable<MemberDef> Members { get; }
         public IEnumerable<MemberDef> MyMembers { get; }
         public string HandlerMethodName { get; }

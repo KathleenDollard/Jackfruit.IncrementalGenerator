@@ -70,7 +70,7 @@ namespace Jackfruit.Tests
         {
             IntegrationHelpers.GenerateIntoProject<Generator>(testOutputSimpleConfiguration);
             var output = IntegrationHelpers.RunCommand<Generator>(testOutputSimpleConfiguration,
-                                                                  "hello --to George");
+                                                                  "--to George");
             Assert.Equal($"Hello, George!{Environment.NewLine}", output);
         }
     }

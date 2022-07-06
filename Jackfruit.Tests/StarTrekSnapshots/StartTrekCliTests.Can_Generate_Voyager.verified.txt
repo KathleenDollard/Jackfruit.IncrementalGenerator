@@ -35,22 +35,17 @@ namespace Jackfruit
       public RootCommand()
       {
          Name = "voyager";
-         GreetingArgument = new Argument<string>("greetingArg");
+         GreetingArgument = new Argument<string>("GREETING");
          Add(GreetingArgument);
          JanewayOption = new Option<bool>("--janeway");
-         JanewayOption.AddAlias("--janeway");
          Add(JanewayOption);
          ChakotayOption = new Option<bool>("--chakotay");
-         ChakotayOption.AddAlias("--chakotay");
          Add(ChakotayOption);
          TorresOption = new Option<bool>("--torres");
-         TorresOption.AddAlias("--torres");
          Add(TorresOption);
          TuvokOption = new Option<bool>("--tuvok");
-         TuvokOption.AddAlias("--tuvok");
          Add(TuvokOption);
          SevenOfNineOption = new Option<bool>("--seven-of-nine");
-         SevenOfNineOption.AddAlias("--seven-of-nine");
          Add(SevenOfNineOption);
          AddValidator(Validate);
          Handler = this;
