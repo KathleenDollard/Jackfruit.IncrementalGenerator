@@ -27,7 +27,7 @@ namespace Jackfruit.IncrementalGenerator
 
         public static CommandDefNode? GetCommandDef(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         {
-            if (context.SemanticModel.GetOperation(context.Node, cancellationToken) is not IInvocationOperation cliCreateInvocation)
+            if (context.SemanticModel.GetOperation(context.Node, cancellationToken) is not IInvocationOperation rootCommandCreateInvocation)
             {
                 // Should not occur
                 return null;
@@ -41,15 +41,16 @@ namespace Jackfruit.IncrementalGenerator
             //          * Create command and member defs
 
             string[] path = { };
-            var invocationOps = InvocationFromArg(cliCreateInvocation.Arguments[0]);
-            return invocationOps is null
-                ? null
-                : invocationOps.Any()
-                    ? GetCommandDefNode(path, null, Enumerable.Empty<MemberDef>(), invocationOps.First(), cancellationToken)
-                    : null;
+            return GetCommandDefNode(path, null, Enumerable.Empty<MemberDef>(), rootCommandCreateInvocation, cancellationToken);
+            //var invocationOps = InvocationsFromArg(cliCreateInvocation.Arguments[0]);
+            //return invocationOps is null
+            //    ? null
+            //    : invocationOps.Any()
+            //        ? GetCommandDefNode(path, null, Enumerable.Empty<MemberDef>(), invocationOps.First(), cancellationToken)
+            //        : null;
         }
 
-        private static IEnumerable<IInvocationOperation?>? InvocationFromArg(IArgumentOperation argOp)
+        private static IEnumerable<IInvocationOperation?>? InvocationsFromArg(IArgumentOperation argOp)
         {
             var parentCreate = argOp.Parent as IInvocationOperation;
             var invocationOps = argOp.Value switch
@@ -82,10 +83,10 @@ namespace Jackfruit.IncrementalGenerator
 
         private static (IMethodSymbol? handlerMethodSymbol, IMethodSymbol? validatorMethodSymbol,
                         IEnumerable<IInvocationOperation> subCommands)
-            CliNodeNewParts(IInvocationOperation invocationOp)
+            CliNodeNewParts(IInvocationOperation? invocationOp)
         {
             // Change this to a collection switch when we get them. it will be beautiful!
-            if (!invocationOp.Arguments.Any())
+            if (invocationOp is null || !invocationOp.Arguments.Any())
             { return (null, null, Enumerable.Empty<IInvocationOperation>()); }
             var argCount = invocationOp.Arguments.Count();
             var handler = MethodFromArg(invocationOp.Arguments[0]);
@@ -105,9 +106,9 @@ namespace Jackfruit.IncrementalGenerator
                                     .Skip(pos);
                 // This SelectMany only to collapse paramarray
                 subCommands = temp
-                    .SelectMany(x => InvocationFromArg(x))
+                    .SelectMany(x => InvocationsFromArg(x))
                     .Where(x => x is not null)
-                    .Select(x=>x!)
+                    .Select(x => x!)
                     .ToList();
 
             }
@@ -127,20 +128,19 @@ namespace Jackfruit.IncrementalGenerator
                     };
 
         private static CommandDefNode? GetCommandDefNode(string[] path,
-                                                         CommandDefNode? parentNode, 
+                                                         CommandDefNode? parentNode,
                                                          IEnumerable<MemberDef> ancestorMembers,
-                                                         IInvocationOperation?  invocationOp,
+                                                         IInvocationOperation? invocationOp,
                                                          CancellationToken cancellationToken)
         {
-            if (cancellationToken.IsCancellationRequested || invocationOp is null)
+            if (cancellationToken.IsCancellationRequested)
             {
                 return null;
             }
-            var (handlerSymbol, validateSymbol, subCommandsOps) = CliNodeNewParts(invocationOp);
-            if (handlerSymbol is null)
-            { return null; }
 
-            var commandDetails = Helpers.GetDetails(handlerSymbol);
+            var (handlerSymbol, validateSymbol, subCommandsOps) = CliNodeNewParts(invocationOp);
+
+            var commandDetails = Helpers.GetDetails(handlerSymbol, parentNode is null);
             if (commandDetails is null)
             { return null; }
 
@@ -155,7 +155,7 @@ namespace Jackfruit.IncrementalGenerator
 
             var validatorDef = Helpers.GetValidatorDef(validateSymbol, commandDef);
             commandDef.Validator = validatorDef;
-            var newPath = path.Union(new string[] { handlerSymbol.Name }).ToArray();
+            var newPath = path.Union(new string[] { handlerSymbol?.Name ?? "UNKNOWN" }).ToArray();
 
             var commandDefNode = new CommandDefNode(commandDef);
             var subCommandNodes = subCommandsOps

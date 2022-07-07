@@ -77,37 +77,39 @@ namespace Jackfruit.IncrementalGenerator
 
         }
 
-        internal static CommandDetails? GetDetails(IMethodSymbol methodSymbol)
+        internal static CommandDetails? GetDetails(IMethodSymbol? methodSymbol, bool isRoot)
         {
 
-            var commandDetails = methodSymbol.BasicDetails();
-            var xmlComment = (methodSymbol.GetDocumentationCommentXml());
-            if (!string.IsNullOrWhiteSpace(xmlComment))
+            var commandDetails =  methodSymbol.BasicDetails(isRoot);
+            if (methodSymbol is not null && commandDetails is not null)
             {
-                var xDoc = XDocument.Parse(xmlComment);
-                AddDescFromXmlDocComment(xDoc, commandDetails.Detail);
-                AddDescFromXmlDocComment(xDoc, commandDetails.MemberDetails);
+                var xmlComment = methodSymbol.GetDocumentationCommentXml();
+                if (!string.IsNullOrWhiteSpace(xmlComment))
+                {
+                    var xDoc = XDocument.Parse(xmlComment);
+                    AddDescFromXmlDocComment(xDoc, commandDetails.Detail);
+                    AddDescFromXmlDocComment(xDoc, commandDetails.MemberDetails);
+                }
+                AddDetailsFromAttributes(methodSymbol, commandDetails.Detail, commandDetails.MemberDetails);
             }
-            AddDetailsFromAttributes(methodSymbol, commandDetails.Detail, commandDetails.MemberDetails);
             return commandDetails;
         }
+
 
         internal static ValidatorDef? GetValidatorDef(IMethodSymbol? validatorSymbol, CommandDef commandDef)
         {
             if (validatorSymbol is null)
             { return null; }
-            var details = validatorSymbol.BasicDetails();
+            var details = validatorSymbol.BasicDetails(commandDef.IsRoot);
             // This is N of M, but expect the number of members to be small
             var members = new List<MemberDef>();
 
+            if (details is null)
+            { return null; }
             foreach (var member in details.MemberDetails)
             {
                 var match = LookupMember(member.Key, commandDef.Members);
-                if (match is null)
-                {
-                    // TODO: This needs to be a diagnostic, so shows where we need to pipe diagnostics
-                    match = new UnknownMemberDef(member.Key);
-                }
+                match ??= new UnknownMemberDef(member.Key);
                 members.Add(match);
                 // Normal type mismatch exception expected to be adequate if types do not match
             }

@@ -1,0 +1,106 @@
+﻿
+using Jackfruit.Internal;
+
+namespace Jackfruit
+{
+    /// <summary>
+    /// This is the main class for the Jackfruit generator. After you call the 
+    /// Create command, the returned RootCommand will contain your CLI. If you 
+    /// need multiple root commands in your application differentiate them with &gt;T&lt;
+    /// </summary>
+    public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
+    {
+        public new static RootCommand Create(params SubCommand[] subCommands)
+            => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(null, subCommands);
+
+        public new static RootCommand Create(Delegate runHandler, params SubCommand[] subCommands)
+            => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(runHandler, subCommands);
+
+        public partial class Result
+        { }
+    }
+}
+
+// *******************************
+
+// This file is created by a generator.
+using System;
+using System.Threading.Tasks;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
+using Jackfruit.Internal;
+
+namespace Jackfruit
+{
+   public partial class RootCommand : ICommandHandler
+   {
+      public RootCommand()
+      {
+         Name = "next-generation";
+         GreetingArgument = new Argument<string>("GREETING");
+         Add(GreetingArgument);
+         PicardOption = new Option<bool>(new string[] {"--picard", "-p"});
+         PicardOption.Description = "This is the description for Picard";
+         Add(PicardOption);
+         AddValidator(Validate);
+         Handler = this;
+      }
+      
+      /// <summary>
+      /// The result class for the NextGeneration command.
+      /// </summary>
+      public partial class Result
+      {
+         public string Greeting {get; set;}
+         public bool Picard {get; set;}
+         /// <summary>
+         /// Get an instance of the Result class for the NextGeneration command.
+         /// </summary>
+         /// <param name="command">The command corresponding to the result</param>
+         /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve.</param>
+         internal static Result GetResult(RootCommand command, InvocationContext invocationContext)
+         {
+            return new Result(command, invocationContext.ParseResult.CommandResult);
+         }
+         
+         private protected Result(RootCommand command, CommandResult commandResult)
+         {
+            Greeting = GetValueForSymbol(command.GreetingArgument, commandResult);
+            Picard = GetValueForSymbol(command.PicardOption, commandResult);
+         }
+         
+         private protected Result(RootCommand command, InvocationContext invocationContext)
+         : this(command, invocationContext.ParseResult.CommandResult)
+         {
+         }
+         
+      }
+      
+      /// <summary>
+      /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
+      /// </summary>
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public int Invoke(InvocationContext invocationContext)
+      {
+         var result = Result.GetResult(this, invocationContext);
+         DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
+         return invocationContext.ExitCode;
+      }
+      
+      /// <summary>
+      /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
+      /// </summary>
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public Task<int> InvokeAsync(InvocationContext invocationContext)
+      {
+         var result = Result.GetResult(this, invocationContext);
+         DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
+         return Task.FromResult(invocationContext.ExitCode);
+      }
+      
+      public Argument<string> GreetingArgument {get; set;}
+      public Option<bool> PicardOption {get; set;}
+   }
+   
+}

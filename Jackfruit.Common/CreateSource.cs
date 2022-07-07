@@ -19,7 +19,7 @@ namespace Jackfruit.Common
         // TODO: This needs to be unique within the project, like fully qualified
         private static string CommandClassName(CommandDef commandDef)
             => commandDef.IsRoot
-                    ? "RootCommand"
+                    ? CommonHelpers.RootCommand
                     : commandDef.Name;
         private static string ParentClassName(CommandDef commandDef)
             => commandDef.IsParentRoot
@@ -233,7 +233,7 @@ namespace Jackfruit.Common
         }
 
         private static ConstructorModel RootConstructor(CommandDef commandDef)
-            => Constructor("RootCommand")
+            => Constructor(CommonHelpers.RootCommand)
                 .Public()
                 .Statements(BuildStatements(commandDef).ToArray());
 

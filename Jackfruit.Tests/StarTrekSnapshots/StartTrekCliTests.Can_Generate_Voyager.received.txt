@@ -1,0 +1,126 @@
+﻿
+using Jackfruit.Internal;
+
+namespace Jackfruit
+{
+    /// <summary>
+    /// This is the main class for the Jackfruit generator. After you call the 
+    /// Create command, the returned RootCommand will contain your CLI. If you 
+    /// need multiple root commands in your application differentiate them with &gt;T&lt;
+    /// </summary>
+    public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
+    {
+        public static RootCommand Create(params SubCommand[] subCommands)
+            => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(null, subCommands);
+
+        public new static RootCommand Create(Delegate runHandler, params SubCommand[] subCommands)
+            => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(runHandler, subCommands);
+
+        public partial class Result
+        { }
+    }
+}
+
+// *******************************
+
+// This file is created by a generator.
+using System;
+using System.Threading.Tasks;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
+using Jackfruit.Internal;
+
+namespace Jackfruit
+{
+   public partial class RootCommand : ICommandHandler
+   {
+      public RootCommand()
+      {
+         Name = "root-command";
+         GreetingArgument = new Argument<string>("GREETING");
+         Add(GreetingArgument);
+         JanewayOption = new Option<bool>("--janeway");
+         Add(JanewayOption);
+         ChakotayOption = new Option<bool>("--chakotay");
+         Add(ChakotayOption);
+         TorresOption = new Option<bool>("--torres");
+         Add(TorresOption);
+         TuvokOption = new Option<bool>("--tuvok");
+         Add(TuvokOption);
+         SevenOfNineOption = new Option<bool>("--seven-of-nine");
+         Add(SevenOfNineOption);
+         AddValidator(Validate);
+         Handler = this;
+      }
+      
+      /// <summary>
+      /// The result class for the RootCommand command.
+      /// </summary>
+      public partial class Result
+      {
+         public System.CommandLine.IConsole Console {get; set;}
+         public string Greeting {get; set;}
+         public bool Janeway {get; set;}
+         public bool Chakotay {get; set;}
+         public bool Torres {get; set;}
+         public bool Tuvok {get; set;}
+         public bool SevenOfNine {get; set;}
+         /// <summary>
+         /// Get an instance of the Result class for the NextGeneration command.
+         /// </summary>
+         /// <param name="command">The command corresponding to the result</param>
+         /// <param name="invocationContext">The System.CommandLine InvocationContext used to retrieve.</param>
+         internal static Result GetResult(RootCommand command, InvocationContext invocationContext)
+         {
+            return new Result(command, invocationContext.ParseResult.CommandResult);
+         }
+         
+         private protected Result(RootCommand command, CommandResult commandResult)
+         {
+            Greeting = GetValueForSymbol(command.GreetingArgument, commandResult);
+            Janeway = GetValueForSymbol(command.JanewayOption, commandResult);
+            Chakotay = GetValueForSymbol(command.ChakotayOption, commandResult);
+            Torres = GetValueForSymbol(command.TorresOption, commandResult);
+            Tuvok = GetValueForSymbol(command.TuvokOption, commandResult);
+            SevenOfNine = GetValueForSymbol(command.SevenOfNineOption, commandResult);
+         }
+         
+         private protected Result(RootCommand command, InvocationContext invocationContext)
+         : this(command, invocationContext.ParseResult.CommandResult)
+         {
+            Console = GetService<System.CommandLine.IConsole>(invocationContext);
+         }
+         
+      }
+      
+      /// <summary>
+      /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
+      /// </summary>
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public int Invoke(InvocationContext invocationContext)
+      {
+         var result = Result.GetResult(this, invocationContext);
+         return DemoHandlers.Handlers.Voyager(result.Console, result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+      }
+      
+      /// <summary>
+      /// The handler invoked by System.CommandLine. This will not be public when generated is more sophisticated.
+      /// </summary>
+      /// <param name="invocationContext">The System.CommandLine Invocation context used to retrieve values.</param>
+      public Task<int> InvokeAsync(InvocationContext invocationContext)
+      {
+         var result = Result.GetResult(this, invocationContext);
+         var ret = DemoHandlers.Handlers.Voyager(result.Console, result.Greeting, result.Janeway, result.Chakotay, result.Torres, result.Tuvok, result.SevenOfNine);
+         return Task.FromResult(ret);
+      }
+      
+      public Argument<string> GreetingArgument {get; set;}
+      public Option<bool> JanewayOption {get; set;}
+      public Option<bool> ChakotayOption {get; set;}
+      public Option<bool> TorresOption {get; set;}
+      public Option<bool> TuvokOption {get; set;}
+      public Option<bool> SevenOfNineOption {get; set;}
+   }
+   
+}

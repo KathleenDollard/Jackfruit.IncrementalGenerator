@@ -21,13 +21,21 @@ namespace Jackfruit
 /*
 //Key:         
 //Id:          RootCommand
-//Handler:     
+//Handler:     MyClass.AA
 //Path:        
 //Parent:      
 //Description: 
-//Aliases:     root-command
+//Aliases:     C1
 //Namespace:   
 //Members:     
+   //Option:
+      //Option Id:      i
+      //Name:           I
+      //TypeName:       int
+      //Description:    
+      //Aliases:        -i, 1, 2
+      //ArgDisplayName: 
+      //Required:       False
 //SubCommands:     
 //**************************************    
 

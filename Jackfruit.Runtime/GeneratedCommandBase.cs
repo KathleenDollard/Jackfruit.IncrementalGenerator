@@ -38,7 +38,7 @@ namespace Jackfruit.Internal
     public abstract class RootCommand<T, TResult> : GeneratedCommandBase<T, TResult>, IRootCommand
         where T : RootCommand<T, TResult>, new()
     {
-        public static RootCommand<T, TResult> Create(SubCommand cliRoot)
+        public static RootCommand<T, TResult> Create(Delegate runHandler, params SubCommand[] cliRoot)
         { return new T(); }
 
         public int Run(string[] args) 

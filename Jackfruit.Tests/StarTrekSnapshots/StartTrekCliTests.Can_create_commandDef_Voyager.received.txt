@@ -1,0 +1,85 @@
+﻿
+using Jackfruit.Internal;
+
+namespace Jackfruit
+{
+    /// <summary>
+    /// This is the main class for the Jackfruit generator. After you call the 
+    /// Create command, the returned RootCommand will contain your CLI. If you 
+    /// need multiple root commands in your application differentiate them with &gt;T&lt;
+    /// </summary>
+    public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
+    {
+        public new static RootCommand Create(CommandNode rootNode)
+        { 
+            return (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(rootNode);
+        }
+    }
+}
+// *******************************
+
+/*
+//Key:         
+//Id:          RootCommand
+//Handler:     DemoHandlers.Handlers.Voyager
+//Path:        
+//Parent:      
+//Description: 
+//Aliases:     root-command
+//Namespace:   
+//Members:     
+   //Service:
+      //Service Id:     console
+      //Name:           Console
+      //TypeName:       System.CommandLine.IConsole
+      //Description:    
+   //Argument:
+      //Argumet Id:     greetingArg
+      //Name:           Greeting
+      //TypeName:       string
+      //Description:    
+      //Required:       False
+   //Option:
+      //Option Id:      janeway
+      //Name:           Janeway
+      //TypeName:       bool
+      //Description:    
+      //Aliases:        --janeway
+      //ArgDisplayName: 
+      //Required:       False
+   //Option:
+      //Option Id:      chakotay
+      //Name:           Chakotay
+      //TypeName:       bool
+      //Description:    
+      //Aliases:        --chakotay
+      //ArgDisplayName: 
+      //Required:       False
+   //Option:
+      //Option Id:      torres
+      //Name:           Torres
+      //TypeName:       bool
+      //Description:    
+      //Aliases:        --torres
+      //ArgDisplayName: 
+      //Required:       False
+   //Option:
+      //Option Id:      tuvok
+      //Name:           Tuvok
+      //TypeName:       bool
+      //Description:    
+      //Aliases:        --tuvok
+      //ArgDisplayName: 
+      //Required:       False
+   //Option:
+      //Option Id:      sevenOfNine
+      //Name:           SevenOfNine
+      //TypeName:       bool
+      //Description:    
+      //Aliases:        --seven-of-nine
+      //ArgDisplayName: 
+      //Required:       False
+//SubCommands:     
+//**************************************    
+
+*/

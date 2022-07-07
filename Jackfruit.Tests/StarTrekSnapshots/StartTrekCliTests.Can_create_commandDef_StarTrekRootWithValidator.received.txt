@@ -16,19 +16,3 @@ namespace Jackfruit
         }
     }
 }
-// *******************************
-
-/*
-//Key:         
-//Id:          RootCommand
-//Handler:     
-//Path:        
-//Parent:      
-//Description: 
-//Aliases:     root-command
-//Namespace:   
-//Members:     
-//SubCommands:     
-//**************************************    
-
-*/

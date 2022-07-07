@@ -33,7 +33,7 @@ public class MyClass
 {
     public void F() 
     {
-        var rootCommand = RootCommand.Create(SubCommand.Create(Handlers.Voyager));
+        var rootCommand = RootCommand.Create(Handlers.Voyager);
     }
 
 }";
