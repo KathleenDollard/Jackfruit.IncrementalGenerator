@@ -16,11 +16,18 @@ namespace Jackfruit.Tests
             => @$"
 using Jackfruit;
 using System.ComponentModel;
+using System;
 
 public partial class RootCommand
 {{
-    public static RootCommand Create(params SubCommand[] cliRoot)
-        => new RootCommand();
+        public static RootCommand Create(params SubCommand[] subCommands)
+            => null;
+
+        public static RootCommand Create(Delegate runHandler, params SubCommand[] subCommands)
+            => null;
+
+        public partial class Result
+        {{ }}
 }}
 
 public class MyClass
@@ -43,7 +50,7 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test()
     {
-       var rootCommand = RootCommand.Create(SubCommand.Create(A));
+       var rootCommand = RootCommand.Create(A);
     }");
             var (inputDiagnostics,diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -58,8 +65,8 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test()
     {
-       var rootCommand = RootCommand.Create(SubCommand.Create(A, 
-            SubCommand.Create(B)));
+       var rootCommand = RootCommand.Create(A, 
+            SubCommand.Create(B));
     }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -74,10 +81,10 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test() 
     {
-       var rootCommand = RootCommand.Create(SubCommand.Create(A, 
+       var rootCommand = RootCommand.Create(A, 
             SubCommand.Create(B),
             SubCommand.Create(C),
-            SubCommand.Create(D)));
+            SubCommand.Create(D));
     }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -92,14 +99,14 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test() 
     {
-       var rootCommand = RootCommand.Create(SubCommand.Create(A, 
+       var rootCommand = RootCommand.Create(A, 
             SubCommand.Create(B),
             SubCommand.Create(C,
                 SubCommand.Create(E),
                 SubCommand.Create(F,
                     SubCommand.Create(G),
                     SubCommand.Create(H))),
-            SubCommand.Create(D)));
+            SubCommand.Create(D));
     }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -114,7 +121,7 @@ public class MyClass
             var input = methodWrapper(@"
     public void Test() 
     {
-        var rootCommand = RootCommand.Create(SubCommand.Create(A, 
+        var rootCommand = RootCommand.Create(A, 
                 SubCommand.Create(B),
                 SubCommand.Create(C,  
                     SubCommand.Create(E),
@@ -124,7 +131,7 @@ public class MyClass
                     )
                 ),
                 SubCommand.Create(D)
-            ));
+           );
     }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -138,7 +145,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(SubCommand.Create(null));
+            var rootCommand = RootCommand.Create((Delegate)null);
         }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -183,7 +190,7 @@ public class MyClass
         var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
+            var rootCommand = RootCommand.Create(AA);
         }
 
         /// <summary>
@@ -205,7 +212,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
+            var rootCommand = RootCommand.Create(AA);
         }
 
         [Description(""Command description in Attribute"")]
@@ -225,7 +232,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
+            var rootCommand = RootCommand.Create(AA);
         }
 
         public void AA(
@@ -244,7 +251,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
+            var rootCommand = RootCommand.Create(AA);
         }
 
         public void AA(
@@ -264,7 +271,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
+            var rootCommand = RootCommand.Create(AA);
         }
 
         public void AA(
@@ -283,7 +290,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
+            var rootCommand = RootCommand.Create(AA);
         }
 
         public void AA(
@@ -303,7 +310,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
+            var rootCommand = RootCommand.Create(AA);
         }
 
         [Aliases(""C1"")]
@@ -323,7 +330,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(SubCommand.Create(AA));
+            var rootCommand = RootCommand.Create(AA);
         }
 
         public void AA(

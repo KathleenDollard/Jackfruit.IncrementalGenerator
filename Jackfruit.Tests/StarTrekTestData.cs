@@ -20,6 +20,8 @@ namespace Jackfruit.Tests
 using System.ComponentModel;
 using System.CommandLine;
 using Jackfruit;
+using System;
+using System.Collections.Generic;
 
 namespace DemoHandlers
 {

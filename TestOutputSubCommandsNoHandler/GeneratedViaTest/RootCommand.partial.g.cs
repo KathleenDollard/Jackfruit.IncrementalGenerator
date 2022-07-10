@@ -1,6 +1,5 @@
 
 using Jackfruit.Internal;
-using System;
 
 namespace Jackfruit
 {
@@ -15,9 +14,6 @@ namespace Jackfruit
             => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(null, subCommands);
 
         public new static RootCommand Create(Delegate runHandler, params SubCommand[] subCommands)
-            => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(runHandler, subCommands);
-
-        public static RootCommand Create(Delegate runHandler, Delegate validator, params SubCommand[] subCommands)
             => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(runHandler, subCommands);
 
         public partial class Result

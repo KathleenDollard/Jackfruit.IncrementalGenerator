@@ -8,24 +8,69 @@ using Jackfruit.IncrementalGenerator;
 using System.Collections.Immutable;
 using System.Collections.Generic;
 using Jackfruit.TestSupport;
+using Jackfruit.Internal;
+using System;
 
 namespace Jackfruit.Tests
 {
     [UsesVerify]
     public class StartTrekCliTests
     {
-        private static (ImmutableArray<Diagnostic> InputDiagnostics, ImmutableArray<Diagnostic> Diagnostics, string Output) GetGeneratedOutput<T>(string source)
+        private static (ImmutableArray<Diagnostic> InputDiagnostics, ImmutableArray<Diagnostic> Diagnostics, string Output) 
+            GetGeneratedOutput<T>(string source)
             where T : IIncrementalGenerator, new()
         {
             var syntaxTrees = new List<SyntaxTree>
             {
                 CSharpSyntaxTree.ParseText(source),
+                //CSharpSyntaxTree.ParseText(common),
                 CSharpSyntaxTree.ParseText(StarTrekTestData.StarTrek)
             };
             return TestHelpers.GetGeneratedOutput<T>(syntaxTrees);
         }
 
-        private const string VoyagerRoot =@"
+        private const string common = @"
+using Jackfruit.Internal;
+using System;
+
+namespace Jackfruit
+    {
+        /// <summary>
+        /// This is the main class for the Jackfruit generator. After you call the 
+        /// Create command, the returned RootCommand will contain your CLI. If you 
+        /// need multiple root commands in your application differentiate them with &gt;T&lt;
+        /// </summary>
+        public partial class RootCommand 
+        {
+            public static RootCommand Create(params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public static RootCommand Create(Delegate runHandler, params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public static RootCommand Create(Delegate runHandler, Delegate validator, params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public partial class Result
+            { }
+        }
+    }
+";
+
+    private const string VoyagerRoot =@"
+using DemoHandlers;
+using Jackfruit;
+
+public class MyClass
+{
+    public void F() 
+    {
+        var rootCommand = RootCommand.Create(Handlers.Voyager);
+    }
+
+}";
+
+        private const string VoyagerRootSingleSubCommand = @"
 using DemoHandlers;
 using Jackfruit;
 
@@ -38,6 +83,20 @@ public class MyClass
 
 }";
 
+
+        private const string NextGenerationRoot = @"
+using DemoHandlers;
+using Jackfruit;
+
+public class MyClass
+{
+    public void F() 
+    {
+        var rootCommand = RootCommand.Create(Handlers.NextGeneration,SubCommand.Create(Handlers.Voyager), SubCommand.Create(Handlers.DeepSpaceNine));
+    }
+}";
+
+
         private const string StarTrekRoot = @"
 using DemoHandlers;
 using Jackfruit;
@@ -46,18 +105,12 @@ public class MyClass
 {
     public void F() 
     {
-        var rootCommand = RootCommand.Create(SubCommand.Create(Handlers.Franchise, 
+        var rootCommand = RootCommand.Create(Handlers.Franchise, 
             SubCommand.Create(Handlers.StarTrek, 
                 SubCommand.Create(Handlers.NextGeneration, 
                     SubCommand.Create(Handlers.DeepSpaceNine),
                     SubCommand.Create(Handlers.Voyager) 
-                ))));
-
-        var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();
-        nextGen.PicardOption.AddAlias("" - p"");
-
-        cliRoot.AddValidator(Validators.ValidatePoliteness, cliRoot.GreetingArgument);
-        nextGen.AddValidator(NextGenerationResultValidator);
+                )));
    }
 
 }";
@@ -70,38 +123,19 @@ public class MyClass
 {
     public void F() 
     {
-        var rootCommand = RootCommand.Create(SubCommand.Create(Handlers.Franchise, Validators.FranchiseValidate,
+        var rootCommand = RootCommand.Create(Handlers.Franchise, Validators.FranchiseValidate,
             SubCommand.Create(Handlers.StarTrek, 
                 SubCommand.Create(Handlers.NextGeneration, 
                     SubCommand.Create(Handlers.DeepSpaceNine),
                     SubCommand.Create(Handlers.Voyager) 
-                ))));
-
-        var nextGen = cliRoot.StarTrekCommand.NextGenerationCommand.Create();
-        nextGen.PicardOption.AddAlias("" - p"");
-
-        cliRoot.AddValidator(Validators.ValidatePoliteness, cliRoot.GreetingArgument);
-        nextGen.AddValidator(NextGenerationResultValidator);
+                )));
    }
-
-}";
-
-
-        private const string NextGenerationRoot = @"
-using DemoHandlers;
-using Jackfruit;
-
-public class MyClass
-{
-    public void F() 
-    {
-        var rootCommand = RootCommand.Create(SubCommand.Create(Handlers.NextGeneration));
-    }
 
 }";
 
         [Theory]
         [InlineData("Voyager", VoyagerRoot)]
+        [InlineData("VoyagerRootSingleSubCommand", VoyagerRootSingleSubCommand)]
         [InlineData("NextGeneration", NextGenerationRoot)]
         [InlineData("StarTrek", StarTrekRoot)]
         [InlineData("StarTrekRootWithValidator", StarTrekRootWithValidator)]
@@ -109,12 +143,14 @@ public class MyClass
         {
             var (inputDiagnostics, diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Single(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("StarTrekSnapshots").UseTextForParameters(fileName);
         }
 
         [Theory]
         [InlineData("Voyager", VoyagerRoot)]
+        [InlineData("VoyagerRootSingleSubCommand", VoyagerRootSingleSubCommand)]
         [InlineData("NextGeneration", NextGenerationRoot)]
         [InlineData("StarTrek", StarTrekRoot)]
         [InlineData("StarTrekRootWithValidator", StarTrekRootWithValidator)]
@@ -122,6 +158,7 @@ public class MyClass
         {
             var (inputDiagnostics, diagnostics, output) = GetGeneratedOutput<Generator>(input);
 
+            Assert.Single(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("StarTrekSnapshots").UseTextForParameters(fileName);
         }
@@ -132,6 +169,7 @@ public class MyClass
             const string input = StarTrekRoot;
             var (inputDiagnostics, diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Single(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("StarTrekSnapshots");
         }
@@ -142,6 +180,7 @@ public class MyClass
             const string input = NextGenerationRoot;
             var (inputDiagnostics, diagnostics, output) = GetGeneratedOutput<CommandDefGenerator>(input);
 
+            Assert.Single(TestHelpers.WarningAndErrors(inputDiagnostics));
             Assert.Empty(diagnostics);
             return Verifier.Verify(output).UseDirectory("StarTrekSnapshots");
         }

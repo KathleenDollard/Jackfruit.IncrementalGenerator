@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Jackfruit.Common;
+using Microsoft.CodeAnalysis;
 using System.Xml.Linq;
 
 namespace Jackfruit.IncrementalGenerator
@@ -113,29 +114,48 @@ namespace Jackfruit.IncrementalGenerator
         //            : null;
         //}
 
-        public static CommandDetails BasicDetails(this IMethodSymbol methodSymbol)
+        public static CommandDetails? BasicDetails(this IMethodSymbol? methodSymbol, bool isRoot)
         {
-            var nspace = methodSymbol.ContainingNamespace.ToString();
+            if (methodSymbol is null && !isRoot)
+            { return null; }
 
-            var commandDetail = new MemberDetail(methodSymbol.ToDisplayString(), methodSymbol.Name, methodSymbol.ReturnType.ToString());
+            var name = isRoot
+                        ? CommonHelpers.RootCommand
+                        : methodSymbol?.Name ?? "";
 
-            var details = new Dictionary<string, MemberDetail>();
+            var commandDetail = new MemberDetail(methodSymbol?.ToDisplayString() ?? "", name, methodSymbol?.ReturnType?.ToString() ?? "");
 
-            foreach (var param in methodSymbol.Parameters)
+            return new CommandDetails(methodSymbol?.ContainingNamespace.ToString() ?? "",
+                                      commandDetail,
+                                      MemberDetails(methodSymbol));
+
+            static Dictionary<string, MemberDetail> MemberDetails(IMethodSymbol? methodSymbol)
             {
-                details[param.Name] = new MemberDetail(param.Name, param.Name, param.Type.ToString());
-                if (param.Name.EndsWith("Arg"))
+                var memberDetails = new Dictionary<string, MemberDetail>();
+
+                if (methodSymbol is not null)
                 {
-                    details[param.Name].MemberKind = MemberKind.Argument;
-                    details[param.Name].Name = details[param.Name].Name.Substring(0, param.Name.Length - 3);
+                    foreach (var param in methodSymbol.Parameters)
+                    {
+                        memberDetails[param.Name] = new MemberDetail(param.Name, param.Name, param.Type.ToString());
+                        if (param.Name.EndsWith("Arg"))
+                        {
+                            memberDetails[param.Name].MemberKind = MemberKind.Argument;
+                            memberDetails[param.Name].Name = memberDetails[param.Name].Name.Substring(0, param.Name.Length - 3);
+                        }
+                        else if (param.Type.IsAbstract)  // Test that this is true for interfaces
+                        {
+                            memberDetails[param.Name].MemberKind = MemberKind.Service;
+                        }
+                    }
                 }
-                else if (param.Type.IsAbstract)  // Test that this is true for interfaces
-                {
-                    details[param.Name].MemberKind = MemberKind.Service;
-                }
+
+                return memberDetails;
             }
-            return new CommandDetails(nspace, commandDetail, details);
         }
+
+
+
 
         public static void AddDescFromXmlDocComment(XDocument xDoc, Dictionary<string, MemberDetail> details)
         {

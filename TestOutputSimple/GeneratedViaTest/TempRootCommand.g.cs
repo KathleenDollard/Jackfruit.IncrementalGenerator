@@ -12,7 +12,7 @@ namespace Jackfruit
    {
       public RootCommand()
       {
-         Name = "hello";
+         Name = "root-command";
          ToOption = new Option<string>("--to");
          Add(ToOption);
          AddValidator(Validate);
@@ -20,7 +20,7 @@ namespace Jackfruit
       }
       
       /// <summary>
-      /// The result class for the Hello command.
+      /// The result class for the RootCommand command.
       /// </summary>
       public partial class Result
       {
@@ -54,7 +54,8 @@ namespace Jackfruit
       public int Invoke(InvocationContext invocationContext)
       {
          var result = Result.GetResult(this, invocationContext);
-         return Temp.Class1.Hello(result.To);
+         var ret = Temp.Class1.Hello(result.To);
+         return ret;
       }
       
       /// <summary>

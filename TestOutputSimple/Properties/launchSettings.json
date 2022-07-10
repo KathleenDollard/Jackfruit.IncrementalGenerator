@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TestOutputSimple": {
+      "commandName": "Project",
+      "commandLineArgs": "--to George"
+    }
+  }
+}

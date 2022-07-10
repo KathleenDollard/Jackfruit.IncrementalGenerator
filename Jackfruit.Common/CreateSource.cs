@@ -2,6 +2,7 @@
 using static Jackfruit.IncrementalGenerator.CodeModels.StatementHelpers;
 using static Jackfruit.IncrementalGenerator.CodeModels.ExpressionHelpers;
 using static Jackfruit.IncrementalGenerator.CodeModels.StructureHelpers;
+using System.Threading.Tasks.Sources;
 
 namespace Jackfruit.Common
 {
@@ -19,7 +20,7 @@ namespace Jackfruit.Common
         // TODO: This needs to be unique within the project, like fully qualified
         private static string CommandClassName(CommandDef commandDef)
             => commandDef.IsRoot
-                    ? "RootCommand"
+                    ? CommonHelpers.RootCommand
                     : commandDef.Name;
         private static string ParentClassName(CommandDef commandDef)
             => commandDef.IsParentRoot
@@ -166,12 +167,18 @@ namespace Jackfruit.Common
 
             if (commandDef.ReturnType == "int")
             {
-                method.Statements.Add(AssignWithDeclare("ret", Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
+                var retValue = string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
+                     ? (ExpressionBase)Symbol("0")
+                     : Invoke("", commandDef.HandlerMethodName, arguments.ToArray());
+                method.Statements.Add(AssignWithDeclare("ret", retValue));
                 method.Statements.Add(Return(Invoke("Task", "FromResult", Symbol("ret"))));
             }
             else
             {
-                method.Statements.Add(SimpleCall(Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
+                if (!string.IsNullOrWhiteSpace(commandDef.HandlerMethodName))
+                {
+                    method.Statements.Add(SimpleCall(Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
+                }
                 method.Statements.Add(Return(Invoke("Task", "FromResult", Symbol($"{invocationContext}.ExitCode"))));
             }
             return method;
@@ -198,11 +205,18 @@ namespace Jackfruit.Common
                     .Statements(GetResultFromInvocationContext());
             if (commandDef.ReturnType == "int")
             {
-                method.Statements.Add(Return(Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
+                var retValue = string.IsNullOrWhiteSpace(commandDef.HandlerMethodName)
+                     ? (ExpressionBase)Symbol("0")
+                     : Invoke("", commandDef.HandlerMethodName, arguments.ToArray());
+                method.Statements.Add(AssignWithDeclare("ret", retValue));
+                method.Statements.Add(Return(Symbol("ret")));
             }
             else
             {
-                method.Statements.Add(SimpleCall(Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
+                if (!string.IsNullOrWhiteSpace(commandDef.HandlerMethodName))
+                {
+                    method.Statements.Add(SimpleCall(Invoke("", commandDef.HandlerMethodName, arguments.ToArray())));
+                }
                 method.Statements.Add(Return(Symbol($"{invocationContext}.ExitCode")));
             }
             return method;
@@ -222,6 +236,7 @@ namespace Jackfruit.Common
                     .Statements(
                         // TODO: Fix invoke to take base in langugae neutral way
                         SimpleCall(Invoke("base", "Validate", Symbol("invocationContext"))),
+                        // TODO: Isn't there a helper method for this
                         AssignWithDeclare(result, Invoke("Result", getResultName, This, Symbol("invocationContext"))),
                         AssignWithDeclare("err", Invoke("string", "Join",
                                     Symbol("Environment.NewLine"),
@@ -233,7 +248,7 @@ namespace Jackfruit.Common
         }
 
         private static ConstructorModel RootConstructor(CommandDef commandDef)
-            => Constructor("RootCommand")
+            => Constructor(CommonHelpers.RootCommand)
                 .Public()
                 .Statements(BuildStatements(commandDef).ToArray());
 

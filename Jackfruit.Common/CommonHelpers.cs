@@ -17,7 +17,9 @@ namespace Jackfruit.Common
             => commandDef.GenerationStyleTags.TryGetValue(CommonHelpers.TriggerStyle, out var style)
                  ? style.ToString()
                  : string.Empty;
-        public static string MethodFullName(IMethodSymbol method)
-            => $"{method.ContainingType.ToDisplayString()}.{method.Name}";
+        public static string MethodFullName(IMethodSymbol? method)
+            => method is null
+                ? ""
+                : $"{method.ContainingType.ToDisplayString()}.{method.Name}";
     }
 }

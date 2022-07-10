@@ -22,10 +22,17 @@ namespace Jackfruit
     /// </summary>
     public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
     {
-        public new static RootCommand Create(CommandNode rootNode)
-        { 
-            return (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(rootNode);
-        }
+            public static RootCommand Create(params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public static RootCommand Create(Delegate runHandler, params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public static RootCommand Create(Delegate runHandler, Delegate validator, params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public partial class Result
+            { }
     }
 }";
         public void Initialize(IncrementalGeneratorInitializationContext initContext)
@@ -62,6 +69,7 @@ namespace Jackfruit
                 var path = string.Join(".", commandDef.Path);
                 writer.AddLine($"//Key:         {joinedPath}");
                 writer.AddLine($"//Id:          {commandDef.Id}");
+                writer.AddLine($"//Name:        {commandDef.Name}");
                 writer.AddLine($"//Handler:     {commandDef.HandlerMethodName}");
                 writer.AddLine($"//Path:        {path}");
                 writer.AddLine($"//Parent:      {commandDef.Parent}");
@@ -75,6 +83,7 @@ namespace Jackfruit
                 writer.AddLine($"//Description: {commandDef.Description}");
                 writer.AddLine($"//Aliases:     {string.Join(", ", commandDef.Aliases)}");
                 writer.AddLine($"//Namespace:   {commandDef.Namespace}");
+                writer.AddLine($"//Returns:     {commandDef.ReturnType}");
                 writer.AddLine($"//Members:     ");
                 writer.IncreaseIndent();
                 foreach (var member in commandDef.Members)
