@@ -8,8 +8,6 @@ using System.Runtime.InteropServices.ComTypes;
 #nullable enable
 namespace Jackfruit.Internal
 {
-
-    // *** Assume everything below in this file will be in a library after we settle ****
     public abstract class GeneratedCommandBase<TSelf, TResult, TParent> : GeneratedCommandBase<TSelf, TResult>
         where TSelf : GeneratedCommandBase<TSelf, TResult>
         where TParent : GeneratedCommandBase
@@ -49,6 +47,12 @@ namespace Jackfruit.Internal
     {
         public string? Name { get; protected set; }
         private Command? _sytemCommandLineCommand = null;
+        //public static RootCommand Create(SubCommand subCommand)
+        //    => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(subCommand);
+
+        //public static RootCommand<T, TResult> Create(Delegate runHandler, params SubCommand[] cliRoot)
+        //{ return new T(); }
+
         public Command SystemCommandLineCommand
         {
             get

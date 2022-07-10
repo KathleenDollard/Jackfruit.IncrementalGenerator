@@ -10,83 +10,100 @@ namespace Jackfruit
     /// </summary>
     public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
     {
-        public new static RootCommand Create(CommandNode rootNode)
-        { 
-            return (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(rootNode);
-        }
+            public static RootCommand Create(params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public static RootCommand Create(Delegate runHandler, params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public static RootCommand Create(Delegate runHandler, Delegate validator, params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public partial class Result
+            { }
     }
 }
 // *******************************
 
 /*
 //Key:         
-//Id:          DemoHandlers.Handlers.Franchise(string)
-//Handler:     DemoHandlers.Handlers.Franchise
+//Id:          DemoHandlers.Handlers.StarTrek(string, bool, bool, bool)
+//Name:        RootCommand
+//Handler:     DemoHandlers.Handlers.StarTrek
 //Path:        
 //Parent:      
-//Validator:
-//   Namespace:   DemoHandlers
-//   MethodName:  DemoHandlers.Validators.FranchiseValidate
-//   Members:     greetingArg
-//Description: 
-//Aliases:     franchise
+//Description: This is the description for StarTrek
+//Aliases:     root-command
 //Namespace:   DemoHandlers
+//Returns:     void
 //Members:     
    //Argument:
       //Argumet Id:     greetingArg
       //Name:           Greeting
       //TypeName:       string
-      //Description:    
+      //Description:    What greeting to use
+      //Required:       False
+   //Option:
+      //Option Id:      kirk
+      //Name:           Kirk
+      //TypeName:       bool
+      //Description:    Whether to greet Captain Kirk
+      //Aliases:        --kirk
+      //ArgDisplayName: 
+      //Required:       False
+   //Option:
+      //Option Id:      spock
+      //Name:           Spock
+      //TypeName:       bool
+      //Description:    Whether to greet Spock
+      //Aliases:        --spock
+      //ArgDisplayName: 
+      //Required:       False
+   //Option:
+      //Option Id:      uhura
+      //Name:           Uhura
+      //TypeName:       bool
+      //Description:    Whether to greet Lieutenant Uhura
+      //Aliases:        --uhura
+      //ArgDisplayName: 
       //Required:       False
 //SubCommands:     
-   //Key:         Franchise
-   //Id:          DemoHandlers.Handlers.StarTrek(string, bool, bool, bool)
-   //Handler:     DemoHandlers.Handlers.StarTrek
-   //Path:        Franchise
-   //Parent:      Franchise
-   //Description: This is the description for StarTrek
-   //Aliases:     star-trek
+   //Key:         StarTrek
+   //Id:          DemoHandlers.Handlers.NextGeneration(string, bool)
+   //Name:        NextGeneration
+   //Handler:     DemoHandlers.Handlers.NextGeneration
+   //Path:        StarTrek
+   //Parent:      RootCommand
+   //Description: This is the description for Next Generation
+   //Aliases:     next-generation
    //Namespace:   DemoHandlers
+   //Returns:     void
    //Members:     
       //Argument:
          //Argumet Id:     greetingArg
          //Name:           Greeting
          //TypeName:       string
-         //Description:    What greeting to use
+         //Description:    
          //Required:       False
       //Option:
-         //Option Id:      kirk
-         //Name:           Kirk
+         //Option Id:      picard
+         //Name:           Picard
          //TypeName:       bool
-         //Description:    Whether to greet Captain Kirk
-         //Aliases:        --kirk
-         //ArgDisplayName: 
-         //Required:       False
-      //Option:
-         //Option Id:      spock
-         //Name:           Spock
-         //TypeName:       bool
-         //Description:    Whether to greet Spock
-         //Aliases:        --spock
-         //ArgDisplayName: 
-         //Required:       False
-      //Option:
-         //Option Id:      uhura
-         //Name:           Uhura
-         //TypeName:       bool
-         //Description:    Whether to greet Lieutenant Uhura
-         //Aliases:        --uhura
+         //Description:    This is the description for Picard
+         //Aliases:        --picard, -p
          //ArgDisplayName: 
          //Required:       False
    //SubCommands:     
-      //Key:         FranchiseStarTrek
-      //Id:          DemoHandlers.Handlers.NextGeneration(string, bool)
-      //Handler:     DemoHandlers.Handlers.NextGeneration
-      //Path:        Franchise.StarTrek
-      //Parent:      StarTrek
-      //Description: This is the description for Next Generation
-      //Aliases:     next-generation
+      //Key:         StarTrekNextGeneration
+      //Id:          DemoHandlers.Handlers.DeepSpaceNine(string, bool, bool, bool, bool, bool)
+      //Name:        DeepSpaceNine
+      //Handler:     DemoHandlers.Handlers.DeepSpaceNine
+      //Path:        StarTrek.NextGeneration
+      //Parent:      NextGeneration
+      //Description: 
+      //Aliases:     deep-space-nine
       //Namespace:   DemoHandlers
+      //Returns:     void
       //Members:     
          //Argument:
             //Argumet Id:     greetingArg
@@ -95,135 +112,111 @@ namespace Jackfruit
             //Description:    
             //Required:       False
          //Option:
-            //Option Id:      picard
-            //Name:           Picard
+            //Option Id:      sisko
+            //Name:           Sisko
             //TypeName:       bool
-            //Description:    This is the description for Picard
-            //Aliases:        --picard, -p
+            //Description:    
+            //Aliases:        --sisko
+            //ArgDisplayName: 
+            //Required:       False
+         //Option:
+            //Option Id:      odo
+            //Name:           Odo
+            //TypeName:       bool
+            //Description:    
+            //Aliases:        --odo
+            //ArgDisplayName: 
+            //Required:       False
+         //Option:
+            //Option Id:      dax
+            //Name:           Dax
+            //TypeName:       bool
+            //Description:    
+            //Aliases:        --dax
+            //ArgDisplayName: 
+            //Required:       False
+         //Option:
+            //Option Id:      worf
+            //Name:           Worf
+            //TypeName:       bool
+            //Description:    
+            //Aliases:        --worf
+            //ArgDisplayName: 
+            //Required:       False
+         //Option:
+            //Option Id:      oBrien
+            //Name:           OBrien
+            //TypeName:       bool
+            //Description:    
+            //Aliases:        --obrien
             //ArgDisplayName: 
             //Required:       False
       //SubCommands:     
-         //Key:         FranchiseStarTrekNextGeneration
-         //Id:          DemoHandlers.Handlers.DeepSpaceNine(string, bool, bool, bool, bool, bool)
-         //Handler:     DemoHandlers.Handlers.DeepSpaceNine
-         //Path:        Franchise.StarTrek.NextGeneration
-         //Parent:      NextGeneration
-         //Description: 
-         //Aliases:     deep-space-nine
-         //Namespace:   DemoHandlers
-         //Members:     
-            //Argument:
-               //Argumet Id:     greetingArg
-               //Name:           Greeting
-               //TypeName:       string
-               //Description:    
-               //Required:       False
-            //Option:
-               //Option Id:      sisko
-               //Name:           Sisko
-               //TypeName:       bool
-               //Description:    
-               //Aliases:        --sisko
-               //ArgDisplayName: 
-               //Required:       False
-            //Option:
-               //Option Id:      odo
-               //Name:           Odo
-               //TypeName:       bool
-               //Description:    
-               //Aliases:        --odo
-               //ArgDisplayName: 
-               //Required:       False
-            //Option:
-               //Option Id:      dax
-               //Name:           Dax
-               //TypeName:       bool
-               //Description:    
-               //Aliases:        --dax
-               //ArgDisplayName: 
-               //Required:       False
-            //Option:
-               //Option Id:      worf
-               //Name:           Worf
-               //TypeName:       bool
-               //Description:    
-               //Aliases:        --worf
-               //ArgDisplayName: 
-               //Required:       False
-            //Option:
-               //Option Id:      oBrien
-               //Name:           OBrien
-               //TypeName:       bool
-               //Description:    
-               //Aliases:        --obrien
-               //ArgDisplayName: 
-               //Required:       False
-         //SubCommands:     
-         //**************************************    
-         
-         //Key:         FranchiseStarTrekNextGeneration
-         //Id:          DemoHandlers.Handlers.Voyager(System.CommandLine.IConsole, string, bool, bool, bool, bool, bool)
-         //Handler:     DemoHandlers.Handlers.Voyager
-         //Path:        Franchise.StarTrek.NextGeneration
-         //Parent:      NextGeneration
-         //Description: 
-         //Aliases:     voyager
-         //Namespace:   DemoHandlers
-         //Members:     
-            //Service:
-               //Service Id:     console
-               //Name:           Console
-               //TypeName:       System.CommandLine.IConsole
-               //Description:    
-            //Argument:
-               //Argumet Id:     greetingArg
-               //Name:           Greeting
-               //TypeName:       string
-               //Description:    
-               //Required:       False
-            //Option:
-               //Option Id:      janeway
-               //Name:           Janeway
-               //TypeName:       bool
-               //Description:    
-               //Aliases:        --janeway
-               //ArgDisplayName: 
-               //Required:       False
-            //Option:
-               //Option Id:      chakotay
-               //Name:           Chakotay
-               //TypeName:       bool
-               //Description:    
-               //Aliases:        --chakotay
-               //ArgDisplayName: 
-               //Required:       False
-            //Option:
-               //Option Id:      torres
-               //Name:           Torres
-               //TypeName:       bool
-               //Description:    
-               //Aliases:        --torres
-               //ArgDisplayName: 
-               //Required:       False
-            //Option:
-               //Option Id:      tuvok
-               //Name:           Tuvok
-               //TypeName:       bool
-               //Description:    
-               //Aliases:        --tuvok
-               //ArgDisplayName: 
-               //Required:       False
-            //Option:
-               //Option Id:      sevenOfNine
-               //Name:           SevenOfNine
-               //TypeName:       bool
-               //Description:    
-               //Aliases:        --seven-of-nine
-               //ArgDisplayName: 
-               //Required:       False
-         //SubCommands:     
-         //**************************************    
-         
+      //**************************************    
+      
+      //Key:         StarTrekNextGeneration
+      //Id:          DemoHandlers.Handlers.Voyager(System.CommandLine.IConsole, string, bool, bool, bool, bool, bool)
+      //Name:        Voyager
+      //Handler:     DemoHandlers.Handlers.Voyager
+      //Path:        StarTrek.NextGeneration
+      //Parent:      NextGeneration
+      //Description: 
+      //Aliases:     voyager
+      //Namespace:   DemoHandlers
+      //Returns:     void
+      //Members:     
+         //Service:
+            //Service Id:     console
+            //Name:           Console
+            //TypeName:       System.CommandLine.IConsole
+            //Description:    
+         //Argument:
+            //Argumet Id:     greetingArg
+            //Name:           Greeting
+            //TypeName:       string
+            //Description:    
+            //Required:       False
+         //Option:
+            //Option Id:      janeway
+            //Name:           Janeway
+            //TypeName:       bool
+            //Description:    
+            //Aliases:        --janeway
+            //ArgDisplayName: 
+            //Required:       False
+         //Option:
+            //Option Id:      chakotay
+            //Name:           Chakotay
+            //TypeName:       bool
+            //Description:    
+            //Aliases:        --chakotay
+            //ArgDisplayName: 
+            //Required:       False
+         //Option:
+            //Option Id:      torres
+            //Name:           Torres
+            //TypeName:       bool
+            //Description:    
+            //Aliases:        --torres
+            //ArgDisplayName: 
+            //Required:       False
+         //Option:
+            //Option Id:      tuvok
+            //Name:           Tuvok
+            //TypeName:       bool
+            //Description:    
+            //Aliases:        --tuvok
+            //ArgDisplayName: 
+            //Required:       False
+         //Option:
+            //Option Id:      sevenOfNine
+            //Name:           SevenOfNine
+            //TypeName:       bool
+            //Description:    
+            //Aliases:        --seven-of-nine
+            //ArgDisplayName: 
+            //Required:       False
+      //SubCommands:     
       //**************************************    
       
    //**************************************    

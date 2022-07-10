@@ -1,28 +1,3 @@
-﻿
-using Jackfruit.Internal;
-
-namespace Jackfruit
-{
-    /// <summary>
-    /// This is the main class for the Jackfruit generator. After you call the 
-    /// Create command, the returned RootCommand will contain your CLI. If you 
-    /// need multiple root commands in your application differentiate them with &gt;T&lt;
-    /// </summary>
-    public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
-    {
-        public new static RootCommand Create(params SubCommand[] subCommands)
-            => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(null, subCommands);
-
-        public new static RootCommand Create(Delegate runHandler, params SubCommand[] subCommands)
-            => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(runHandler, subCommands);
-
-        public partial class Result
-        { }
-    }
-}
-
-// *******************************
-
 // This file is created by a generator.
 using System;
 using System.Threading.Tasks;
@@ -37,23 +12,19 @@ namespace Jackfruit
    {
       public RootCommand()
       {
-         Name = "next-generation";
-         GreetingArgument = new Argument<string>("GREETING");
-         Add(GreetingArgument);
-         PicardOption = new Option<bool>(new string[] {"--picard", "-p"});
-         PicardOption.Description = "This is the description for Picard";
-         Add(PicardOption);
+         Name = "root-command";
+         ToOption = new Option<string>("--to");
+         Add(ToOption);
          AddValidator(Validate);
          Handler = this;
       }
       
       /// <summary>
-      /// The result class for the NextGeneration command.
+      /// The result class for the RootCommand command.
       /// </summary>
       public partial class Result
       {
-         public string Greeting {get; set;}
-         public bool Picard {get; set;}
+         public string To {get; set;}
          /// <summary>
          /// Get an instance of the Result class for the NextGeneration command.
          /// </summary>
@@ -66,8 +37,7 @@ namespace Jackfruit
          
          private protected Result(RootCommand command, CommandResult commandResult)
          {
-            Greeting = GetValueForSymbol(command.GreetingArgument, commandResult);
-            Picard = GetValueForSymbol(command.PicardOption, commandResult);
+            To = GetValueForSymbol(command.ToOption, commandResult);
          }
          
          private protected Result(RootCommand command, InvocationContext invocationContext)
@@ -84,8 +54,8 @@ namespace Jackfruit
       public int Invoke(InvocationContext invocationContext)
       {
          var result = Result.GetResult(this, invocationContext);
-         DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
-         return invocationContext.ExitCode;
+         var ret = Temp.Class1.Hello(result.To);
+         return ret;
       }
       
       /// <summary>
@@ -95,12 +65,11 @@ namespace Jackfruit
       public Task<int> InvokeAsync(InvocationContext invocationContext)
       {
          var result = Result.GetResult(this, invocationContext);
-         DemoHandlers.Handlers.NextGeneration(result.Greeting, result.Picard);
-         return Task.FromResult(invocationContext.ExitCode);
+         var ret = Temp.Class1.Hello(result.To);
+         return Task.FromResult(ret);
       }
       
-      public Argument<string> GreetingArgument {get; set;}
-      public Option<bool> PicardOption {get; set;}
+      public Option<string> ToOption {get; set;}
    }
    
 }

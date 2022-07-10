@@ -119,15 +119,15 @@ namespace Jackfruit.IncrementalGenerator
             if (methodSymbol is null && !isRoot)
             { return null; }
 
-            var commandDetail = isRoot
-                        ? new MemberDetail(CommonHelpers.RootCommand, CommonHelpers.RootCommand, "int")
-                        : new MemberDetail(methodSymbol!.ToDisplayString(), methodSymbol.Name, methodSymbol.ReturnType.ToString());
+            var name = isRoot
+                        ? CommonHelpers.RootCommand
+                        : methodSymbol?.Name ?? "";
 
-            var nspace = isRoot
-                         ? ""
-                         : methodSymbol!.ContainingNamespace.ToString();
+            var commandDetail = new MemberDetail(methodSymbol?.ToDisplayString() ?? "", name, methodSymbol?.ReturnType?.ToString() ?? "");
 
-            return new CommandDetails(nspace, commandDetail, MemberDetails(methodSymbol));
+            return new CommandDetails(methodSymbol?.ContainingNamespace.ToString() ?? "",
+                                      commandDetail,
+                                      MemberDetails(methodSymbol));
 
             static Dictionary<string, MemberDetail> MemberDetails(IMethodSymbol? methodSymbol)
             {

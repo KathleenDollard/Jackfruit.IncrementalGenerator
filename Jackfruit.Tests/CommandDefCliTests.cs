@@ -145,7 +145,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.Create(null);
+            var rootCommand = RootCommand.Create((Delegate)null);
         }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 
@@ -160,7 +160,7 @@ public class MyClass
             var input = methodWrapper(@"
         public void Test()
         {
-            var rootCommand = RootCommand.CreateX(SubCommand.Create(A);
+            var rootCommand = RootCommand.CreateX(SubCommand.Create(A));
         }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 

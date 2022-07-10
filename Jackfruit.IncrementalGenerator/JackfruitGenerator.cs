@@ -33,6 +33,7 @@ namespace Jackfruit.IncrementalGenerator
     {
         private const string cliClassCode = @"
 using Jackfruit.Internal;
+using System;
 
 namespace Jackfruit
 {
@@ -47,6 +48,9 @@ namespace Jackfruit
             => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(null, subCommands);
 
         public new static RootCommand Create(Delegate runHandler, params SubCommand[] subCommands)
+            => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(runHandler, subCommands);
+
+        public static RootCommand Create(Delegate runHandler, Delegate validator, params SubCommand[] subCommands)
             => (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(runHandler, subCommands);
 
         public partial class Result
@@ -66,7 +70,7 @@ namespace Jackfruit
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => IsCliCreateInvocation(s),
                     transform: static (ctx, cancellationToken) => BuildModel.GetCommandDef(ctx, cancellationToken))
-                .WhereNotNull();
+                .Where(static m => m is not null)!;
 
             // Flatten per rootcommand node
             var commandDefCollection = commandDefNodes

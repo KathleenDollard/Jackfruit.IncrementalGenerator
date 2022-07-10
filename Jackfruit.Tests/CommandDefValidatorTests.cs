@@ -37,7 +37,7 @@ public class MyClass
             var input = MethodWrapper(@"
     public void Test()
     {
-       var rootCommand = RootCommand.Create(SubCommand.Create( ToValidate, Validator1));
+       var rootCommand = RootCommand.Create(SubCommand.Create(ToValidate, Validator1));
     }");
             var (inputDiagnostics, diagnostics, output) = TestHelpers.GetGeneratedOutput<CommandDefGenerator>(input);
 

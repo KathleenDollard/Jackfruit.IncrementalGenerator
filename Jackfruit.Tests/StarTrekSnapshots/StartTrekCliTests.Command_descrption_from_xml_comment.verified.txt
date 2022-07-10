@@ -10,10 +10,17 @@ namespace Jackfruit
     /// </summary>
     public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
     {
-        public new static RootCommand Create(CommandNode rootNode)
-        { 
-            return (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(rootNode);
-        }
+            public static RootCommand Create(params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public static RootCommand Create(Delegate runHandler, params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public static RootCommand Create(Delegate runHandler, Delegate validator, params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public partial class Result
+            { }
     }
 }
 // *******************************
@@ -21,12 +28,14 @@ namespace Jackfruit
 /*
 //Key:         
 //Id:          DemoHandlers.Handlers.Franchise(string)
+//Name:        RootCommand
 //Handler:     DemoHandlers.Handlers.Franchise
 //Path:        
 //Parent:      
 //Description: 
-//Aliases:     franchise
+//Aliases:     root-command
 //Namespace:   DemoHandlers
+//Returns:     void
 //Members:     
    //Argument:
       //Argumet Id:     greetingArg
@@ -37,12 +46,14 @@ namespace Jackfruit
 //SubCommands:     
    //Key:         Franchise
    //Id:          DemoHandlers.Handlers.StarTrek(string, bool, bool, bool)
+   //Name:        StarTrek
    //Handler:     DemoHandlers.Handlers.StarTrek
    //Path:        Franchise
-   //Parent:      Franchise
+   //Parent:      RootCommand
    //Description: This is the description for StarTrek
    //Aliases:     star-trek
    //Namespace:   DemoHandlers
+   //Returns:     void
    //Members:     
       //Argument:
          //Argumet Id:     greetingArg
@@ -77,12 +88,14 @@ namespace Jackfruit
    //SubCommands:     
       //Key:         FranchiseStarTrek
       //Id:          DemoHandlers.Handlers.NextGeneration(string, bool)
+      //Name:        NextGeneration
       //Handler:     DemoHandlers.Handlers.NextGeneration
       //Path:        Franchise.StarTrek
       //Parent:      StarTrek
       //Description: This is the description for Next Generation
       //Aliases:     next-generation
       //Namespace:   DemoHandlers
+      //Returns:     void
       //Members:     
          //Argument:
             //Argumet Id:     greetingArg
@@ -101,12 +114,14 @@ namespace Jackfruit
       //SubCommands:     
          //Key:         FranchiseStarTrekNextGeneration
          //Id:          DemoHandlers.Handlers.DeepSpaceNine(string, bool, bool, bool, bool, bool)
+         //Name:        DeepSpaceNine
          //Handler:     DemoHandlers.Handlers.DeepSpaceNine
          //Path:        Franchise.StarTrek.NextGeneration
          //Parent:      NextGeneration
          //Description: 
          //Aliases:     deep-space-nine
          //Namespace:   DemoHandlers
+         //Returns:     void
          //Members:     
             //Argument:
                //Argumet Id:     greetingArg
@@ -159,12 +174,14 @@ namespace Jackfruit
          
          //Key:         FranchiseStarTrekNextGeneration
          //Id:          DemoHandlers.Handlers.Voyager(System.CommandLine.IConsole, string, bool, bool, bool, bool, bool)
+         //Name:        Voyager
          //Handler:     DemoHandlers.Handlers.Voyager
          //Path:        Franchise.StarTrek.NextGeneration
          //Parent:      NextGeneration
          //Description: 
          //Aliases:     voyager
          //Namespace:   DemoHandlers
+         //Returns:     void
          //Members:     
             //Service:
                //Service Id:     console

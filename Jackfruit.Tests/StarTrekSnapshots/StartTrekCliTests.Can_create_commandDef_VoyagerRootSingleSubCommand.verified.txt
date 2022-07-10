@@ -39,42 +39,65 @@ namespace Jackfruit
 //Members:     
 //SubCommands:     
    //Key:         UNKNOWN
-   //Id:          MyClass.ToValidate(int, int, int)
-   //Name:        ToValidate
-   //Handler:     MyClass.ToValidate
+   //Id:          DemoHandlers.Handlers.Voyager(System.CommandLine.IConsole, string, bool, bool, bool, bool, bool)
+   //Name:        Voyager
+   //Handler:     DemoHandlers.Handlers.Voyager
    //Path:        UNKNOWN
    //Parent:      RootCommand
-   //Validator:
-   //   Namespace:   <global namespace>
-   //   MethodName:  MyClass.Validator1
-   //   Members:     j
    //Description: 
-   //Aliases:     to-validate
-   //Namespace:   <global namespace>
+   //Aliases:     voyager
+   //Namespace:   DemoHandlers
    //Returns:     void
    //Members:     
-      //Option:
-         //Option Id:      i
-         //Name:           I
-         //TypeName:       int
+      //Service:
+         //Service Id:     console
+         //Name:           Console
+         //TypeName:       System.CommandLine.IConsole
          //Description:    
-         //Aliases:        -i
+      //Argument:
+         //Argumet Id:     greetingArg
+         //Name:           Greeting
+         //TypeName:       string
+         //Description:    
+         //Required:       False
+      //Option:
+         //Option Id:      janeway
+         //Name:           Janeway
+         //TypeName:       bool
+         //Description:    
+         //Aliases:        --janeway
          //ArgDisplayName: 
          //Required:       False
       //Option:
-         //Option Id:      j
-         //Name:           J
-         //TypeName:       int
+         //Option Id:      chakotay
+         //Name:           Chakotay
+         //TypeName:       bool
          //Description:    
-         //Aliases:        -j
+         //Aliases:        --chakotay
          //ArgDisplayName: 
          //Required:       False
       //Option:
-         //Option Id:      k
-         //Name:           K
-         //TypeName:       int
+         //Option Id:      torres
+         //Name:           Torres
+         //TypeName:       bool
          //Description:    
-         //Aliases:        -k
+         //Aliases:        --torres
+         //ArgDisplayName: 
+         //Required:       False
+      //Option:
+         //Option Id:      tuvok
+         //Name:           Tuvok
+         //TypeName:       bool
+         //Description:    
+         //Aliases:        --tuvok
+         //ArgDisplayName: 
+         //Required:       False
+      //Option:
+         //Option Id:      sevenOfNine
+         //Name:           SevenOfNine
+         //TypeName:       bool
+         //Description:    
+         //Aliases:        --seven-of-nine
          //ArgDisplayName: 
          //Required:       False
    //SubCommands:     

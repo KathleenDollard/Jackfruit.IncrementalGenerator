@@ -27,27 +27,24 @@ namespace Jackfruit.IncrementalGenerator
 
         public static CommandDefNode? GetCommandDef(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         {
-            if (context.SemanticModel.GetOperation(context.Node, cancellationToken) is not IInvocationOperation rootCommandCreateInvocation)
+            return context.SemanticModel.GetOperation(context.Node, cancellationToken) switch
             {
-                // Should not occur
-                return null;
-            }
-            // Transform1: (using the mode)
-            //      * Get the single parameter, which is the root of an explicit tree
-            //      * Traverse the tree, depth first and for each node - build the path on traversal:
-            //          * Extract the delegate and details from it
-            //          * Extract XML comments (as an XML blob)
-            //          * Extract known attributes from method declaration and parameters
-            //          * Create command and member defs
+                IInvocationOperation rootCommandCreateInvocation => CommandDefFromInvocation(rootCommandCreateInvocation, cancellationToken),
+                IInvalidOperation invalidOp => CommandDefWithParams(invalidOp, cancellationToken),
+                _ => null
+            };
 
-            string[] path = { };
-            return GetCommandDefNode(path, null, Enumerable.Empty<MemberDef>(), rootCommandCreateInvocation, cancellationToken);
-            //var invocationOps = InvocationsFromArg(cliCreateInvocation.Arguments[0]);
-            //return invocationOps is null
-            //    ? null
-            //    : invocationOps.Any()
-            //        ? GetCommandDefNode(path, null, Enumerable.Empty<MemberDef>(), invocationOps.First(), cancellationToken)
-            //        : null;
+            static CommandDefNode? CommandDefFromInvocation(IInvocationOperation rootCommandCreateInvocation, CancellationToken cancellationToken)
+                => GetCommandDefNode(new string[] { }, null, Enumerable.Empty<MemberDef>(), rootCommandCreateInvocation, cancellationToken);
+
+            static CommandDefNode? CommandDefWithParams(IInvalidOperation invalidOp, CancellationToken cancellationToken)
+            {
+                var invocationOp = invalidOp.ChildOperations.OfType<IInvocationOperation>().FirstOrDefault();
+                return invocationOp is null
+                    ? null
+                    : GetCommandDefNode(new string[] { }, null, Enumerable.Empty<MemberDef>(), invocationOp, cancellationToken);
+            }
+
         }
 
         private static IEnumerable<IInvocationOperation?>? InvocationsFromArg(IArgumentOperation argOp)
@@ -85,34 +82,44 @@ namespace Jackfruit.IncrementalGenerator
                         IEnumerable<IInvocationOperation> subCommands)
             CliNodeNewParts(IInvocationOperation? invocationOp)
         {
-            // Change this to a collection switch when we get them. it will be beautiful!
             if (invocationOp is null || !invocationOp.Arguments.Any())
             { return (null, null, Enumerable.Empty<IInvocationOperation>()); }
+
+            var handlerArg =
+                    invocationOp.Arguments[0].Parameter?.Type.ToString() == "System.Delegate"
+                    ? invocationOp.Arguments[0]
+                    : null;
+            var validatorArg =
+                    invocationOp.Arguments.Length > 1 && invocationOp.Arguments[1].Parameter?.Type.ToString() == "System.Delegate"
+                    ? invocationOp.Arguments[1]
+                    : null;
+            var subCommandArgs =
+                    handlerArg is null
+                    ? invocationOp.Arguments
+                    : validatorArg is null
+                        ? invocationOp.Arguments.Skip(1)
+                        : invocationOp.Arguments.Skip(2);
+
             var argCount = invocationOp.Arguments.Count();
-            var handler = MethodFromArg(invocationOp.Arguments[0]);
-            IMethodSymbol? validator = null;
-            IEnumerable<IInvocationOperation>? subCommands = null;
+            var handler =
+                    handlerArg is null
+                    ? null
+                    : MethodFromArg(handlerArg);
 
-            if (argCount > 1)
-            {
-                var pos = 1;
-                var arg = invocationOp.Arguments[pos];
-                // second arg could be a validator or a CliNode
-                validator = MethodFromArg(invocationOp.Arguments[pos]);
-                if (validator is not null)
-                { pos++; }
+            var validator =
+                    validatorArg is null
+                    ? null
+                    : MethodFromArg(validatorArg);
 
-                IEnumerable<IArgumentOperation> temp = invocationOp.Arguments
-                                    .Skip(pos);
-                // This SelectMany only to collapse paramarray
-                subCommands = temp
-                    .SelectMany(x => InvocationsFromArg(x))
-                    .Where(x => x is not null)
-                    .Select(x => x!)
-                    .ToList();
+            var subCommands = subCommandArgs
+                .SelectMany(x => InvocationsFromArg(x))
+                .Where(x => x is not null)
+                .Select(x => x!)
+                .ToList();
 
-            }
             return (handler, validator, subCommands ?? Enumerable.Empty<IInvocationOperation>());
+
+
         }
 
         // TODO: Add Validation for handler and validator return types

@@ -10,10 +10,17 @@ namespace Jackfruit
     /// </summary>
     public partial class RootCommand : RootCommand<RootCommand, RootCommand.Result>
     {
-        public new static RootCommand Create(CommandNode rootNode)
-        { 
-            return (RootCommand)RootCommand<RootCommand, RootCommand.Result>.Create(rootNode);
-        }
+            public static RootCommand Create(params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public static RootCommand Create(Delegate runHandler, params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public static RootCommand Create(Delegate runHandler, Delegate validator, params SubCommand[] subCommands)
+                => new RootCommand();
+
+            public partial class Result
+            { }
     }
 }
 // *******************************
@@ -21,12 +28,14 @@ namespace Jackfruit
 /*
 //Key:         
 //Id:          MyClass.A(int)
+//Name:        RootCommand
 //Handler:     MyClass.A
 //Path:        
 //Parent:      
 //Description: 
-//Aliases:     a
+//Aliases:     root-command
 //Namespace:   <global namespace>
+//Returns:     void
 //Members:     
    //Option:
       //Option Id:      i
@@ -39,12 +48,14 @@ namespace Jackfruit
 //SubCommands:     
    //Key:         A
    //Id:          MyClass.B(int)
+   //Name:        B
    //Handler:     MyClass.B
    //Path:        A
-   //Parent:      A
+   //Parent:      RootCommand
    //Description: 
    //Aliases:     b
    //Namespace:   <global namespace>
+   //Returns:     void
    //Members:     
       //Option:
          //Option Id:      i
@@ -59,12 +70,14 @@ namespace Jackfruit
    
    //Key:         A
    //Id:          MyClass.C(int)
+   //Name:        C
    //Handler:     MyClass.C
    //Path:        A
-   //Parent:      A
+   //Parent:      RootCommand
    //Description: 
    //Aliases:     c
    //Namespace:   <global namespace>
+   //Returns:     void
    //Members:     
       //Option:
          //Option Id:      i
@@ -77,12 +90,14 @@ namespace Jackfruit
    //SubCommands:     
       //Key:         AC
       //Id:          MyClass.E(int)
+      //Name:        E
       //Handler:     MyClass.E
       //Path:        A.C
       //Parent:      C
       //Description: 
       //Aliases:     e
       //Namespace:   <global namespace>
+      //Returns:     void
       //Members:     
          //Option:
             //Option Id:      i
@@ -97,12 +112,14 @@ namespace Jackfruit
       
       //Key:         AC
       //Id:          MyClass.F(int)
+      //Name:        F
       //Handler:     MyClass.F
       //Path:        A.C
       //Parent:      C
       //Description: 
       //Aliases:     f
       //Namespace:   <global namespace>
+      //Returns:     void
       //Members:     
          //Option:
             //Option Id:      i
@@ -115,12 +132,14 @@ namespace Jackfruit
       //SubCommands:     
          //Key:         ACF
          //Id:          MyClass.G(int)
+         //Name:        G
          //Handler:     MyClass.G
          //Path:        A.C.F
          //Parent:      F
          //Description: 
          //Aliases:     g
          //Namespace:   <global namespace>
+         //Returns:     void
          //Members:     
             //Option:
                //Option Id:      i
@@ -135,12 +154,14 @@ namespace Jackfruit
          
          //Key:         ACF
          //Id:          MyClass.H(int)
+         //Name:        H
          //Handler:     MyClass.H
          //Path:        A.C.F
          //Parent:      F
          //Description: 
          //Aliases:     h
          //Namespace:   <global namespace>
+         //Returns:     void
          //Members:     
             //Option:
                //Option Id:      i
@@ -159,12 +180,14 @@ namespace Jackfruit
    
    //Key:         A
    //Id:          MyClass.D(int)
+   //Name:        D
    //Handler:     MyClass.D
    //Path:        A
-   //Parent:      A
+   //Parent:      RootCommand
    //Description: 
    //Aliases:     d
    //Namespace:   <global namespace>
+   //Returns:     void
    //Members:     
       //Option:
          //Option Id:      i
