@@ -1,17 +1,35 @@
 ﻿using Jackfruit.Common;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp;
 using System.Xml.Linq;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace Jackfruit.IncrementalGenerator
 {
     internal static class RoslynHelpers
     {
-        public enum MemberKind
-        {
-            Option = 0,
-            Argument,
-            Service
-        }
+        internal static (string? className, string? methodName) GetName(SyntaxNode expression)
+            => expression switch
+            {
+                MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                    => (memberAccess.Expression.ToString(),
+                        memberAccess.Name is GenericNameSyntax genericName
+                            ? genericName.Identifier.ValueText
+                            : memberAccess.Name.ToString()),
+                _ => (null, null)
+            };
+
+        internal static IMethodSymbol? MethodFromArg(IArgumentOperation argOp)
+            => argOp.Value is not IConversionOperation conversion
+                ? null
+                : conversion.Operand is not IDelegateCreationOperation delegateOp
+                    ? null
+                    : delegateOp.Target switch
+                    {
+                        IMethodReferenceOperation methodRefOp => methodRefOp.Method,
+                        _ => null
+                    };
 
         public class CommandDetails
         {

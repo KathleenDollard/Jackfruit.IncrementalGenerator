@@ -2,7 +2,7 @@
 using Jackfruit.Common;
 using Microsoft.CodeAnalysis.Operations;
 using System.Xml.Linq;
-using static Jackfruit.IncrementalGenerator.RoslynHelpers;
+//using static Jackfruit.IncrementalGenerator.RoslynHelpers;
 using System.Linq;
 
 namespace Jackfruit.IncrementalGenerator
@@ -12,7 +12,7 @@ namespace Jackfruit.IncrementalGenerator
         internal static CommandDef? BuildCommandDef(string[] path,
                                                     CommandDefNode? parent,
                                                     string methodName,
-                                                    CommandDetails? commandDetails,
+                                                    RoslynHelpers.CommandDetails? commandDetails,
                                                     IEnumerable<MemberDef> ancestorMembers,
                                                     string triggerStyle)
         {
@@ -25,7 +25,7 @@ namespace Jackfruit.IncrementalGenerator
 
             foreach (var memberPair in commandDetails.MemberDetails)
             {
-                if (memberPair.Key == CommandKey) { continue; }
+                if (memberPair.Key == RoslynHelpers.CommandKey) { continue; }
                 var memberDetail = memberPair.Value;
 
                 var isOnRoot = ancestorMembers.Any(m => m.Name == memberDetail.Name);
@@ -77,7 +77,7 @@ namespace Jackfruit.IncrementalGenerator
 
         }
 
-        internal static CommandDetails? GetDetails(IMethodSymbol? methodSymbol, bool isRoot)
+        internal static RoslynHelpers.CommandDetails? GetDetails(IMethodSymbol? methodSymbol, bool isRoot)
         {
 
             var commandDetails =  methodSymbol.BasicDetails(isRoot);
@@ -87,10 +87,10 @@ namespace Jackfruit.IncrementalGenerator
                 if (!string.IsNullOrWhiteSpace(xmlComment))
                 {
                     var xDoc = XDocument.Parse(xmlComment);
-                    AddDescFromXmlDocComment(xDoc, commandDetails.Detail);
-                    AddDescFromXmlDocComment(xDoc, commandDetails.MemberDetails);
+                    RoslynHelpers.AddDescFromXmlDocComment(xDoc, commandDetails.Detail);
+                    RoslynHelpers.AddDescFromXmlDocComment(xDoc, commandDetails.MemberDetails);
                 }
-                AddDetailsFromAttributes(methodSymbol, commandDetails.Detail, commandDetails.MemberDetails);
+                RoslynHelpers.AddDetailsFromAttributes(methodSymbol, commandDetails.Detail, commandDetails.MemberDetails);
             }
             return commandDetails;
         }

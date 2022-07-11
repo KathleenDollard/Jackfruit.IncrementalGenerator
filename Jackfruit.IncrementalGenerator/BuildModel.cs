@@ -104,12 +104,12 @@ namespace Jackfruit.IncrementalGenerator
             var handler =
                     handlerArg is null
                     ? null
-                    : MethodFromArg(handlerArg);
+                    : RoslynHelpers.MethodFromArg(handlerArg);
 
             var validator =
                     validatorArg is null
                     ? null
-                    : MethodFromArg(validatorArg);
+                    : RoslynHelpers.MethodFromArg(validatorArg);
 
             var subCommands = subCommandArgs
                 .SelectMany(x => InvocationsFromArg(x))
@@ -122,17 +122,7 @@ namespace Jackfruit.IncrementalGenerator
 
         }
 
-        // TODO: Add Validation for handler and validator return types
-        static IMethodSymbol? MethodFromArg(IArgumentOperation argOp)
-            => argOp.Value is not IConversionOperation conversion
-                ? null
-                : conversion.Operand is not IDelegateCreationOperation delegateOp
-                    ? null
-                    : delegateOp.Target switch
-                    {
-                        IMethodReferenceOperation methodRefOp => methodRefOp.Method,
-                        _ => null
-                    };
+
 
         private static CommandDefNode? GetCommandDefNode(string[] path,
                                                          CommandDefNode? parentNode,

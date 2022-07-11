@@ -29,7 +29,7 @@ namespace Jackfruit.IncrementalGenerator
 
 
     [Generator]
-    public class Generator : IIncrementalGenerator
+    public class Generator2 : IIncrementalGenerator
     {
         private const string cliClassCode = @"
 using Jackfruit.Internal;
@@ -113,7 +113,7 @@ namespace Jackfruit
                 int argCount = invocation.ArgumentList.Arguments.Count;
                 if (argCount == 0)
                 { return false; }
-                var (className, methodName) = RoslynHelpers.GetName(invocation.Expression);
+                var (className, methodName) = GetName(invocation.Expression);
                 return className == CommonHelpers.RootCommand && methodName == CommonHelpers.AddCommandName ;
             }
             return false;
@@ -130,6 +130,17 @@ namespace Jackfruit
             language.AddCodeFile(codeFileModel);
             context.AddSource($"{hintName}.g.cs", writer.Output());
         }
+
+        internal static (string? className, string? methodName) GetName(SyntaxNode expression)
+            => expression switch
+            {
+                MemberAccessExpressionSyntax memberAccess when expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                    => (memberAccess.Expression.ToString(),
+                        memberAccess.Name is GenericNameSyntax genericName
+                            ? genericName.Identifier.ValueText
+                            : memberAccess.Name.ToString()),
+                _ => (null,null)
+            };
 
         internal static string? GetCaller(SyntaxNode expression)
             => expression switch
