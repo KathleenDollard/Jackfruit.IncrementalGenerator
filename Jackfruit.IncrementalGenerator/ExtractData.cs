@@ -1,11 +1,6 @@
-﻿using Jackfruit.Common;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using static Jackfruit.IncrementalGenerator.RoslynHelpers;
 
 namespace Jackfruit.IncrementalGenerator
 {
@@ -27,7 +22,7 @@ namespace Jackfruit.IncrementalGenerator
 
         private static CommandDetail DetailFromType(ITypeSymbol typeSymbol, SemanticModel semanticModel, Location location, CancellationToken cancellationToken)
         {
-            var commandDetail = new CommandDetail(typeSymbol.Name, "Root","int",typeSymbol.ContainingNamespace.ToString());
+            var commandDetail = new CommandDetail(typeSymbol.Name, "Root", "int", typeSymbol.ContainingNamespace.ToString());
             commandDetail.XmlDocs = typeSymbol.GetDocumentationCommentXml();
 
             var method = typeSymbol.GetTypeMembers("Define", 0)
@@ -58,21 +53,20 @@ namespace Jackfruit.IncrementalGenerator
                 var setDelegateOp = semanticModel.GetOperation(setDelegateSyntax);
                 if (!(setDelegateOp is IInvocationOperation setDelegateInvocation))
                 { return commandDetail.InternalError("SetDelegate is not an invocation", setDelegateSyntax.GetLocation()); }
-                commandDetail.MemberDetails = MemberDetails(setDelegateInvocation, commandDetail, setDelegateSyntax.GetLocation());
-
-
-        
-        }
+                var handlerMethodSymbol = HandlerMethodFromInvocation(setDelegateInvocation, commandDetail, setDelegateSyntax.GetLocation());
+                if (handlerMethodSymbol is not null)
+                { commandDetail.MemberDetails = MemberDetails(handlerMethodSymbol, commandDetail, setDelegateSyntax.GetLocation()); }
+            }
 
             return commandDetail;
         }
 
-        private static List<Detail> MemberDetails(IInvocationOperation setDelegateInvocation,
+        private static IMethodSymbol? HandlerMethodFromInvocation(IInvocationOperation setDelegateInvocation,
                                                          CommandDetail commandDetail,
                                                          Location location)
         {
             if (setDelegateInvocation.Arguments.Length != 1)
-            { return new List<Detail>(); } // This scenario will be reported as a syntax error
+            { return null; } // This scenario will be reported as a syntax error
 
             var handlerMethodSymbol = RoslynHelpers.MethodFromArg(setDelegateInvocation.Arguments[0]);
             if (handlerMethodSymbol == null)
@@ -80,16 +74,23 @@ namespace Jackfruit.IncrementalGenerator
                 commandDetail.UserWarning(Error.SetDelegateNotMethodGroupId,
                                           Error.SetDelegateNotMethodGroupMessage,
                                           location);
-                return new List<Detail>()   ;
+                return null;
             }
+            return handlerMethodSymbol;
 
+        }
+
+        private static List<Detail> MemberDetails(IMethodSymbol handlerMethodSymbol,
+                                                         CommandDetail commandDetail,
+                                                         Location location)
+        {
             var memberDetails = new List<Detail>();
 
             foreach (var param in handlerMethodSymbol.Parameters)
             {
-                //param.GetAttributes
+                var attributes = param.GetAttributes();
                 var detail = new Detail(param.Name, param.Name, param.Type.ToString());
-                if (param.Name.EndsWith("Arg"))
+                if (param.Name.EndsWith("Arg") || attributes.Any(x => x.AttributeClass?.Name == "Argument"))
                 {
                     detail.MemberKind = MemberKind.Argument;
                     detail.Name = detail.Name.Substring(0, param.Name.Length - 3);
@@ -97,6 +98,11 @@ namespace Jackfruit.IncrementalGenerator
                 else if (param.Type.IsAbstract)  // Test that this is true for interfaces
                 {
                     detail.MemberKind = MemberKind.Service;
+                }
+                var descAttribute = attributes.Where(x => x.AttributeClass?.Name == "Description").FirstOrDefault();
+                if (descAttribute is not null)
+                {
+                    detail.Description = descAttribute.ConstructorArguments.FirstOrDefault().Value?.ToString();
                 }
                 memberDetails.Add(detail);
             }

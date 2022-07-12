@@ -19,7 +19,7 @@ namespace Jackfruit.IncrementalGenerator
 
         public string Id { get; }
         public string Name { get; set; }
-        public string Description
+        public string? Description
         {
             get => description;
             set

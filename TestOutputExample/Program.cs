@@ -4,7 +4,6 @@ using System;
 
 internal class Program
 {
-
     private static void Main(string[] args)
     {
         var x = DateTime.Now.DayOfWeek == DayOfWeek.Tuesday
@@ -12,7 +11,7 @@ internal class Program
             : RunHandlers.StarTrek;
 
         var rootCommand = RootCommand.Create(
-            RunHandlers.Franchise, ResultValidators.FranchiseValidate,
+            RunHandlers.Franchise, 
                 SubCommand.Create(RunHandlers.StarTrek,
                     SubCommand.Create(RunHandlers.NextGeneration,
                         SubCommand.Create(RunHandlers.DeepSpaceNine),

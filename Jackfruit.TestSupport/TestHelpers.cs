@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.IO;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics;
 using Xunit;
 
@@ -35,8 +30,8 @@ public class TestHelpers
          => GetGeneratedOutput<T>(OutputKind.DynamicallyLinkedLibrary, syntaxTrees);
 
     public static (ImmutableArray<Diagnostic> InputDiagnostics, ImmutableArray<Diagnostic> Diagnostics, string Output)
-    GetGeneratedOutput<T>(OutputKind compilationKind, params SyntaxTree[] syntaxTrees)
-    where T : IIncrementalGenerator, new()
+        GetGeneratedOutput<T>(OutputKind compilationKind, params SyntaxTree[] syntaxTrees)
+        where T : IIncrementalGenerator, new()
     {
         var (compilation, inputDiagnostics) = GetCompilation<T>(compilationKind, syntaxTrees);
 
