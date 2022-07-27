@@ -1,0 +1,25 @@
+﻿{
+  Namespace: <global namespace>,
+  MemberDetails: [
+    {
+      Id: i,
+      Name: I,
+      Description: ,
+      TypeName: int,
+      Required: false
+    },
+    {
+      Id: s,
+      Name: S,
+      Description: ,
+      TypeName: string,
+      Required: false
+    }
+  ],
+  XmlDocs: ,
+  Id: MyClass,
+  Name: Root,
+  Description: ,
+  TypeName: int,
+  Required: false
+}

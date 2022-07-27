@@ -17,6 +17,8 @@ namespace Jackfruit.IncrementalGenerator
                         memberAccess.Name is GenericNameSyntax genericName
                             ? genericName.Identifier.ValueText
                             : memberAccess.Name.ToString()),
+                IdentifierNameSyntax nameSyntax 
+                    => ("", nameSyntax.Identifier.ToString()),
                 _ => (null, null)
             };
 

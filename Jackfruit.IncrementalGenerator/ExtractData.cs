@@ -12,8 +12,8 @@ namespace Jackfruit.IncrementalGenerator
 
         public static CommandDetail GetDetails(SyntaxNode node, SemanticModel semanticModel, CancellationToken cancellationToken)
         {
-            var symbolInfo = semanticModel.GetSymbolInfo(node, cancellationToken);
-            return symbolInfo.Symbol switch
+            var symbol = semanticModel.GetDeclaredSymbol(node, cancellationToken);
+            return symbol switch
             {
                 ITypeSymbol typeSymbol => DetailFromType(typeSymbol, semanticModel, node.GetLocation(), cancellationToken),
                 _ => CommandDetail.Empty.InternalError("Root is not a type", node.GetLocation())
@@ -25,7 +25,7 @@ namespace Jackfruit.IncrementalGenerator
             var commandDetail = new CommandDetail(typeSymbol.Name, "Root", "int", typeSymbol.ContainingNamespace.ToString());
             commandDetail.XmlDocs = typeSymbol.GetDocumentationCommentXml();
 
-            var method = typeSymbol.GetTypeMembers("Define", 0)
+            var method = typeSymbol.GetMembers("Define")
                     .OfType<IMethodSymbol>()
                     .FirstOrDefault();
             if (method is null)
@@ -33,19 +33,30 @@ namespace Jackfruit.IncrementalGenerator
 
             if (!(method.DeclaringSyntaxReferences.SingleOrDefault()?.GetSyntax() is MethodDeclarationSyntax methodSyntax))
             { return CommandDetail.Empty.InternalError("Issue getting method syntax", location); }
-            var addSubCommandSyntaxes = methodSyntax.DescendantNodes()
-                    .OfType<InvocationExpressionSyntax>()
-                    .Where(x => RoslynHelpers.GetName(x.Expression).methodName == addSubCommandName);
-            var setDelegateSyntax = methodSyntax.ChildNodes()
-                    .OfType<InvocationExpressionSyntax>()
-                    .Where(x => RoslynHelpers.GetName(x.Expression).methodName == setDelegateName)
-                    .FirstOrDefault();
+            var addSubCommandSyntaxes = SubCommandSyntaxes(methodSyntax);
+         
+            var setDelegateSyntax = SetActionSyntax(methodSyntax);
             if (!addSubCommandSyntaxes.Any() && setDelegateSyntax is null)
             { commandDetail.UserWarning(Error.NoActionOrSubCommandsId, Error.NoActionOrSubCommandsMessage, location); }
 
-            foreach (var subCommand in addSubCommandSyntaxes)
+            foreach (var subCommandSyntax in addSubCommandSyntaxes)
             {
+                var subCommandOp = semanticModel.GetOperation(subCommandSyntax);
+                if (subCommandOp is not IInvocationOperation subCommandDelegateInvocation)
+                { return commandDetail.InternalError("AddSubCommand is not an invocation", subCommandSyntax.GetLocation()); }
+                var handlerMethodSymbol = HandlerMethodFromInvocation(subCommandDelegateInvocation, commandDetail, subCommandSyntax.GetLocation());
 
+                if (handlerMethodSymbol is not null)
+                {
+                    var subCommandDetail = new CommandDetail(handlerMethodSymbol.Name,
+                                                             handlerMethodSymbol.Name,
+                                                             handlerMethodSymbol.ReturnType.ToString(),
+                                                             handlerMethodSymbol.ContainingNamespace.ToString())
+                    {
+                        MemberDetails = MemberDetails(handlerMethodSymbol, commandDetail, subCommandSyntax.GetLocation())
+                    };
+                    commandDetail.SubCommandDetails.Add(subCommandDetail);
+                }
             }
 
             if (setDelegateSyntax is not null)
@@ -59,6 +70,31 @@ namespace Jackfruit.IncrementalGenerator
             }
 
             return commandDetail;
+
+            static InvocationExpressionSyntax? SetActionSyntax(MethodDeclarationSyntax methodSyntax)
+            {
+                var expressionStatements = methodSyntax.Body?
+                    .Statements
+                    .OfType<ExpressionStatementSyntax>();
+                var invocations = expressionStatements
+                    .Select(x => x.Expression)
+                    .OfType<InvocationExpressionSyntax>();
+                var invocation = invocations
+                    .FirstOrDefault(x => RoslynHelpers.GetName(x.Expression).methodName == setDelegateName);
+                return invocation;
+            }
+
+            static IEnumerable<InvocationExpressionSyntax?> SubCommandSyntaxes(MethodDeclarationSyntax methodSyntax)
+            {
+                var expressionStatements = methodSyntax.Body?
+                    .Statements
+                    .OfType<ExpressionStatementSyntax>();
+                var invocations = expressionStatements
+                    .Select(x => x.Expression)
+                    .OfType<InvocationExpressionSyntax>()
+                    .Where(x => RoslynHelpers.GetName(x.Expression).methodName == addSubCommandName);
+                return invocations;
+            }
         }
 
         private static IMethodSymbol? HandlerMethodFromInvocation(IInvocationOperation setDelegateInvocation,

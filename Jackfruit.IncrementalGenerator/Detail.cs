@@ -11,7 +11,9 @@ namespace Jackfruit.IncrementalGenerator
         public Detail(string id, string name, string? typeName = null)
         {
             Id = id;
-            Name = char.ToUpperInvariant(name[0]) + name.Substring(1);
+            Name = string.IsNullOrWhiteSpace(name)
+                    ? ""
+                    : char.ToUpperInvariant(name[0]) + name.Substring(1);
             TypeName = typeName;
         }
 

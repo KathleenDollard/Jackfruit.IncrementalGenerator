@@ -72,21 +72,6 @@ namespace Jackfruit
          return Task.FromResult(invocationContext.ExitCode);
       }
       
-      /// <summary>
-      /// The validate method invoked by System.CommandLine.
-      /// </summary>
-      /// <param name="invocationContext">The System.CommandLine CommandResult used to retrieve values for validation and it will hold any errors.</param>
-      public override void Validate(InvocationContext invocationContext)
-      {
-         base.Validate(invocationContext);
-         var result = Result.GetResult(this, invocationContext);
-         var err = string.Join(Environment.NewLine, DemoHandlers.ResultValidators.FranchiseValidate(result.Greeting));
-         if (!(string.IsNullOrWhiteSpace(err)))
-         {
-            invocationContext.ParseResult.CommandResult.ErrorMessage = err;
-         }
-      }
-      
       public Argument<string> GreetingArgument {get; set;}
       public StarTrek StarTrek {get; set;}
    }

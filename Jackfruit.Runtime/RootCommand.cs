@@ -7,7 +7,7 @@ namespace Jackfruit.Runtime
     public abstract class RootCommand
     {
         public abstract void Define();
-        public void AddSubCommand() { }
-        public void SetAction(Delegate handlerAction) { }
-    }
+        protected void AddSubCommand(SubCommand subCommand) { }
+        protected void SetAction(Delegate handlerAction) { }
+        }
 }

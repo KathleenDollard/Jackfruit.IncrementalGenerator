@@ -13,7 +13,7 @@ namespace Jackfruit.Tests
         private readonly IntegrationTestConfiguration testOutputExampleConfiguration =
             new("TestOutputExample")
             {
-                OutputKind = OutputKind.ConsoleApplication 
+                OutputKind = OutputKind.ConsoleApplication
             };
 
         private readonly IntegrationTestConfiguration testOutputEmptyConfiguration =

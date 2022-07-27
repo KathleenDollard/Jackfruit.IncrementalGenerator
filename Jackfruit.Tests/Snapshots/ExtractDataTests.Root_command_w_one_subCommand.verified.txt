@@ -1,0 +1,19 @@
+﻿{
+  Namespace: <global namespace>,
+  XmlDocs: ,
+  Errors: [
+    {
+      Id: JF0001,
+      ReportToUser: true,
+      Location: : (6,0)-(23,1),
+      Message: Use the AddSubCommand method to add subcommands, or the SetAction to specify an action (or both),
+      DefaultSeverity: Warning,
+      IsDiagnosticEnabledByDefault: true
+    }
+  ],
+  Id: MyClass,
+  Name: Root,
+  Description: ,
+  TypeName: int,
+  Required: false
+}
